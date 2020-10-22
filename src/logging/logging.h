@@ -8,7 +8,7 @@
 
 #include <defines.h>
 
-#ifdef _DEBUG
+#ifndef _RELEASE
 #define LOG_CONTEXT(name) static LogLocalContext log_ctx_(name)
 #define LOG_DEBUG Log(LogLocalContext(__FILE__ ":" STRINGIFY(__LINE__))).debug()
 #define LOG_INFO Log(LogLocalContext(__FILE__ ":" STRINGIFY(__LINE__))).info()
@@ -27,10 +27,10 @@ DevNullSink const& operator<<(DevNullSink const& sink, T const&) { return sink; 
 
 
 struct LogLocalContext {
-    const char *name;
+    const char *file;
 
     LogLocalContext() noexcept;
-    explicit LogLocalContext(const char *name) noexcept;
+    explicit LogLocalContext(const char *file) noexcept;
 };
 
 struct Log {
@@ -70,6 +70,7 @@ struct LogGlobalContext {
     LogGlobalContext &set_level(Log::Level level);
     LogGlobalContext &attach(std::ostream &os, Log::Level level = Log::Level::Debug);
     LogGlobalContext &attach(const char *filename, Log::Level level = Log::Level::Debug);
+    LogGlobalContext &attach(const std::string& filename, Log::Level level = Log::Level::Debug);
     LogGlobalContext &reset();
 
     void write(std::stringstream &log, Log::Level log_level, LogLocalContext ctx) const;

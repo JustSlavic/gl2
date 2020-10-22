@@ -14,6 +14,7 @@ struct LogFileHandler : public LogHandler {
     std::ofstream output;
 
     explicit LogFileHandler(const char *filename, Log::Level handler_level = Log::Level::Debug);
+    explicit LogFileHandler(const std::string &filename, Log::Level handler_level = Log::Level::Debug);
     void write(const std::stringstream& log) override;
 };
 

@@ -4,26 +4,28 @@ CXX_STANDARD = c++14
 
 INC_DIR = \
     /usr/include \
-    include \
+    src \
     libs \
 
 LIB_DIR = \
     /usr/lib/ \
 
 LOCAL_LIBS = \
-    stb \
-    imgui \
+#     stb \
+#     imgui \
 
 # Libraries:
 # GL - OpenGL
 # GLU - OpenGL Utility
 # glfw - Managing window and input
-# GLEW - Loads supported OpenGL functions for us
+# GLEW - Extention Wrangler that dynamically loads supported OpenGL functions
+# SDL2 - Simple DirectMedia Layer (managing window, input, audio, etc.)
 LIBS = \
     GL \
     GLU \
-    glfw \
     GLEW \
+    SDL2 \
+#     glfw \
 
 CXXFLAGS = \
     -Wall \
@@ -44,26 +46,44 @@ else ifeq ($(MAKECMDGOALS),debug)
     # In debug build put debug info into binary, set _DEBUG definition
     SUB_DIR  := debug
     CXXFLAGS += -ggdb3
-    CXXFLAGS += -D_DEBUG
+    CXXFLAGS += -DDEBUG
 else ifeq ($(MAKECMDGOALS),release)
     # In release build set optimisation level O2, set _RELEASE definition
     SUB_DIR  := release
-    CXXFLAGS += -O2 -D_RELEASE
+    CXXFLAGS += -O2 -DRELEASE
+else
+    SUB_DIR  := plain
 endif
 
 
 HEADERS = \
+    application \
     defines \
+    keymap \
+    shader \
+    utils \
+    api/mouse \
+    api/window \
+    es/dispatcher \
+    es/emitter \
+    es/event_system \
+    es/observer \
     logging/logging \
     logging/handler \
 
 
 SOURCES = \
+    application \
+    keymap \
+    shader \
+    utils \
+    api/mouse \
+    api/window_sdl \
     logging/logging \
     logging/handler \
 
 
-HEADERS      := $(addprefix include/,          $(addsuffix .h,   $(HEADERS)))
+HEADERS      := $(addprefix src/,              $(addsuffix .h,   $(HEADERS)))
 OBJECTS      := $(addprefix build/$(SUB_DIR)/, $(addsuffix .o,   $(SOURCES)))
 SOURCES      := $(addprefix src/,              $(addsuffix .cpp, $(SOURCES)))
 
@@ -96,12 +116,16 @@ version: src/version.cpp
 
 GIT_REF := $(addprefix .git/, $(subst ref: ,, $(shell cat .git/HEAD)))
 
+# remake version file if:
+#                v checked out to another branch
+#                          v pushed/reseted current branch (commit's hash changed)
 src/version.cpp: .git/HEAD $(GIT_REF)
 	@./version.sh
 
 clean:
 	find build -type f -name '*.o' -delete
-	rm -fv bin/*/lib$(PROJECT).a
+	find build -type f -name '*.d' -delete
+	rm -fv build/*/lib$(PROJECT).a
 	rm -fv bin/*/$(PROJECT)
 	rm -fv run
 
@@ -123,9 +147,12 @@ $(PROJECT_EXE): main.cpp build/$(SUB_DIR)/version.o $(PROJECT_LIB) $(STATIC_LIBS
 $(PROJECT_LIB): $(OBJECTS)
 	ar rcvs $(PROJECT_LIB) $(OBJECTS)
 
-build/$(SUB_DIR)/%.o: src/%.cpp include/%.h
+-include $(OBJECTS:.o=.d)
+
+build/$(SUB_DIR)/%.o: src/%.cpp
 	@mkdir -p $(dir $@)
 	g++ $< -c -o $@ $(CXXFLAGS)
+	g++ -MM $(CXXFLAGS) $< > build/$(SUB_DIR)/$*.d
 
 ${STATIC_LIBS}:
 	$(MAKE) -C $(shell dirname $(dir $@))

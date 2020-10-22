@@ -4,9 +4,13 @@
 #include <ctime>
 #include <iomanip>
 
-LogLocalContext::LogLocalContext() noexcept : name(nullptr) {}
+LogLocalContext::LogLocalContext() noexcept 
+    : file(nullptr)
+{}
 
-LogLocalContext::LogLocalContext(const char *name) noexcept : name(name) {}
+LogLocalContext::LogLocalContext(const char *file) noexcept 
+    : file(file)
+{}
 
 Log::Log(LogLocalContext ctx) : context(ctx) {}
 
@@ -61,7 +65,9 @@ void LogGlobalContext::write(std::stringstream &log, Log::Level log_level, LogLo
     temporary_log
             << std::put_time(&tm, "%F %T ")
             << std::setw(8) << log_level_to_cstr(log_level);
-    if (ctx.name) temporary_log << " [" << ctx.name << "]";
+    if (ctx.file) {
+        temporary_log << " [" << ctx.file << "]";
+    }
     temporary_log << " " << log.str();
 
     for (auto& handler : outputs) {
@@ -81,6 +87,10 @@ LogGlobalContext &LogGlobalContext::attach(std::ostream &os, Log::Level handler_
 }
 
 LogGlobalContext &LogGlobalContext::attach(const char *filename, Log::Level handler_level) {
+    return attach(std::string(filename), handler_level);
+}
+
+LogGlobalContext &LogGlobalContext::attach(const std::string &filename, Log::Level handler_level) {
     outputs.push_back(std::make_unique<LogFileHandler>(filename, handler_level));
     return *this;
 }

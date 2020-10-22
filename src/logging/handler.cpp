@@ -3,6 +3,11 @@
 
 
 LogFileHandler::LogFileHandler(const char *filename, Log::Level handler_level)
+    : LogFileHandler(std::string(filename), handler_level)
+{
+}
+
+LogFileHandler::LogFileHandler(const std::string &filename, Log::Level handler_level)
     : output(filename, std::ios::app)
 {
     if (output.bad()) throw std::runtime_error("Cannot open log file!");

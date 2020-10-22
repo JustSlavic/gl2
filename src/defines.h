@@ -18,23 +18,20 @@
         std::exit(1); \
     } void SEMICOLON__()
 
-#define ASSERT_EQ(x, y) \
-    if (x == y) {} \
-    else { \
-        LOG_ERROR << "Assertion failed at " __FILE__ ":" STRINGIFY(__LINE__); \
+#define ASSERT2(x, msg) \
+    if (x) { } else { \
+        LOG_ERROR << msg; \
+        std::exit(1); \
     } void SEMICOLON__()
-
-#define ASSERT_NE(x, y) \
-    if (x == y) { \
-        LOG_ERROR << "Assertion failed at " __FILE__ ":" STRINGIFY(__LINE__); \
-    } else {} void SEMICOLON__()
 
 #define GL_CALL(call) call; ASSERT(check_gl_errors())
 #define GL_CHECK_ERRORS ASSERT(check_gl_errors())
 
 #else
 
+// #define ASSERT(x)
 #define ASSERT(x)
+#define ASSERT2(x, msg)
 #define ASSERT_EQ(x, y)
 #define ASSERT_NE(x, y)
 #define GL_CALL(call) call
