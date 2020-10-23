@@ -9,12 +9,6 @@
 namespace gl2 {
     // Instantiating template BEFORE first usage
     template <>
-    void Application::update<StopEvent>(StopEvent event) {
-        LOG_INFO << "Received StopEvent";
-        running = false;
-    }
-
-    template <>
     void Application::update<WindowMotionEvent>(WindowMotionEvent event) {
         LOG_INFO << "Received WindowMotionEvent(" << event.x << ", " << event.y << ")";
     }
@@ -30,10 +24,10 @@ namespace gl2 {
     }
 
     Application::Application() {
+        Dispatcher<StopEvent>::subscribe(EVENT_CALLBACK(on_stop));
         Dispatcher<WindowMotionEvent>::subscribe(EVENT_CALLBACK(update));
         Dispatcher<EventMoveUp>::subscribe(EVENT_CALLBACK(update));
         Dispatcher<EventMoveDown>::subscribe(EVENT_CALLBACK(update));
-        Dispatcher<StopEvent>::subscribe(EVENT_CALLBACK(update));
     }
 
     Application::~Application() {
@@ -61,5 +55,10 @@ namespace gl2 {
         }
 
         return 0;
+    }
+
+    void Application::on_stop(StopEvent) {
+        LOG_INFO << "Received StopEvent";
+        running = false;
     }
 }

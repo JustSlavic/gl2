@@ -3,7 +3,7 @@
 #include <es/event_system.h>
 #include "window.h"
 #include "mouse.h"
-#include <assert.h>
+#include "keyboard.h"
 
 
 namespace gl2 {
@@ -82,8 +82,14 @@ namespace gl2 {
                             emit(WindowMotionEvent(event.window.data1, event.window.data2));
                         }
                         break;
+                    case SDL_KEYDOWN:
+                        process_keyboard_press_event(event.key);
+                        break;
+                    case SDL_KEYUP:
+                        process_keyboard_release_event(event.key);
+                        break;
                     case SDL_MOUSEMOTION:
-                        process_mouse_motion_event(event);
+                        process_mouse_motion_event(event.motion);
                         break;
                     case SDL_MOUSEBUTTONDOWN:
                         process_mouse_button_down_event(event.button);
@@ -118,7 +124,7 @@ namespace gl2 {
                 case SDL_BUTTON_X2:
                     Mouse::press(Mouse::X2);
                     break;
-                default: assert(false);
+                default: ASSERT(false);
             }
         }
         
@@ -139,13 +145,13 @@ namespace gl2 {
                 case SDL_BUTTON_X2:
                     Mouse::release(Mouse::X2);
                     break;
-                default: assert(false);
+                default: ASSERT(false);
 
             }
         }
 
-        void process_mouse_motion_event(const SDL_Event& e) {
-            emit(MouseMotionEvent(e.motion.x, e.motion.y));            
+        void process_mouse_motion_event(const SDL_MouseMotionEvent& e) {
+            emit(MouseMotionEvent(e.x, e.y));            
         }
 
         void process_mouse_wheel_event(const SDL_Event& e) {
@@ -154,6 +160,24 @@ namespace gl2 {
 
         void process_quit_event(const SDL_Event& e) {
             emit(StopEvent());
+        }
+
+        void process_keyboard_press_event(const SDL_KeyboardEvent& e) {
+            switch (e.keysym.sym) {
+                case SDLK_ESCAPE:
+                    Keyboard::press(Keyboard::ESC);
+                    break;
+                default: ASSERT(false);
+            }
+        }
+
+        void process_keyboard_release_event(const SDL_KeyboardEvent& e) {
+            switch (e.keysym.sym) {
+                case SDLK_ESCAPE:
+                    Keyboard::release(Keyboard::ESC);
+                    break;
+                default: ASSERT(false);
+            }
         }
     };
 

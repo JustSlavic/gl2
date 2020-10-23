@@ -2,8 +2,6 @@
 
 #include <defines.h>
 #include <es/event_system.h>
-#include <api/mouse.h>
-// #include <api/keyboard.h>
 
 
 struct EventMoveUp {};
@@ -11,6 +9,10 @@ struct EventMoveDown {};
 struct EventMoveLeft {};
 struct EventMoveRight {};
 
+/*
+ *  This class provides means to remap key presses to actions
+ *  @TODO: make reading keymaps from file to make setting saving possible
+ */
 struct Keymap : public IEmitter {
     static Keymap &instance();
 

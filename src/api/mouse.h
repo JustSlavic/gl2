@@ -4,9 +4,6 @@
 #include <es/event_system.h>
 
 
-struct MouseButtonDownEvent;
-struct MouseButtonUpEvent;
-
 struct Mouse : public IEmitter {
     enum Button {
         LEFT,
@@ -22,10 +19,24 @@ struct Mouse : public IEmitter {
         PRESSED,
     };
 
+
+    struct ButtonPressEvent {
+        Mouse::Button button;
+
+        ButtonPressEvent(Mouse::Button button) :button(button) {}
+    };
+
+    struct ButtonReleaseEvent {
+        Mouse::Button button;
+
+        ButtonReleaseEvent(Mouse::Button button) :button(button) {}
+    };
+
     ButtonState state[MOUSE_BUTTONS_N];
 
     static void press(Button button);
     static void release(Button button);
+    static ButtonState get_state(Button button);
     static Mouse &instance();
 
 private:
@@ -43,16 +54,5 @@ inline const char *to_string(Mouse::Button b) {
     }
 }
 
-struct MouseButtonDownEvent {
-    Mouse::Button button;
-
-    MouseButtonDownEvent(Mouse::Button button) :button(button) {}
-};
-
-struct MouseButtonUpEvent {
-    Mouse::Button button;
-
-    MouseButtonUpEvent(Mouse::Button button) :button(button) {}
-};
 
 #endif // API_MOUSE_H

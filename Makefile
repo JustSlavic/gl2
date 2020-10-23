@@ -60,14 +60,15 @@ HEADERS = \
     application \
     defines \
     keymap \
-    shader \
     utils \
+    api/keyboard \
     api/mouse \
     api/window \
     es/dispatcher \
     es/emitter \
     es/event_system \
     es/observer \
+    graphics/shader \
     logging/logging \
     logging/handler \
 
@@ -75,10 +76,11 @@ HEADERS = \
 SOURCES = \
     application \
     keymap \
-    shader \
     utils \
+    api/keyboard \
     api/mouse \
     api/window_sdl \
+    graphics/shader \
     logging/logging \
     logging/handler \
 

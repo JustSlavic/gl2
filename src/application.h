@@ -22,6 +22,8 @@ namespace gl2 {
         void update(T) {
             ASSERT2(false, "You have to instantiate update(T) manually");
         }
+    private:
+        void on_stop(StopEvent);
     };
 }
 
