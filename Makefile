@@ -43,12 +43,12 @@ ifndef MAKECMDGOALS
     # If nothing is set => no debug info is included in binary, also no flags are set
     SUB_DIR  := plain
 else ifeq ($(MAKECMDGOALS),debug)
-    # In debug build put debug info into binary, set _DEBUG definition
+    # In debug build put debug info into binary, set DEBUG definition
     SUB_DIR  := debug
     CXXFLAGS += -ggdb3
     CXXFLAGS += -DDEBUG
 else ifeq ($(MAKECMDGOALS),release)
-    # In release build set optimisation level O2, set _RELEASE definition
+    # In release build set optimisation level O2, set RELEASE definition
     SUB_DIR  := release
     CXXFLAGS += -O2 -DRELEASE
 else
@@ -61,6 +61,7 @@ HEADERS = \
     defines \
     keymap \
     utils \
+    api/graphics_api \
     api/keyboard \
     api/mouse \
     api/window \
@@ -68,6 +69,7 @@ HEADERS = \
     es/emitter \
     es/event_system \
     es/observer \
+    fs/watcher \
     graphics/shader \
     logging/logging \
     logging/handler \
@@ -77,9 +79,11 @@ SOURCES = \
     application \
     keymap \
     utils \
+    api/graphics_api \
     api/keyboard \
     api/mouse \
-    api/window_sdl \
+    api/window \
+    fs/watcher \
     graphics/shader \
     logging/logging \
     logging/handler \
@@ -153,8 +157,8 @@ $(PROJECT_LIB): $(OBJECTS)
 
 build/$(SUB_DIR)/%.o: src/%.cpp
 	@mkdir -p $(dir $@)
+	@g++ -MM -MT "$@" $(CXXFLAGS) $< > build/$(SUB_DIR)/$*.d
 	g++ $< -c -o $@ $(CXXFLAGS)
-	g++ -MM $(CXXFLAGS) $< > build/$(SUB_DIR)/$*.d
 
 ${STATIC_LIBS}:
 	$(MAKE) -C $(shell dirname $(dir $@))

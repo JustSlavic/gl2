@@ -32,10 +32,20 @@ struct Mouse : public IEmitter {
         ButtonReleaseEvent(Mouse::Button button) :button(button) {}
     };
 
+    struct MoveEvent {
+        i32 x;
+        i32 y;
+
+        MoveEvent(i32 new_x, i32 new_y) :x(new_x), y(new_y) {}
+    };
+
     ButtonState state[MOUSE_BUTTONS_N];
+    i32 x;
+    i32 y;
 
     static void press(Button button);
     static void release(Button button);
+    static void move(i32 x, i32 y);
     static ButtonState get_state(Button button);
     static Mouse &instance();
 

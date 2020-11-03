@@ -9,6 +9,11 @@ struct IEmitter {
     void emit(TEvent event) {
         Dispatcher<TEvent>::instance().emit(event);
     }
+
+    template <typename TEvent, typename... Args>
+    void emit(Args... args) {
+        Dispatcher<TEvent>::instance().emit(TEvent(std::forward<Args...>(args)...));
+    }
 };
 
 

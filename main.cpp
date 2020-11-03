@@ -14,7 +14,8 @@
 int main(int argc, char** argv, char** env) {
     LogGlobalContext::instance()
         .attach(std::cout)
-        .attach(now_as_string() + ".log");
+        .attach(std::string("log/") + now_as_string() + ".log");
+
     LOG_INFO << "Welcome to Gir2";
 
     gl2::Application app;
@@ -23,30 +24,30 @@ int main(int argc, char** argv, char** env) {
 
 
 #if 0
-    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-        fprintf(stderr, "Could not initialize sdl2: %s\n", SDL_GetError());
-        return 1;
-    }
+            if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+                fprintf(stderr, "Could not initialize sdl2: %s\n", SDL_GetError());
+                return 1;
+            }
 
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+            SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
 
-    SDL_Window* window = SDL_CreateWindow(
-        "gir2",
-        SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-        WINDOW_WIDTH, WINDOW_HEIGHT,
-        SDL_WINDOW_SHOWN
-        );
+            SDL_Window* window = SDL_CreateWindow(
+                "gir2",
+                SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+                WINDOW_WIDTH, WINDOW_HEIGHT,
+                SDL_WINDOW_SHOWN
+                );
 
-    if (window == nullptr) {
-        fprintf(stderr, "Could not create window: %s\n", SDL_GetError());
-        return 1;
-    }
+            if (window == nullptr) {
+                fprintf(stderr, "Could not create window: %s\n", SDL_GetError());
+                return 1;
+            }
 
-    SDL_Surface* surface = SDL_GetWindowSurface(window);
-    SDL_GLContext glcontext = SDL_GL_CreateContext(window);
+            SDL_Surface* surface = SDL_GetWindowSurface(window);
+            SDL_GLContext glcontext = SDL_GL_CreateContext(window);
 
     GLenum err = glewInit();
     if (GLEW_OK != err) {

@@ -7,20 +7,26 @@ namespace gl2 {
     struct GraphicsApi {
         enum class Name {
             None,
-            DirectX,
-            Metal,
             OpenGL,
+            Direct3D,
+            Metal,
             Vulkan,
         };
 
-        GraphicsApi();
+        static void startup();
+        static void shutdown();
 
-        static Name getApiName();
+        static Name get_api_name();
+
+    private:
+        GraphicsApi() = default;
+        static GraphicsApi &instance();
 
         struct Impl;
         Impl* impl;
     };
 
+    const char *to_string(GraphicsApi::Name);
 }
 
 #endif // WM_GRAPHICS_API_H

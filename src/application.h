@@ -8,7 +8,7 @@
 
 
 namespace gl2 {
-    struct Application final {
+    struct Application : public IEmitter {
         Window* window{nullptr};
         bool running = false;
 

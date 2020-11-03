@@ -4,6 +4,8 @@
 #include <defines.h>
 
 
+struct EventFrameFinished {};
+
 struct StopEvent {};
 
 struct WindowMotionEvent {
@@ -11,9 +13,5 @@ struct WindowMotionEvent {
     WindowMotionEvent(i32 x, i32 y) :x(x), y(y) {}
 };
 
-struct MouseMotionEvent {
-    i32 x, y;
-    MouseMotionEvent(i32 x, i32 y) :x(x), y(y) {}
-};
 
 #endif // GL2_ES_EVENT_H

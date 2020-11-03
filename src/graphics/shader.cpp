@@ -2,23 +2,49 @@
 #include <utils.h>
 #include <defines.h>
 #include <logging/logging.h>
+#include <es/event_system.h>
 
 #include <GL/glew.h>
 #include <vector>
 
 
-Shader::~Shader() {
-    glDeleteProgram(id); GL_CHECK_ERRORS;
+Shader::Shader() {
+#ifdef DEBUG
+    Dispatcher<EventFileChanged>::subscribe(EVENT_CALLBACK(on_file_update));
+#endif
 }
 
+Shader::~Shader() {
+    if (id) {
+        glDeleteProgram(id); GL_CHECK_ERRORS;
+    }
+}
+
+
+#ifdef DEBUG
+void Shader::on_file_update(EventFileChanged e) {
+    LOG_INFO << "Shader (" << e.filename << ") changed, reloading";
+}
+#endif
 
 Shader &Shader::load_shader(Shader::Type type, const char *filename) {
     std::string source = read_whole_file(filename);
     sources.emplace(type, std::move(source));
 
+#ifdef DEBUG
+    filenames_of_shaders.emplace(filename, type);
+    watchers.emplace_back(filename);
+#endif
+
     return *this;
 }
 
+#if 0
+Watcher Shader::load_shader_and_watch(Shader::Type type, const char *filename) {
+    load_shader(type, filename);
+    return Watcher(filename);
+}
+#endif
 
 GLuint shader_type_to_gl_enum(Shader::Type type) {
     switch (type) {
@@ -33,6 +59,7 @@ const char *shader_type_to_c_str(Shader::Type type) {
     switch (type) {
         case Shader::Type::Vertex: return "Vertex";
         case Shader::Type::Fragment: return "Fragment";
+        default: ASSERT(false);
     }
 
     return "";

@@ -3,7 +3,10 @@
 
 #include <unordered_map>
 #include <glm/glm.hpp>
-
+#ifdef DEBUG
+#include <vector>
+#include <fs/watcher.h>
+#endif
 
 struct Shader {
     enum class Type {
@@ -17,7 +20,7 @@ struct Shader {
         Uniform(int);
     };
 
-    Shader() = default;
+    Shader();
     Shader(const Shader&) = delete;
     Shader(Shader&&) = default;
     ~Shader();
@@ -25,6 +28,13 @@ struct Shader {
     unsigned int id = 0;
     std::unordered_map<Type, std::string> sources;
     std::unordered_map<std::string, Uniform> uniform_cache;
+
+#ifdef DEBUG
+    std::unordered_map<std::string, Type> filenames_of_shaders;
+    std::vector<Watcher> watchers;
+
+    void on_file_update(EventFileChanged);
+#endif
 
     Shader& load_shader(Type type, const char *filename);
     Shader& compile();
