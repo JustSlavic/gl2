@@ -61,7 +61,7 @@ HEADERS = \
     defines \
     keymap \
     utils \
-    api/graphics_api \
+    graphics/graphics_api \
     api/keyboard \
     api/mouse \
     api/window \
@@ -79,7 +79,7 @@ SOURCES = \
     application \
     keymap \
     utils \
-    api/graphics_api \
+    graphics/graphics_api \
     api/keyboard \
     api/mouse \
     api/window \
