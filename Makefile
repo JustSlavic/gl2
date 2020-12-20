@@ -1,6 +1,6 @@
 PROJECT = gl2
 CXX = g++
-CXX_STANDARD = c++14
+CXX_STANDARD = c++17
 
 INC_DIR = \
     /usr/include \
@@ -45,12 +45,13 @@ ifndef MAKECMDGOALS
 else ifeq ($(MAKECMDGOALS),debug)
     # In debug build put debug info into binary, set DEBUG definition
     SUB_DIR  := debug
-    CXXFLAGS += -ggdb3
-    CXXFLAGS += -DDEBUG
+    CXXFLAGS += -ggdb3 -DDEBUG
 else ifeq ($(MAKECMDGOALS),release)
     # In release build set optimisation level O2, set RELEASE definition
     SUB_DIR  := release
     CXXFLAGS += -O2 -DRELEASE
+else ifeq ($(MAKECMDGOALS),test)
+    # Runs tests
 else
     SUB_DIR  := plain
 endif
@@ -71,8 +72,16 @@ HEADERS = \
     es/observer \
     fs/watcher \
     graphics/shader \
+    graphics/vertex_array \
+    graphics/vertex_buffer \
+    graphics/vertex_buffer_layout \
+    graphics/index_buffer \
+    graphics/renderer \
     logging/logging \
     logging/handler \
+    modeling_2d/camera \
+    modeling_2d/model \
+    service/shader_library/shader_library \
 
 
 SOURCES = \
@@ -85,8 +94,16 @@ SOURCES = \
     api/window \
     fs/watcher \
     graphics/shader \
+    graphics/vertex_array \
+    graphics/vertex_buffer \
+    graphics/vertex_buffer_layout \
+    graphics/index_buffer \
+    graphics/renderer \
     logging/logging \
     logging/handler \
+    modeling_2d/camera \
+    modeling_2d/model \
+    service/shader_library/shader_library \
 
 
 HEADERS      := $(addprefix src/,              $(addsuffix .h,   $(HEADERS)))
@@ -97,6 +114,9 @@ STATIC_LIBS  := $(foreach lib, $(LOCAL_LIBS), $(addprefix libs/$(lib)/bin/lib, $
 
 # CURRENT_DIR  := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
+PROJECT_LIB := build/$(SUB_DIR)/lib$(PROJECT).a
+PROJECT_EXE := bin/$(SUB_DIR)/$(PROJECT)
+
 # ================= RULES ================= #
 
 # Unconditional rules
@@ -105,7 +125,11 @@ STATIC_LIBS  := $(foreach lib, $(LOCAL_LIBS), $(addprefix libs/$(lib)/bin/lib, $
 # Silent rules
 # .SILENT:
 
-all debug release: prebuild bin/$(SUB_DIR)/$(PROJECT) postbuild
+all debug release: prebuild $(PROJECT_EXE) postbuild
+
+test:
+	$(MAKE) -C tests
+	./bin/test/$(PROJECT)_test
 
 
 # ================= UTILITY ================= #
@@ -122,10 +146,9 @@ version: src/version.cpp
 
 GIT_REF := $(addprefix .git/, $(subst ref: ,, $(shell cat .git/HEAD)))
 
-# remake version file if:
-#                v checked out to another branch
-#                          v pushed/reseted current branch (commit's hash changed)
 src/version.cpp: .git/HEAD $(GIT_REF)
+#                          ^^^^^^^^^^ commit/reset current branch (commit's hash changed)
+#                ^^^^^^^^^ checked out to another branch
 	@./version.sh
 
 clean:
@@ -143,9 +166,6 @@ clean:
 
 
 # ================= PROJECT ================= #
-
-PROJECT_LIB := build/$(SUB_DIR)/lib$(PROJECT).a
-PROJECT_EXE := bin/$(SUB_DIR)/$(PROJECT)
 
 $(PROJECT_EXE): main.cpp build/$(SUB_DIR)/version.o $(PROJECT_LIB) $(STATIC_LIBS)
 	g++ main.cpp build/$(SUB_DIR)/version.o $(PROJECT_LIB) $(STATIC_LIBS) -o $(PROJECT_EXE) $(CXXFLAGS) $(LDFLAGS)

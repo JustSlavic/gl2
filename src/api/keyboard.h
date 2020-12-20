@@ -12,7 +12,7 @@ struct Keyboard : public IEmitter {
     enum Key {
         ESC = 0,
         _1, _2, _3, _4, _5, _6, _7, _8, _9, _0,
-        F1, F2, F3, F4, F5, F6, F7, F8, F9, F0,
+        F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12,
         A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z,
         NUM_1, NUM_2, NUM_3, NUM_4, NUM_5, NUM_6, NUM_7, NUM_8, NUM_9, NUM_0,
         LALT, LCTRL, LSHIFT,
@@ -39,11 +39,17 @@ struct Keyboard : public IEmitter {
     static void press(Key);
     static void release(Key);
     static KeyState get_state(Key);
+    static bool is_pressed(Key);
     static Keyboard &instance();
 
 private:
     Keyboard();
 };
+
+
+#ifndef FOR_ALL_KEYS
+#define FOR_ALL_KEYS(VAR) Keyboard::Key VAR = (Keyboard::Key) 0; for (i32 i__ = 0; i__ < Keyboard::KEYBOARD_KEYS_N; i__++, VAR = (Keyboard::Key) i__)
+#endif
 
 
 const char *to_string(Keyboard::Key k);

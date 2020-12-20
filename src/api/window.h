@@ -1,17 +1,21 @@
 #ifndef GL2_WM_WINDOW_H
 #define GL2_WM_WINDOW_H
 
-#include "graphics_api.h"
+#include <defines.h>
+
 
 namespace gl2 {
 
 struct Window {
-    Window(int width, int height);
-    Window(int width, int height, const char* title);
+    Window(i32 width, i32 height);
+    Window(i32 width, i32 height, const char* title);
     ~Window();
 
-    int startup();
+    i32 startup();
     void shutdown();
+
+    i32 get_width();
+    i32 get_height();
 
     void poll_events();
     void swap_buffers();

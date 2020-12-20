@@ -27,6 +27,9 @@ namespace gl2 {
         
         ~Impl() = default;
 
+        i32 get_width() { return width; }
+        i32 get_height() { return height; }
+
         i32 startup() {
             if (initialized) return 0;
 
@@ -50,7 +53,15 @@ namespace gl2 {
             SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
             SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
-            LOG_INFO << "Using SDL v.";
+            SDL_version compiled;
+            SDL_VERSION(&compiled);
+            LOG_INFO << "Compiled against SDL v." << 
+                (int)compiled.major << "." << (int)compiled.minor << "." << (int)compiled.patch;
+
+            SDL_version linked;
+            SDL_GetVersion(&linked);
+            LOG_INFO << "Linked against SDL v." <<
+                (int)linked.major << "." << (int)linked.minor << "." << (int)linked.patch;
 
             initialized = true;
             return 0;
@@ -138,11 +149,11 @@ namespace gl2 {
         }
 
         void process_mouse_wheel_event(const SDL_Event& e) {
-            // emit(MouseWheelEvent());
+            Mouse::scroll(e.wheel.y);
         }
 
         void process_quit_event(const SDL_Event& e) {
-            emit(StopEvent());
+            emit(EventStop()); // @Todo Emit EventWindowClose instead
         }
 
         void process_keyboard_event(const SDL_Event& e) {
@@ -176,6 +187,19 @@ namespace gl2 {
                 case SDL_SCANCODE_7: PRESS_OR_RELEASE(Keyboard::_7); break;
                 case SDL_SCANCODE_8: PRESS_OR_RELEASE(Keyboard::_8); break;
                 case SDL_SCANCODE_9: PRESS_OR_RELEASE(Keyboard::_9); break;
+
+                case SDL_SCANCODE_F1: PRESS_OR_RELEASE(Keyboard::F1); break;
+                case SDL_SCANCODE_F2: PRESS_OR_RELEASE(Keyboard::F2); break;
+                case SDL_SCANCODE_F3: PRESS_OR_RELEASE(Keyboard::F3); break;
+                case SDL_SCANCODE_F4: PRESS_OR_RELEASE(Keyboard::F4); break;
+                case SDL_SCANCODE_F5: PRESS_OR_RELEASE(Keyboard::F5); break;
+                case SDL_SCANCODE_F6: PRESS_OR_RELEASE(Keyboard::F6); break;
+                case SDL_SCANCODE_F7: PRESS_OR_RELEASE(Keyboard::F7); break;
+                case SDL_SCANCODE_F8: PRESS_OR_RELEASE(Keyboard::F8); break;
+                case SDL_SCANCODE_F9: PRESS_OR_RELEASE(Keyboard::F9); break;
+                case SDL_SCANCODE_F10: PRESS_OR_RELEASE(Keyboard::F10); break;
+                case SDL_SCANCODE_F11: PRESS_OR_RELEASE(Keyboard::F11); break;
+                case SDL_SCANCODE_F12: PRESS_OR_RELEASE(Keyboard::F12); break;
 
                 case SDL_SCANCODE_A: PRESS_OR_RELEASE(Keyboard::A); break;
                 case SDL_SCANCODE_B: PRESS_OR_RELEASE(Keyboard::B); break;
@@ -225,6 +249,8 @@ namespace gl2 {
 
     i32 Window::startup() { return impl->startup(); }
     void Window::shutdown() { impl->shutdown(); }
+    i32 Window::get_width() { return impl->get_width(); }
+    i32 Window::get_height() { return impl->get_height(); }
     void Window::poll_events() { impl->poll_events(); }
     void Window::swap_buffers() { impl->swap_buffers(); }
 }

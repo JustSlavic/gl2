@@ -18,12 +18,8 @@ namespace gl2 {
         int initialize();
         int run();
 
-        template <typename T>
-        void update(T) {
-            ASSERT2(false, "You have to instantiate update(T) manually");
-        }
     private:
-        void on_stop(StopEvent);
+        void on_stop(EventStop);
     };
 }
 

@@ -3,10 +3,8 @@
 
 #include <unordered_map>
 #include <glm/glm.hpp>
-#ifdef DEBUG
-#include <vector>
-#include <fs/watcher.h>
-#endif
+#include <defines.h>
+
 
 struct Shader {
     enum class Type {
@@ -15,9 +13,9 @@ struct Shader {
     };
 
     struct Uniform {
-        int location;
+        i32 location;
 
-        Uniform(int);
+        Uniform(i32);
     };
 
     Shader();
@@ -25,36 +23,30 @@ struct Shader {
     Shader(Shader&&) = default;
     ~Shader();
 
-    unsigned int id = 0;
+    u32 id = 0;
     std::unordered_map<Type, std::string> sources;
     std::unordered_map<std::string, Uniform> uniform_cache;
 
-#ifdef DEBUG
-    std::unordered_map<std::string, Type> filenames_of_shaders;
-    std::vector<Watcher> watchers;
-
-    void on_file_update(EventFileChanged);
-#endif
 
     Shader& load_shader(Type type, const char *filename);
     Shader& compile();
 
     Uniform get_uniform(const char *name);
 
-    Shader& set_uniform_1i(Uniform uniform, int x);
-    Shader& set_uniform_1i(const char *name, int x);
+    Shader& set_uniform_1i(Uniform uniform, i32 x);
+    Shader& set_uniform_1i(const char *name, i32 x);
 
-    Shader& set_uniform_1f(Uniform uniform, float x);
-    Shader& set_uniform_1f(const char *name, float x);
+    Shader& set_uniform_1f(Uniform uniform, f32 x);
+    Shader& set_uniform_1f(const char *name, f32 x);
 
-    Shader& set_uniform_3f(Uniform uniform, float x1, float x2, float x3);
-    Shader& set_uniform_3f(const char *name, float x1, float x2, float x3);
+    Shader& set_uniform_3f(Uniform uniform, f32 x1, f32 x2, f32 x3);
+    Shader& set_uniform_3f(const char *name, f32 x1, f32 x2, f32 x3);
 
     Shader& set_uniform_vec3f(Uniform uniform, const glm::vec3 &vector);
     Shader& set_uniform_vec3f(const char *name, const glm::vec3 &vector);
 
-    Shader& set_uniform_4f(Uniform uniform, float x1, float x2, float x3, float x4);
-    Shader& set_uniform_4f(const char *name, float x1, float x2, float x3, float x4);
+    Shader& set_uniform_4f(Uniform uniform, f32 x1, f32 x2, f32 x3, f32 x4);
+    Shader& set_uniform_4f(const char *name, f32 x1, f32 x2, f32 x3, f32 x4);
 
     Shader& set_uniform_mat4f(Uniform uniform, const glm::mat4& matrix);
     Shader& set_uniform_mat4f(const char *name, const glm::mat4& matrix);

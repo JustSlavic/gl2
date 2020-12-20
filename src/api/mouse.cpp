@@ -22,6 +22,11 @@ void Mouse::release(Button button) {
     m.emit(ButtonReleaseEvent(button));
 }
 
+void Mouse::scroll(i32 scroll) {
+    Mouse& m = Mouse::instance();
+    m.emit(ScrollEvent(scroll));
+}
+
 void Mouse::move(i32 x, i32 y) {
     Mouse& m = Mouse::instance();
     m.x = x;

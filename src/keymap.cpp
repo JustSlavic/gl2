@@ -25,16 +25,27 @@ void Keymap::update<Mouse::ButtonReleaseEvent>(Mouse::ButtonReleaseEvent event) 
     emit(EventMoveUp());
 }
 
+template<> 
+void Keymap::update<Mouse::ScrollEvent>(Mouse::ScrollEvent event) {
+    constexpr f32 ZOOM_SCALE = .1f;
+    emit(EventZoom(ZOOM_SCALE * event.scroll));
+}
+
 template<>
 void Keymap::update<Keyboard::KeyReleaseEvent>(Keyboard::KeyReleaseEvent event) {
-    if (event.key == Keyboard::ESC) {
-        emit(StopEvent());
+    switch (event.key) {
+        case Keyboard::ESC: emit(EventStop()); break;
+        case Keyboard::R: emit(EventRestart()); break;
+        case Keyboard::SPACE: emit(EventPause()); break;
+        case Keyboard::F2: emit(EventToggleF2()); break;
+        default: break;
     }
 }
 
 Keymap::Keymap() {
     Dispatcher<Mouse::ButtonPressEvent>::subscribe(EVENT_CALLBACK(update));
     Dispatcher<Mouse::ButtonReleaseEvent>::subscribe(EVENT_CALLBACK(update));
+    Dispatcher<Mouse::ScrollEvent>::subscribe(EVENT_CALLBACK(update));
     Dispatcher<Keyboard::KeyReleaseEvent>::subscribe(EVENT_CALLBACK(update));
 }
 

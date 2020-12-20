@@ -27,6 +27,10 @@ Keyboard::KeyState Keyboard::get_state(Key k) {
     return keyboard.state[k];
 } 
 
+bool Keyboard::is_pressed(Key k) {
+    return Keyboard::instance().state[k] == Keyboard::KeyState::PRESSED;
+}
+
 const char *to_string(Keyboard::Key k) {
     switch (k) {
         case Keyboard::ESC: return "ESC";
@@ -51,7 +55,9 @@ const char *to_string(Keyboard::Key k) {
         case Keyboard::F7: return "F7";
         case Keyboard::F8: return "F8";
         case Keyboard::F9: return "F9";
-        case Keyboard::F0: return "F0";
+        case Keyboard::F10: return "F10";
+        case Keyboard::F11: return "F11";
+        case Keyboard::F12: return "F12";
 
         case Keyboard::A: return "A";
         case Keyboard::B: return "B";

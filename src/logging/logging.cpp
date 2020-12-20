@@ -3,6 +3,8 @@
 #include <iostream>
 #include <ctime>
 #include <iomanip>
+#include <cstring>
+
 
 LogLocalContext::LogLocalContext() noexcept 
     : file(nullptr)
@@ -66,7 +68,14 @@ void LogGlobalContext::write(std::stringstream &log, Log::Level log_level, LogLo
             << std::put_time(&tm, "%F %T ")
             << std::setw(8) << log_level_to_cstr(log_level);
     if (ctx.file) {
-        temporary_log << " [" << ctx.file << "]";
+        int len = std::strlen(ctx.file);
+        constexpr int cut_length = 20;
+
+        if (len > cut_length) {
+            temporary_log << " [..." << (ctx.file + (len - cut_length)) << "]";
+        } else {
+            temporary_log << " [" << ctx.file << "]";
+        }
     }
     temporary_log << " " << log.str();
 

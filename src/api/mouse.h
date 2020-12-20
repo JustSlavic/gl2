@@ -32,6 +32,12 @@ struct Mouse : public IEmitter {
         ButtonReleaseEvent(Mouse::Button button) :button(button) {}
     };
 
+    struct ScrollEvent {
+        i32 scroll;
+
+        ScrollEvent(i32 scroll) :scroll(scroll) {}
+    };
+
     struct MoveEvent {
         i32 x;
         i32 y;
@@ -45,6 +51,7 @@ struct Mouse : public IEmitter {
 
     static void press(Button button);
     static void release(Button button);
+    static void scroll(i32 scroll);
     static void move(i32 x, i32 y);
     static ButtonState get_state(Button button);
     static Mouse &instance();
