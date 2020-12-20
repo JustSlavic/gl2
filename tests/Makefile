@@ -4,8 +4,8 @@ CXX_STANDARD = c++17
 
 INC_DIR = \
     /usr/include \
-    src \
-    libs \
+    ../src \
+    ../libs \
 
 LIB_DIR = \
     /usr/lib/ \

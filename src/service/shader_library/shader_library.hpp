@@ -15,5 +15,5 @@ struct ShaderLibrary {
     void terminate();
 };
 
-} // shader
-} // service
+} // namespace shader
+} // namespace service
