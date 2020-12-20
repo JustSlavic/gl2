@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 namespace service {
 
 struct StringID {
@@ -10,4 +12,7 @@ struct StringID {
     StringID(const char *);
 };
 
-} // nnamespace service
+bool operator==(const StringID& lhs, const StringID& rhs);
+bool operator!=(const StringID& lhs, const StringID& rhs);
+
+} // namespace service

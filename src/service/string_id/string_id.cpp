@@ -2,15 +2,19 @@
 #include <defines.h>
 
 #include <vector>
+#include <string>
+
+namespace service {
+
+constexpr u64 BUFFER_SIZE = 1 << 10; // KByte of IDs
 
 struct StringID_DB {
-    constexpr u64 BUFFER_SIZE = 1 << 10; // KByte of IDs
     char* data = nullptr;
     char* next = nullptr;
     u64   size = 0;
 
     StringID_DB() {
-        data = calloc(BUFFER_SIZE, sizeof(char));
+        data = (char*) calloc(BUFFER_SIZE, sizeof(char));
         ASSERT(data);
         next = data;
     }
@@ -21,6 +25,7 @@ struct StringID_DB {
 
     const char* make(const char* id) {
         // do smth
+        return nullptr;
     }
 };
 
@@ -33,3 +38,13 @@ StringID::StringID(const char *id_)
 {
 }
 
+
+bool operator==(const StringID& lhs, const StringID& rhs) {
+    return lhs.id == rhs.id;
+}
+
+bool operator!=(const StringID& lhs, const StringID& rhs) {
+    return lhs.id != rhs.id;
+}
+
+} // namespace service

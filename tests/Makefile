@@ -27,17 +27,33 @@ LDFLAGS = \
     $(addprefix -L, $(LIB_DIR)) \
     $(addprefix -l, $(LIBS))
 
+
+HEADERS = \
+	logging/logging \
+	logging/handler \
+	service/string_id/string_id \
+
 SOURCES = \
+	logging/logging \
+	logging/handler \
+	service/string_id/string_id \
+
+TESTCPP = \
 	string_id \
 
 BIN_DIR   := ../bin
 BUILD_DIR := ../build
+SRC_DIR   := ../src
 SUB_DIR   := test
 
-OBJECTS := $(addprefix $(BUILD_DIR)/$(SUB_DIR)/, $(addsuffix .o,   $(SOURCES)))
-SOURCES := $(addprefix tests/,                   $(addsuffix .cpp, $(SOURCES)))
+HEADERS   := $(addprefix $(SRC_DIR)/,         $(addsuffix .h,   $(HEADERS)))
+OBJECTS   := $(addprefix $(BUILD_DIR)/debug/, $(addsuffix .o,   $(SOURCES)))
+SOURCES   := $(addprefix $(SRC_DIR)/,         $(addsuffix .cpp, $(SOURCES)))
 
-TEST_EXE := $(BIN_DIR)/$(SUB_DIR)/$(PROJECT)
+TESTOBJ   := $(addprefix $(BUILD_DIR)/$(SUB_DIR)/, $(addsuffix .o, $(TESTCPP)))
+TESTCPP   := $(addsuffix .cpp, $(TESTCPP))
+
+TEST_EXE  := $(BIN_DIR)/$(SUB_DIR)/$(PROJECT)
 
 # ================= RULES ================= #
 
@@ -55,6 +71,12 @@ prebuild:
 	@mkdir -p $(BIN_DIR)/$(SUB_DIR)
 	@mkdir -p $(BUILD_DIR)/$(SUB_DIR)
 
+	@echo "OBJECTS:"
+	@echo $(OBJECTS)
+
+	@echo "TESTOBJ:"
+	@echo $(TESTOBJ)
+
 postbuild:
 
 clean:
@@ -63,13 +85,23 @@ clean:
 
 # ================= PROJECT ================= #
 
+# Links test executable
+$(TEST_EXE): $(OBJECTS) $(TESTOBJ)
+	g++ $(OBJECTS) $(TESTOBJ) -o $(TEST_EXE) $(CXXFLAGS) $(LDFLAGS)
 
-$(TEST_EXE): $(OBJECTS)
-	c++ $(OBJECTS) -o $(TEST_EXE) $(CXXFLAGS) $(LDFLAGS)
 
--include $(OBJECTS:.o=.d)
+-include $(TESTOBJ:.o=.d)
 
+# Builds tests' object files
 $(BUILD_DIR)/$(SUB_DIR)/%.o: %.cpp
 	@mkdir -p $(dir $@)
 	@g++ -MM -MT "$@" $(CXXFLAGS) $< > $(BUILD_DIR)/$(SUB_DIR)/$*.d
 	g++ $< -c -o $@ $(CXXFLAGS)
+
+-include $(OBJECTS:.o=.d)
+
+# Builds app's object files
+$(BUILD_DIR)/debug/%.o: $(SRC_DIR)/%.cpp
+	@mkdir -p $(dir $@)
+	@g++ -MM -MT "$@" $(CXXFLAGS) $< > $(BUILD_DIR)/debug/$*.d
+	g++ $< -c -o $@ $(CXXFLAGS) -ggdb3 -DDEBUG
