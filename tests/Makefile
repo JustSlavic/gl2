@@ -28,11 +28,6 @@ LDFLAGS = \
     $(addprefix -l, $(LIBS))
 
 
-HEADERS = \
-	logging/logging \
-	logging/handler \
-	service/string_id/string_id \
-
 SOURCES = \
 	logging/logging \
 	logging/handler \
@@ -40,13 +35,14 @@ SOURCES = \
 
 TESTCPP = \
 	string_id \
+	vec2 \
+	float \
 
 BIN_DIR   := ../bin
 BUILD_DIR := ../build
 SRC_DIR   := ../src
 SUB_DIR   := test
 
-HEADERS   := $(addprefix $(SRC_DIR)/,         $(addsuffix .h,   $(HEADERS)))
 OBJECTS   := $(addprefix $(BUILD_DIR)/debug/, $(addsuffix .o,   $(SOURCES)))
 SOURCES   := $(addprefix $(SRC_DIR)/,         $(addsuffix .cpp, $(SOURCES)))
 

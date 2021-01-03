@@ -5,8 +5,14 @@
 #include <cstdlib>
 #include <cstdint>
 
-#include <utils.h>
 #include <logging/logging.h>
+
+
+// @todo works on my machine!
+//       how do I check it compile-time on other machines?
+#define ENDIANESS_LE 0
+#define ENDIANESS_BE 1
+#define ENDIANESS ENDIANESS_LE
 
 #define STRINGIFY2(X) #X
 #define STRINGIFY(X) STRINGIFY2(X)
@@ -18,25 +24,15 @@
         std::exit(1); \
     } void SEMICOLON__()
 
-#define ASSERT2(x, msg) \
-    if (x) { } else { \
-        LOG_ERROR << msg; \
-        std::exit(1); \
-    } void SEMICOLON__()
-
 #define GL_CALL(call) call; ASSERT(check_gl_errors())
 #define GL_CHECK_ERRORS ASSERT(check_gl_errors())
 
 #else
 
-// #define ASSERT(x)
 #define ASSERT(x)
-#define ASSERT2(x, msg)
-#define ASSERT_EQ(x, y)
-#define ASSERT_NE(x, y)
 #define GL_CALL(call) call
 #define GL_CHECK_ERRORS
-
+      
 #endif
 
 

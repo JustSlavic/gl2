@@ -8,7 +8,7 @@
 #include <cmath>
 
 
-f32 mass_to_radius(f32 m) {
+inline f32 mass_to_radius(f32 m) {
     constexpr f32 rho = 10000.f;
     return std::sqrt(m / (M_PI * rho));
 }
@@ -51,7 +51,9 @@ Model::Model()
 
 void Model::add_body(f32 x, f32 y) {
     LOG_DEBUG << "Body added at (" << x << ", " << y << ");";
-    bodies.emplace_back(x, y);
+    auto b = Circle(x, y);
+    b.m = 3.f;
+    bodies.emplace_back(b);
 }
 
 
@@ -97,11 +99,11 @@ void interact_inelastic(std::vector<Circle>& bodies, std::vector<Circle>& buffer
     buffer.clear();
     std::vector<bool> merged(bodies.size(), false);
 
-    for (i32 i = 0; i < bodies.size(); i++) {
+    for (size_t i = 0; i < bodies.size(); i++) {
         if (merged[i]) continue;
         auto a = bodies[i];
 
-        for (i32 j = 0; j < bodies.size(); j++) {
+        for (size_t j = 0; j < bodies.size(); j++) {
             if (merged[i]) continue;
             if (i == j) continue;
             auto &b = bodies[j];
@@ -132,11 +134,11 @@ void interact_elastic(std::vector<Circle>& bodies, std::vector<Circle>& buffer) 
     buffer.clear();
     std::vector<bool> interacted(bodies.size(), false);
 
-    for (i32 i = 0; i < bodies.size(); i++) {
+    for (size_t i = 0; i < bodies.size(); i++) {
         if (interacted[i]) continue;
         auto a = bodies[i];
 
-        for (i32 j = i+1; j < bodies.size(); j++) {
+        for (size_t j = i+1; j < bodies.size(); j++) {
             if (interacted[j]) continue;
             auto b = bodies[j];
 
@@ -186,7 +188,7 @@ void Model::move_bodies(f32 dt) {
 
     buffer.clear();
 
-    for (i32 i = 0; i < bodies.size(); i++) {
+    for (size_t i = 0; i < bodies.size(); i++) {
         auto& b = bodies[i];
 
         f32 new_x = b.x + b.vx * dt;

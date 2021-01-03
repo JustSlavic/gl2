@@ -57,33 +57,6 @@ else
 endif
 
 
-HEADERS = \
-    application \
-    defines \
-    keymap \
-    utils \
-    graphics/graphics_api \
-    api/keyboard \
-    api/mouse \
-    api/window \
-    es/dispatcher \
-    es/emitter \
-    es/event_system \
-    es/observer \
-    fs/watcher \
-    graphics/shader \
-    graphics/vertex_array \
-    graphics/vertex_buffer \
-    graphics/vertex_buffer_layout \
-    graphics/index_buffer \
-    graphics/renderer \
-    logging/logging \
-    logging/handler \
-    modeling_2d/camera \
-    modeling_2d/model \
-    service/shader_library/shader_library \
-
-
 SOURCES = \
     application \
     keymap \
@@ -106,7 +79,6 @@ SOURCES = \
     service/shader_library/shader_library \
 
 
-HEADERS      := $(addprefix src/,              $(addsuffix .h,   $(HEADERS)))
 OBJECTS      := $(addprefix build/$(SUB_DIR)/, $(addsuffix .o,   $(SOURCES)))
 SOURCES      := $(addprefix src/,              $(addsuffix .cpp, $(SOURCES)))
 
@@ -147,8 +119,8 @@ version: src/version.cpp
 GIT_REF := $(addprefix .git/, $(subst ref: ,, $(shell cat .git/HEAD)))
 
 src/version.cpp: .git/HEAD $(GIT_REF)
-#                          ^^^^^^^^^^ commit/reset current branch (commit's hash changed)
-#                ^^^^^^^^^ checked out to another branch
+#                          ^^^^^^^^^^ if commit/reset current branch (commit's hash changed)
+#                ^^^^^^^^^ if checked out to another branch
 	@./version.sh
 
 clean:

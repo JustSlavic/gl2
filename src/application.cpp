@@ -53,9 +53,9 @@ namespace gl2 {
     }
 
     int Application::run() {
-        service::shader::ShaderLibrary lib;
-        lib.initialize("shaders.data");
-        return 0;
+        // service::shader::ShaderLibrary lib;
+        // lib.initialize("shaders.data");
+        // return 0;
 
         running = true;
 
@@ -145,7 +145,7 @@ namespace gl2 {
         while (running) {
             auto t_ = std::chrono::steady_clock::now();
             auto dt = std::chrono::duration_cast<std::chrono::microseconds>(t_ - t).count();
-            LOG_DEBUG << "dt = " << dt << " μs; fps = " << (1000000.0 / dt);
+            // LOG_DEBUG << "dt = " << dt << " μs; fps = " << (1000000.0 / dt);
             t = t_;
 
             auto view = camera.get_view_matrix();
