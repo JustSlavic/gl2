@@ -29,6 +29,8 @@ LDFLAGS = \
 
 
 SOURCES = \
+	math/vec2 \
+	math/vec3 \
 	logging/logging \
 	logging/handler \
 	service/string_id/string_id \
@@ -36,6 +38,7 @@ SOURCES = \
 TESTCPP = \
 	string_id \
 	vec2 \
+	vec3 \
 	float \
 
 BIN_DIR   := ../bin

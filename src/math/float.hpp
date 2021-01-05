@@ -3,7 +3,6 @@
 #include "consts.hpp"
 
 #include <defines.h>
-#include <cmath>
 #include <type_traits>
 
 namespace math {
@@ -16,14 +15,20 @@ inline bool equal(f64 a, f64 b) {
     return abs(b - a) < consts<f64>::eps();
 }
 
+// @todo make all operations below by myself
+inline bool is_nan(f32 a) {
+    return ::std::isnan(a);
+}
+
+inline bool is_nan(f64 a) {
+    return ::std::isnan(a);
+}
 
 inline f32 abs(f32 x) {
-    // @todo make it by myself
     return ::std::abs(x);
 }
 
 inline f64 abs(f64 x) {
-    // @todo make it by myself
     return ::std::abs(x);
 }
 
@@ -35,7 +40,7 @@ inline f64 sqrt(f64 x) {
     return ::std::sqrt(x);
 }
 
-
+// =======================
 
 using IEEE_754_f32_repr = union {
     struct {

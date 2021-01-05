@@ -6,6 +6,8 @@
 #include <graphics/vertex_array.h>
 #include <graphics/index_buffer.h>
 
+#include <math/vec2.hpp>
+
 
 struct Circle {
     f32 x, y;
