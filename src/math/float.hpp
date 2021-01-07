@@ -7,12 +7,20 @@
 
 namespace math {
 
+inline f32 abs(f32 x) {
+    return ::std::abs(x);
+}
+
+inline f64 abs(f64 x) {
+    return ::std::abs(x);
+}
+
 inline bool equal(f32 a, f32 b) {
-    return abs(b - a) < consts<f32>::eps();
+    return ::math::abs(b - a) < consts<f32>::eps();
 }
 
 inline bool equal(f64 a, f64 b) {
-    return abs(b - a) < consts<f64>::eps();
+    return ::math::abs(b - a) < consts<f64>::eps();
 }
 
 // @todo make all operations below by myself
@@ -24,13 +32,6 @@ inline bool is_nan(f64 a) {
     return ::std::isnan(a);
 }
 
-inline f32 abs(f32 x) {
-    return ::std::abs(x);
-}
-
-inline f64 abs(f64 x) {
-    return ::std::abs(x);
-}
 
 inline f32 sqrt(f32 x) {
     return ::std::sqrt(x);

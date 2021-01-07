@@ -74,9 +74,11 @@ SOURCES = \
     graphics/renderer \
     logging/logging \
     logging/handler \
+    math/vec2 \
+    math/vec3 \
     modeling_2d/camera \
     modeling_2d/model \
-    service/shader_library/shader_library \
+    service/shader_library \
 
 
 OBJECTS      := $(addprefix build/$(SUB_DIR)/, $(addsuffix .o,   $(SOURCES)))

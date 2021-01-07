@@ -92,13 +92,4 @@ inline bool operator != (const vec3& a, const vec3& b) {
     return !(a == b);
 }
 
-// @think is there a sense to do such an operation?
-inline vec3 abs (const vec3& a) {
-    return vec3(abs(a.x), abs(a.y), abs(a.z));
-}
-
-inline vec3 sqrt(const vec3& a) {
-    return vec3(sqrt(a.x), sqrt(a.y), sqrt(a.z));
-}
-
 } // math

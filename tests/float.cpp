@@ -13,6 +13,19 @@ TEST(Float, Epsilon) {
     EXPECT_EQ(math::consts<f32>::eps(), repr.value);
 }
 
+TEST(Float, Abs) {
+    EXPECT_EQ(1.f, math::abs(-1.f));
+}
+
+TEST(Float, Equal) {
+    f32 a = .211f + .3f;
+    f32 b = .511f;
+
+    EXPECT_NE(0.3f, 0.f);
+    EXPECT_NE(a, b);
+    EXPECT_TRUE(math::equal(a, b));
+}
+
 TEST(Float, NormalMinimum) {
     math::IEEE_754_f32_repr repr;
     repr.sign = 0x0;
@@ -85,21 +98,4 @@ TEST(Float, NaN) {
     EXPECT_EQ(a.d, b.d);
 
 }
-
-TEST(Float, Abs) {
-    EXPECT_EQ(1.f, math::abs(-1.f));
-}
-
-TEST(Float, Equal) {
-    f32 a = .211f + .3f;
-    f32 b = .511f;
-
-    // print_binary_repr(a);
-    // print_binary_repr(b);
-
-    EXPECT_NE(a, b);
-    EXPECT_TRUE(math::equal(a, b));
-}
-
-
 

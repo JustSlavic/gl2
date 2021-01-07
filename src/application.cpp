@@ -20,7 +20,7 @@
 #include <modeling_2d/camera.hpp>
 #include <modeling_2d/model.hpp>
 
-#include <service/shader_library/shader_library.hpp>
+#include <service/shader_library.hpp>
 
 
 namespace gl2 {
@@ -111,14 +111,20 @@ namespace gl2 {
             1, 2, 3   // second Triangle
         };
 
-        Shader shdr;
-        shdr.load_shader(Shader::Type::Vertex, "resources/shaders/body.vshader")
+        auto body_shader = Shader();
+        body_shader.load_shader(Shader::Type::Vertex, "resources/shaders/body.vshader")
             .load_shader(Shader::Type::Fragment, "resources/shaders/body.fshader")
             .compile()
             .bind();
 
+        auto arrow_shader = Shader();
+        arrow_shader.load_shader(Shader::Type::Vertex, "resources/shaders/arrow.vshader")
+            .load_shader(Shader::Type::Fragment, "resources/shaders/arrow.fshader")
+            .compile();
 
-        shdr.set_uniform_mat4f("u_projection", projection);
+
+        body_shader.set_uniform_mat4f("u_projection", projection);
+        arrow_shader.set_uniform_mat4f("u_projection", projection);
 
         VertexArray va;
         va.bind();
@@ -131,9 +137,10 @@ namespace gl2 {
         va.add_buffer(vb, vbl);
 
 
-        model.shader = &shdr;
+        model.shader = &body_shader;
         model.va = &va;
         model.ib = &ib;
+        model.arrow_shader = &arrow_shader;
 
 
         auto t = std::chrono::steady_clock::now();
@@ -150,10 +157,13 @@ namespace gl2 {
 
             auto view = camera.get_view_matrix();
         
-            shdr.set_uniform_mat4f("u_view", view);
-            shdr.set_uniform_mat4f("u_model", glm::mat4(1.f));
+            body_shader.set_uniform_mat4f("u_view", view);
+            body_shader.set_uniform_mat4f("u_model", glm::mat4(1.f));
 
-            Renderer::clear(glm::vec3(1.f));
+            arrow_shader.set_uniform_mat4f("u_view", view);
+            arrow_shader.set_uniform_mat4f("u_model", glm::mat4(1.f));
+
+            Renderer::clear(glm::vec3(.8f));
             // Renderer::draw(va, ib, shdr);
 
             model.draw_bodies();

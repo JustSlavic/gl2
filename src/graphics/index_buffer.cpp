@@ -1,6 +1,5 @@
 #include "index_buffer.h"
-#include <defines.h>
-
+#include <utils.h>
 #include <GL/glew.h>
 
 

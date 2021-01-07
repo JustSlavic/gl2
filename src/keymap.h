@@ -18,7 +18,7 @@ struct Keymap : public IEmitter {
 
     template <typename T> 
     void update(T) {
-        ASSERT2(false, "You must instantiate update function by hand");
+        ASSERT(false); //, "You must instantiate update function by hand");
     }
 
 private:

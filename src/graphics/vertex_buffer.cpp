@@ -1,5 +1,5 @@
 #include "vertex_buffer.h"
-#include <defines.h>
+#include <utils.h>
 #include <logging/logging.h>
 
 #include <GL/glew.h>

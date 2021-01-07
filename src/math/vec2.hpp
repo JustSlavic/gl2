@@ -43,6 +43,14 @@ struct vec2 {
 };
 
 
+inline f32 length (const vec2& a) {
+    return a.length();
+}
+
+inline vec2 normalize (const vec2& a) {
+    return a.normalized();
+}
+
 inline bool equal (const vec2& a, const vec2& b) {
     return math::equal(a.x, b.x) && math::equal(a.y, b.y);
 }
@@ -67,6 +75,10 @@ inline vec2 operator *  (f32 c, const vec2& a) {
     return vec2(c * a.x, c * a.y);
 }
 
+inline vec2 operator /  (const vec2& a, f32 c) {
+    return vec2(a.x / c, a.y / c);
+}
+
 inline bool operator == (const vec2& a, const vec2& b) {
     return (a.x == b.x) && (a.y == b.y);
 }
@@ -77,15 +89,6 @@ inline bool operator != (const vec2& a, const vec2& b) {
 
 inline f32 dot (const vec2& a, const vec2& b) {
     return a.x * b.x + a.y * b.y;
-}
-
-// @think is there a sense to do such an operation?
-inline vec2 abs (const vec2& a) {
-    return vec2(abs(a.x), abs(a.y));
-}
-
-inline vec2 sqrt(const vec2& a) {
-    return vec2(sqrt(a.x), sqrt(a.y));
 }
 
 } // math

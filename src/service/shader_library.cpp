@@ -5,12 +5,12 @@
 #include <logging/logging.h>
 
 namespace service {
-namespace shader {
-
 
 ShaderLibrary::ShaderLibrary() {}
 
-void ShaderLibrary::initialize(const char *filename) {
+void ShaderLibrary::initialize() {}
+
+void ShaderLibrary::load_from_file(const char* filename) {
     std::ifstream input(filename);
 
     while (input.good() && !input.eof()) {
@@ -27,5 +27,4 @@ void ShaderLibrary::initialize(const char *filename) {
 
 void ShaderLibrary::terminate() {}
 
-} // shader
 } // service

@@ -29,39 +29,7 @@ void print_binary_repr(T x) {
     printf("\n");
 }
 
-void print_binary_repr(f32 x) {
-    union {
-        f32 f;
-        u32 d;
-    } f32_to_u32;
-    f32_to_u32.f = x;
-
-    u32 mask = 1;
-    mask <<= (sizeof(u32)*8 - 1);
-
-    while (mask) {
-        printf("%d", (f32_to_u32.d & mask) > 0);
-        mask >>= 1;
-    }
-    printf("\n");
-}
-
-void print_binary_repr(double x) {
-    union {
-        f64 f;
-        u64 d;
-    } f64_to_u64;
-    f64_to_u64.f = x;
-
-    u64 mask = 1;
-    mask <<= (sizeof(u64)*8 - 1);
-
-    while (mask) {
-        printf("%d", (f64_to_u64.d & mask) > 0);
-        mask >>= 1;
-    }
-    printf("\n");
-}
-
+void print_binary_repr(f32 x);
+void print_binary_repr(f64 x);
 
 #endif // GIR1_UTIL_H

@@ -13,6 +13,9 @@ LIB_DIR = \
 LOCAL_LIBS = \
 
 LIBS = \
+	GL \
+    GLU \
+    GLEW \
 	gtest \
 	gtest_main \
 
@@ -31,15 +34,19 @@ LDFLAGS = \
 SOURCES = \
 	math/vec2 \
 	math/vec3 \
+	graphics/shader \
 	logging/logging \
 	logging/handler \
-	service/string_id/string_id \
+	service/str_id \
+	service/shader_library \
+	utils \
 
 TESTCPP = \
-	string_id \
+	str_id \
+	float \
 	vec2 \
 	vec3 \
-	float \
+	shader_library \
 
 BIN_DIR   := ../bin
 BUILD_DIR := ../build
