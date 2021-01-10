@@ -15,7 +15,7 @@ LOCAL_LIBS = \
 LIBS = \
 	GL \
     GLU \
-    GLEW \
+    GLEW\
 	gtest \
 	gtest_main \
 
@@ -23,6 +23,8 @@ CXXFLAGS = \
     -Wall \
     -std=$(CXX_STANDARD) \
     -pthread \
+    -ggdb3 \
+    -DDEBUG \
 
 CXXFLAGS += $(addprefix -I, $(INC_DIR))
 
@@ -34,6 +36,8 @@ LDFLAGS = \
 SOURCES = \
 	math/vec2 \
 	math/vec3 \
+	math/vec4 \
+	math/color \
 	graphics/shader \
 	logging/logging \
 	logging/handler \
@@ -46,6 +50,8 @@ TESTCPP = \
 	float \
 	vec2 \
 	vec3 \
+	vec4 \
+	color \
 	shader_library \
 
 BIN_DIR   := ../bin
@@ -77,11 +83,11 @@ prebuild:
 	@mkdir -p $(BIN_DIR)/$(SUB_DIR)
 	@mkdir -p $(BUILD_DIR)/$(SUB_DIR)
 
-	@echo "OBJECTS:"
-	@echo $(OBJECTS)
+# 	@echo "OBJECTS:"
+# 	@echo $(OBJECTS)
 
-	@echo "TESTOBJ:"
-	@echo $(TESTOBJ)
+# 	@echo "TESTOBJ:"
+# 	@echo $(TESTOBJ)
 
 postbuild:
 
@@ -110,4 +116,4 @@ $(BUILD_DIR)/$(SUB_DIR)/%.o: %.cpp
 $(BUILD_DIR)/debug/%.o: $(SRC_DIR)/%.cpp
 	@mkdir -p $(dir $@)
 	@g++ -MM -MT "$@" $(CXXFLAGS) $< > $(BUILD_DIR)/debug/$*.d
-	g++ $< -c -o $@ $(CXXFLAGS) -ggdb3 -DDEBUG
+	g++ $< -c -o $@ $(CXXFLAGS)
