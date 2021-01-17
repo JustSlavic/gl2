@@ -91,4 +91,5 @@ inline f32 dot (const vec2& a, const vec2& b) {
     return a.x * b.x + a.y * b.y;
 }
 
+
 } // math

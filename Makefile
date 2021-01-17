@@ -74,8 +74,11 @@ SOURCES = \
     graphics/renderer \
     logging/logging \
     logging/handler \
+    math/color \
     math/vec2 \
     math/vec3 \
+    math/vec4 \
+    math/mat4 \
     modeling_2d/camera \
     modeling_2d/model \
     service/shader_library \

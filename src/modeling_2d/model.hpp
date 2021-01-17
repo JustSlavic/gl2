@@ -24,6 +24,8 @@ struct Model {
     std::vector<body> bodies;
     std::vector<body> buffer;
 
+    // body cursor_highlight;
+
     Shader* shader = nullptr;
     VertexArray* va;
     IndexBuffer* ib;

@@ -159,6 +159,18 @@ Shader &Shader::set_uniform_mat4f(const char *name, const glm::mat4 &matrix) {
     return *this;
 }
 
+Shader &Shader::set_uniform_mat4f(Shader::Uniform uniform, const math::mat4& matrix) {
+    this->bind();
+    glUniformMatrix4fv(uniform.location, 1, GL_FALSE, matrix.data()); GL_CHECK_ERRORS;
+    return *this;
+}
+
+Shader &Shader::set_uniform_mat4f(const char* name, const math::mat4& matrix) {
+    Uniform uniform = get_uniform(name);
+    set_uniform_mat4f(uniform, matrix);
+    return *this;
+}
+
 Shader &Shader::set_uniform_1i(Shader::Uniform uniform, int x) {
     this->bind();
     glUniform1i(uniform.location, x); GL_CHECK_ERRORS;

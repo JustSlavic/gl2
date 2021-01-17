@@ -47,8 +47,8 @@ inline bool operator == (const color_rgba& lhs, const color_rgba& rhs) {
     return (lhs.r == rhs.r) && (lhs.g == rhs.g) && (lhs.b == rhs.b) && (lhs.a == rhs.a);
 }
 
-using color_24 = color_rgb;
-using color_32 = color_rgba;
-using color    = color_rgba;
+using color24 = color_rgb;
+using color32 = color_rgba;
+using color   = color_rgba;
 
 } // math

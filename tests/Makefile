@@ -37,6 +37,7 @@ SOURCES = \
 	math/vec2 \
 	math/vec3 \
 	math/vec4 \
+	math/mat4 \
 	math/color \
 	graphics/shader \
 	logging/logging \
@@ -51,6 +52,7 @@ TESTCPP = \
 	vec2 \
 	vec3 \
 	vec4 \
+	mat4 \
 	color \
 	shader_library \
 

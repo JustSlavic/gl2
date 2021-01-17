@@ -84,6 +84,10 @@ inline vec3 operator *  (f32 c, const vec3& a) {
     return vec3(c * a.x, c * a.y, c * a.z);
 }
 
+inline vec3 operator /  (const vec3& a, f32 denom) {
+    return vec3(a.x / denom, a.y / denom, a.z / denom);
+}
+
 inline bool operator == (const vec3& a, const vec3& b) {
     return (a.x == b.x) && (a.y == b.y) && (a.z == b.z);
 }

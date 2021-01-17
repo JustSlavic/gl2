@@ -5,6 +5,7 @@
 in vec2 v_texture_coordinates;
 
 uniform float u_scale_factor;
+uniform vec3  u_color;
 // uniform float u_width;
 // uniform float u_length;
 
@@ -69,7 +70,7 @@ void main () {
     float tail = arrow_tail(uv, tail_length, tail_width);
     float b = clamp(tip + tail, 0.f, 1.f);
 
-    vec3 color = vec3(1.f, 1.f, 0.f); // yellow
+    // vec3 color = vec3(1.f, 1.f, 0.f); // yellow
 
-    out_color = vec4(color * b, b);
+    out_color = vec4(u_color * b, b);
 } 

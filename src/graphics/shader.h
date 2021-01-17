@@ -3,6 +3,7 @@
 
 #include <unordered_map>
 #include <glm/glm.hpp>
+#include <math.hpp>
 #include <defines.h>
 
 
@@ -50,6 +51,8 @@ struct Shader {
 
     Shader& set_uniform_mat4f(Uniform uniform, const glm::mat4& matrix);
     Shader& set_uniform_mat4f(const char *name, const glm::mat4& matrix);
+    Shader& set_uniform_mat4f(Uniform uniform, const math::mat4& matrix);
+    Shader& set_uniform_mat4f(const char *name, const math::mat4& matrix);
 
     Shader& bind();
     static void unbind();

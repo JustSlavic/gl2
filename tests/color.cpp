@@ -28,9 +28,9 @@ TEST(Color, Make32) {
 TEST(Color, From24bit) {
     u32 color = 0x88FCF9; // beautiful light blue
 
-    auto color24 = math::color_24::from_24bit(color);
-    auto color32_1 = math::color_32::from_24bit(color, 0xFF);
-    auto color32_2 = math::color_32::from_24bit(color, 1.f);
+    auto color24 = math::color24::from_24bit(color);
+    auto color32_1 = math::color32::from_24bit(color, 0xFF);
+    auto color32_2 = math::color32::from_24bit(color, 1.f);
     
     EXPECT_EQ(color24.r, 136.f / 255.f);
     EXPECT_EQ(color24.g, 252.f / 255.f);
@@ -50,8 +50,8 @@ TEST(Color, From24bit) {
 TEST(Color, From32bit) {
     u32 color = 0x88FCF9FF; // beautiful light blue
 
-    auto color24 = math::color_24::from_32bit(color);
-    auto color32 = math::color_32::from_32bit(color);
+    auto color24 = math::color24::from_32bit(color);
+    auto color32 = math::color32::from_32bit(color);
 
     EXPECT_EQ(color24.r, 136.f / 255.f);
     EXPECT_EQ(color24.g, 252.f / 255.f);
@@ -66,57 +66,57 @@ TEST(Color, From32bit) {
 TEST(Color, Subcolor24) {
     u32 color = 0x88FCF9FF; // beautiful light blue
 
-    auto color32 = math::color_32::from_32bit(color);
-    auto color24 = math::color_24::from_32bit(color);
+    auto color32 = math::color32::from_32bit(color);
+    auto color24 = math::color24::from_32bit(color);
     ASSERT_EQ(color32.rgb, color24);
 }
 
 TEST(Color, To24bit) {
     u32 color = 0x88FCF9; // beautiful light blue
 
-    auto color24 = math::color_24::make(136.f / 255.f, 252.f / 255.f, 249.f / 255.f);
+    auto color24 = math::color24::make(136.f / 255.f, 252.f / 255.f, 249.f / 255.f);
     EXPECT_EQ(color24.to_24bit(), color);
 
-    auto color32 = math::color_32::make(136.f / 255.f, 252.f / 255.f, 249.f / 255.f, 1.f);
+    auto color32 = math::color32::make(136.f / 255.f, 252.f / 255.f, 249.f / 255.f, 1.f);
     EXPECT_EQ(color32.to_24bit(), color);
 }
 
 TEST(Color, To32bit) {
     u32 color = 0x88FCF9FF; // beautiful light blue
 
-    auto color24_1 = math::color_24::make(136.f / 255.f, 252.f / 255.f, 249.f / 255.f);
+    auto color24_1 = math::color24::make(136.f / 255.f, 252.f / 255.f, 249.f / 255.f);
     EXPECT_EQ(color24_1.to_32bit(1.f), color);
 
-    auto color24_2 = math::color_24::make(136.f / 255.f, 252.f / 255.f, 249.f / 255.f);
+    auto color24_2 = math::color24::make(136.f / 255.f, 252.f / 255.f, 249.f / 255.f);
     EXPECT_EQ(color24_2.to_32bit(0xFF), color);
 
-    auto color32 = math::color_32::make(136.f / 255.f, 252.f / 255.f, 249.f / 255.f, 1.f);
+    auto color32 = math::color32::make(136.f / 255.f, 252.f / 255.f, 249.f / 255.f, 1.f);
     EXPECT_EQ(color32.to_32bit(), color);
 }
 
 TEST(Color, Equivalency24) {
     u32 color = 0x88FCF9; // beautiful light blue
 
-    auto color24 = math::color_24::from_24bit(color);
+    auto color24 = math::color24::from_24bit(color);
     EXPECT_EQ(color24.to_24bit(), color);
 
-    auto color32_1 = math::color_32::from_24bit(color, 1.f);
+    auto color32_1 = math::color32::from_24bit(color, 1.f);
     EXPECT_EQ(color32_1.to_24bit(), color);
 
-    auto color32_2 = math::color_32::from_24bit(color, 0xFF);
+    auto color32_2 = math::color32::from_24bit(color, 0xFF);
     EXPECT_EQ(color32_2.to_24bit(), color);
 }
 
 TEST(Color, Equivalency32) {
     u32 color = 0x88FCF9FF; // beautiful light blue
 
-    auto color24_1 = math::color_24::from_32bit(color);
+    auto color24_1 = math::color24::from_32bit(color);
     EXPECT_EQ(color24_1.to_32bit(1.f), color);
 
-    auto color24_2 = math::color_24::from_32bit(color);
+    auto color24_2 = math::color24::from_32bit(color);
     EXPECT_EQ(color24_2.to_32bit(0xFF), color);
 
-    auto color32 = math::color_32::from_32bit(color);
+    auto color32 = math::color32::from_32bit(color);
     EXPECT_EQ(color32.to_32bit(), color);
 }
 
