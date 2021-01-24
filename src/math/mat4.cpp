@@ -33,7 +33,24 @@ mat4 mat4::eye() {
 // h - height
 // n - near clip distance
 // f - far clip distance
-mat4 projection(f32 fov, f32 w, f32 h, f32 n, f32 f) {
+mat4 projection(f32 w, f32 h, f32 n, f32 f) {
+    auto a = mat4::zero();
+
+    a._11 = 2 * n / w;
+    a._22 = 2 * n / h;
+    a._33 = -(f + n) / (f - n);
+    a._34 = -1.f;
+    a._43 = -2 * f * n / (f - n);
+
+    return a;
+}
+
+// fov - field of view (angle in radians)
+// w - width
+// h - height
+// n - near clip distance
+// f - far clip distance
+mat4 projection_fov(f32 fov, f32 w, f32 h, f32 n, f32 f) {
     auto a = mat4::zero();
 
     // tg(fov / 2) == w / n
@@ -50,6 +67,8 @@ mat4 projection(f32 fov, f32 w, f32 h, f32 n, f32 f) {
     return a;
 }
 
+// fov - field of view (angle in radians)
+// ratio - aspect ratio of the viewport
 // n - near clip distance
 // f - far clip distance
 mat4 projection_fov(f32 fov, f32 ratio, f32 n, f32 f) {

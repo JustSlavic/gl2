@@ -11,7 +11,7 @@
 namespace gl2 {
     struct Renderer {
         static void init();
-        static void clear(const glm::vec3 &color = glm::vec3(0.f));
+        static void clear(const math::color24&);
         static void draw(const VertexArray &vertex_array, const IndexBuffer &index_buffer, Shader &shader);
         static void draw(const VertexArray &vertex_array, Shader &shader);
     };

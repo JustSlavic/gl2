@@ -4,7 +4,7 @@
 
 
 namespace gl2 {
-    void Renderer::clear(const glm::vec3 &color) {
+    void Renderer::clear(const math::color24& color) {
         glClearColor(color.r, color.g, color.b, 1.0); GL_CHECK_ERRORS;
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); GL_CHECK_ERRORS;
     }

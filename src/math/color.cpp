@@ -4,6 +4,15 @@
 namespace math {
 
 
+color_rgb color_rgb::make(f32 v) {
+  ASSERT(0.f <= v && v <= 1.f);
+
+  color_rgb color;
+  color.r = color.g = color.b = v;
+  
+  return color;
+}
+
 color_rgb color_rgb::make(f32 r, f32 g, f32 b) {
     ASSERT(0.f <= r && r <= 1.f);
     ASSERT(0.f <= g && g <= 1.f);

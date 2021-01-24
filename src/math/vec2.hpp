@@ -9,8 +9,10 @@ namespace math {
 struct vec3;
 struct vec2 {
     union {
-        struct { f32 x; f32 y; };
-        struct { f32 u; f32 v; };
+        struct { f32  x,  y; };
+        struct { f32  u,  v; };
+        struct { f32 _1, _2; };
+        f32 at[2];
     };
 
              vec2 ();

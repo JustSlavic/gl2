@@ -52,8 +52,10 @@ inline mat4 operator * (const mat4& lhs, const mat4& rhs) {
 
 f32  determinant(const mat4& matrix);
 
-mat4 projection(f32 fov, f32 width, f32 height, f32 near, f32 far);
+mat4 projection(f32 width, f32 height, f32 near, f32 far);
+mat4 projection_fov(f32 fov, f32 width, f32 height, f32 near, f32 far);
 mat4 projection_fov(f32 fov, f32 ratio, f32 near, f32 far);
+
 
 } // math
 

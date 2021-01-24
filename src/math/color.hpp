@@ -7,6 +7,7 @@ namespace math {
 struct color_rgb {
     struct { f32 r; f32 g; f32 b; };
 
+    static color_rgb make(f32 v);
     static color_rgb make(f32 r, f32 g, f32 b);
 
     static color_rgb from_24bit (u32 color_24bit);
@@ -26,7 +27,7 @@ inline bool operator == (const color_rgb& lhs, const color_rgb& rhs) {
 struct color_rgba {
     struct {
         union {
-            struct { f32 r; f32 g; f32 b; };
+            struct { f32 r, g, b; };
             color_rgb rgb;
         };
         f32 a;

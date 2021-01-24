@@ -110,7 +110,7 @@ namespace gl2 {
         }
         std::cout << std::endl;        
 
-        auto my_proj_1 = math::projection(math::radians(45.f), f32(w), f32(h), NEAR_CLIP_DISTANCE, FAR_CLIP_DISTANCE);
+        auto my_proj_1 = math::projection_fov(math::radians(45.f), f32(w), f32(h), NEAR_CLIP_DISTANCE, FAR_CLIP_DISTANCE);
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
                 std::cout << my_proj_1.at[i*4 + j] << " ";
@@ -128,6 +128,26 @@ namespace gl2 {
         }
         std::cout << std::endl;
 
+        f32 tf2 = ::std::tan(.5f * math::radians(45.f));
+        LOG_INFO << "tf2 =  " << tf2;
+        LOG_INFO << "       W = " << 2.f * NEAR_CLIP_DISTANCE * tf2 * w / h;
+        LOG_INFO << "       H = " << 2.f * NEAR_CLIP_DISTANCE * tf2;
+        auto my_proj_3 = math::projection(2.f * NEAR_CLIP_DISTANCE * tf2 * w / h, 2.f * NEAR_CLIP_DISTANCE * tf2, NEAR_CLIP_DISTANCE, FAR_CLIP_DISTANCE);
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                std::cout << my_proj_3.at[i*4 + j] << " ";
+            }
+            std::cout << std::endl;
+        }
+        std::cout << std::endl;
+
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                projection[i][j] = my_proj_3.at[i*4 + j];
+            }
+        }
+
+
         Model model;
         Camera2D camera;
 
@@ -144,14 +164,21 @@ namespace gl2 {
                 math::vec3 right = math::cross(forward, up);
 
                 f32 ratio = f32(w) / f32(h);
+
+                f32 t = 2 * NEAR_CLIP_DISTANCE * ::std::tan(.5f * math::radians(45.f));
+                f32 clip_width = t * ratio;
+                f32 clip_height = t;
+
+                LOG_DEBUG << "CLIP WIDTH = " << clip_width << "; CLIP HEIGHT = " << clip_height;
+
                 math::vec2 mouse = math::vec2(
-                    2.f * ( f32(m.x) / f32(w) - .5f) * ratio,
-                    2.f * (-f32(m.y) / f32(h) + .5f)
+                    ( f32(m.x) / f32(w) - .5f),
+                    (-f32(m.y) / f32(h) + .5f)
                 );
                 LOG_DEBUG << "mouse = (" << mouse.x << ", " << mouse.y << ")";
 
                 math::vec3 center = position + forward * NEAR_CLIP_DISTANCE;
-                math::vec3 point = center + right*mouse.x * NEAR_CLIP_DISTANCE + up*mouse.y * NEAR_CLIP_DISTANCE;
+                math::vec3 point = center + right*mouse.x * clip_width + up*mouse.y * clip_height;
                 LOG_DEBUG << "point = (" << point.x << ", " << point.y << ", " << point.z << ")";
 
                 math::vec3 direction = point - position;
@@ -233,13 +260,13 @@ namespace gl2 {
             arrow_shader.set_uniform_mat4f("u_view", view);
             arrow_shader.set_uniform_mat4f("u_model", glm::mat4(1.f));
 
-            Renderer::clear(glm::vec3(.8f));
+            // Renderer::clear(glm::vec3(.8f));
+            Renderer::clear(math::color24::make(.8f));
             // Renderer::draw(va, ib, shdr);
 
             // Draw Ox
             {
                 arrow_shader.set_uniform_mat4f("u_model", glm::translate(glm::scale(glm::mat4(1.f), glm::vec3(0.1f)), glm::vec3(.5f, 0.f, 0.f)));
-                arrow_shader.set_uniform_1f("u_scale_factor", 1.f);
                 arrow_shader.set_uniform_3f("u_color", 0.f, 0.f, 1.f);
                 arrow_shader.bind();
                 Renderer::draw(va, ib, arrow_shader);
@@ -248,7 +275,6 @@ namespace gl2 {
             // Draw Oy
             {
                 arrow_shader.set_uniform_mat4f("u_model", glm::translate(glm::rotate(glm::scale(glm::mat4(1.f), glm::vec3(0.1f)), glm::radians(90.f), glm::vec3(0.f, 0.f, 1.f)), glm::vec3(.5f, 0.f, 0.f)));
-                arrow_shader.set_uniform_1f("u_scale_factor", 1.f);
                 arrow_shader.set_uniform_3f("u_color", 1.f, 0.f, 0.f);
                 arrow_shader.bind();
                 Renderer::draw(va, ib, arrow_shader);

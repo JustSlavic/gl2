@@ -109,7 +109,6 @@ void Model::draw_bodies() {
 
             // drawing the arrows
             arrow_shader->set_uniform_mat4f("u_model", model_matrix);
-            arrow_shader->set_uniform_1f("u_scale_factor", v);
             // arrow_shader->set_uniform_1f("u_length", 1.f);
             // arrow_shader->set_uniform_1f("u_width", 1.f);
             arrow_shader->bind();
