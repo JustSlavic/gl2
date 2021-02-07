@@ -6,5 +6,5 @@
 TEST(ShaderLibrary, Init) {
     service::ShaderLibrary library;
 
-    library.initialize();
+    library.initialize("resources/shaders.data");
 }

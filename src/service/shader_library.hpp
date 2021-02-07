@@ -10,8 +10,7 @@ struct ShaderLibrary {
 
     ShaderLibrary();
 
-    void initialize();
-    void load_from_file(const char* filename);
+    void initialize(const char* filename);
     void terminate();
 };
 

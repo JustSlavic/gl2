@@ -8,22 +8,17 @@
 constexpr f32 CAMERA_SPEED = .5f;
 
 void update(Camera2D *camera, f32 dt) {
-    bool changed = false;
     FOR_ALL_KEYS(k) {
         if (Keyboard::is_pressed(k)) {
             switch (k) {
-                case Keyboard::W: camera->position.y += CAMERA_SPEED*dt; changed = true; break;
-                case Keyboard::S: camera->position.y -= CAMERA_SPEED*dt; changed = true; break;
-                case Keyboard::A: camera->position.x += CAMERA_SPEED*dt; changed = true; break;
-                case Keyboard::D: camera->position.x -= CAMERA_SPEED*dt; changed = true; break;
+                case Keyboard::W: camera->position.y += CAMERA_SPEED*dt; break;
+                case Keyboard::S: camera->position.y -= CAMERA_SPEED*dt; break;
+                case Keyboard::A: camera->position.x += CAMERA_SPEED*dt; break;
+                case Keyboard::D: camera->position.x -= CAMERA_SPEED*dt; break;
                 default: break;
             }
         }
     }
-
-    // if (changed) {
-    //     LOG_DEBUG << "Camera { x: " << camera->position.x << ", y : " << camera->position.y << " };";
-    // }
 }
 
 Camera2D::Camera2D() 

@@ -6,11 +6,9 @@
 
 namespace service {
 
-ShaderLibrary::ShaderLibrary() {}
+ShaderLibrary::ShaderLibrary () {}
 
-void ShaderLibrary::initialize() {}
-
-void ShaderLibrary::load_from_file(const char* filename) {
+void ShaderLibrary::initialize (const char* filename) {
     std::ifstream input(filename);
 
     while (input.good() && !input.eof()) {
@@ -19,12 +17,15 @@ void ShaderLibrary::load_from_file(const char* filename) {
         input.getline(buffer, 1024);
 
         std::filesystem::path filepath(buffer);
+        filepath = std::filesystem::current_path() / filepath; 
 
-        LOG_DEBUG << "File: " << std::filesystem::current_path() / filepath;
-        LOG_DEBUG << std::boolalpha << "exists: " << std::filesystem::exists(std::filesystem::current_path() / filepath);
+        LOG_DEBUG << "File: " << filepath;
+        LOG_DEBUG << std::boolalpha << "exists: " << std::filesystem::exists(filepath);
+
+
     }
 }
 
-void ShaderLibrary::terminate() {}
+void ShaderLibrary::terminate () {}
 
 } // service
