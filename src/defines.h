@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <cstdint>
 
+#include "typedef.hpp"
 #include <logging/logging.h>
 
 
@@ -35,19 +36,17 @@
       
 #endif
 
-
-typedef int8_t   i8;
-typedef int16_t  i16;
-typedef int32_t  i32;
-typedef int64_t  i64;
-
-typedef uint8_t  u8;
-typedef uint16_t u16;
-typedef uint32_t u32;
-typedef uint64_t u64;
-
-typedef float    f32;
-typedef double   f64;
+#define DEFINE_BIT_MASK_T(NAME, T, ...) \
+    struct NAME { \
+        enum INTERNAL : T { \
+            __VA_ARGS__ \
+        }; \
+        T value = 0; \
+        bool get(INTERNAL t) { return (value & t) != 0; } \
+        void set(INTERNAL t) { value |= t; } \
+        void unset(INTERNAL t) { value &= (~t); } \
+    }
+#define DEFINE_BIT_MASK(NAME, ...) DEFINE_BIT_MASK_T(NAME, u32, __VA_ARGS__)
 
 enum GIR1_ERROR {
     ERROR_GLFW_FAILED = 256,
