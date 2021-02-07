@@ -52,6 +52,8 @@ else ifeq ($(MAKECMDGOALS),release)
     CXXFLAGS += -O2 -DRELEASE
 else ifeq ($(MAKECMDGOALS),test)
     # Runs tests
+else ifeq ($(MAKECMDGOALS),bench)
+    # Runs benchmarks
 else
     SUB_DIR  := plain
 endif
@@ -108,6 +110,11 @@ test:
 	$(MAKE) -C tests
 	./bin/test/$(PROJECT)_test
 
+bench:
+	$(MAKE) -C benchmark
+	@echo ""
+	@echo "========================="
+	./bin/benchmark/benchmark_gl2
 
 # ================= UTILITY ================= #
 
