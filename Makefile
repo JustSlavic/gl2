@@ -54,8 +54,6 @@ else ifeq ($(MAKECMDGOALS),release)
     CXXFLAGS += -O2 -DRELEASE
 else ifeq ($(MAKECMDGOALS),test)
     # Runs tests
-else ifeq ($(MAKECMDGOALS),bench)
-    # Runs benchmarks
 else ifeq ($(MAKECMDGOALS),perf)
     SUB_DIR  := 
     CXXFLAGS += -fno-omit-frame-pointer
@@ -101,6 +99,7 @@ STATIC_LIBS  := $(foreach lib, $(LOCAL_LIBS), $(addprefix libs/$(lib)/bin/lib, $
 PROJECT_LIB := build/$(SUB_DIR)/lib$(PROJECT).a
 PROJECT_EXE := bin/$(SUB_DIR)/$(PROJECT)
 
+
 # ================= RULES ================= #
 
 # Unconditional rules
@@ -117,11 +116,6 @@ test:
 	@echo "========================="
 	./bin/test/$(PROJECT)_test
 
-bench:
-	$(MAKE) -C benchmark
-	@echo ""
-	@echo "========================="
-	./bin/benchmark/benchmark_gl2
 
 # ================= UTILITY ================= #
 
@@ -148,8 +142,9 @@ clean:
 	rm -fv build/*/lib$(PROJECT).a
 	rm -fv bin/*/$(PROJECT)
 	rm -fv run
+	rm -fv perf.data
+	rm -fv perf.data.old
 	$(MAKE) -C tests clean
-	$(MAKE) -C benchmark clean
 
 # Cleaning local lib's builds
 # .PHONY: $(LOCAL_LIBS)
