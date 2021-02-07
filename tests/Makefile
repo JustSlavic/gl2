@@ -22,6 +22,7 @@ LIBS = \
 CXXFLAGS = \
     -Wall \
     -std=$(CXX_STANDARD) \
+    -fno-rtti \
     -pthread \
     -ggdb3 \
     -DDEBUG \
@@ -48,6 +49,7 @@ SOURCES = \
 
 TESTCPP = \
 	str_id \
+	bit_masks \
 	float \
 	vec2 \
 	vec3 \
@@ -107,7 +109,7 @@ $(TEST_EXE): $(OBJECTS) $(TESTOBJ)
 -include $(TESTOBJ:.o=.d)
 
 # Builds tests' object files
-$(BUILD_DIR)/$(SUB_DIR)/%.o: %.cpp
+$(BUILD_DIR)/$(SUB_DIR)/%.o: %.cpp ./Makefile
 	@mkdir -p $(dir $@)
 	@g++ -MM -MT "$@" $(CXXFLAGS) $< > $(BUILD_DIR)/$(SUB_DIR)/$*.d
 	g++ $< -c -o $@ $(CXXFLAGS)
@@ -115,7 +117,7 @@ $(BUILD_DIR)/$(SUB_DIR)/%.o: %.cpp
 -include $(OBJECTS:.o=.d)
 
 # Builds app's object files
-$(BUILD_DIR)/debug/%.o: $(SRC_DIR)/%.cpp
+$(BUILD_DIR)/debug/%.o: $(SRC_DIR)/%.cpp ./Makefile
 	@mkdir -p $(dir $@)
 	@g++ -MM -MT "$@" $(CXXFLAGS) $< > $(BUILD_DIR)/debug/$*.d
 	g++ $< -c -o $@ $(CXXFLAGS)
