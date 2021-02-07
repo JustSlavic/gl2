@@ -29,6 +29,8 @@ LIBS = \
 
 CXXFLAGS = \
     -Wall \
+    -Werror \
+    -fno-rtti \
     -std=$(CXX_STANDARD)
 
 CXXFLAGS += $(addprefix -I, $(INC_DIR))
@@ -54,6 +56,9 @@ else ifeq ($(MAKECMDGOALS),test)
     # Runs tests
 else ifeq ($(MAKECMDGOALS),bench)
     # Runs benchmarks
+else ifeq ($(MAKECMDGOALS),perf)
+    SUB_DIR  := 
+    CXXFLAGS += -fno-omit-frame-pointer
 else
     SUB_DIR  := plain
 endif
@@ -108,6 +113,8 @@ all debug release: prebuild $(PROJECT_EXE) postbuild
 
 test:
 	$(MAKE) -C tests
+	@echo ""
+	@echo "========================="
 	./bin/test/$(PROJECT)_test
 
 bench:
@@ -141,6 +148,8 @@ clean:
 	rm -fv build/*/lib$(PROJECT).a
 	rm -fv bin/*/$(PROJECT)
 	rm -fv run
+	$(MAKE) -C tests clean
+	$(MAKE) -C benchmark clean
 
 # Cleaning local lib's builds
 # .PHONY: $(LOCAL_LIBS)

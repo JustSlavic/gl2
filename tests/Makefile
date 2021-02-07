@@ -26,6 +26,9 @@ CXXFLAGS = \
     -pthread \
     -ggdb3 \
     -DDEBUG \
+#     -fsanitize=address \
+#     -fsanitize=undefined \
+#     -pedantic \
 
 CXXFLAGS += $(addprefix -I, $(INC_DIR))
 
@@ -96,7 +99,7 @@ prebuild:
 postbuild:
 
 clean:
-	find $(BIN_DIR) -type f -name $(TEST_EXE) -delete
+	find $(BIN_DIR) -type f -name $(notdir $(TEST_EXE)) -delete
 	find $(BUILD_DIR) -type f -name '*.o' -delete
 
 # ================= PROJECT ================= #

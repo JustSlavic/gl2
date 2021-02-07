@@ -51,7 +51,7 @@ postbuild:
 
 
 clean:
-	find $(BIN_DIR) -type f -name $(BENCH_EXE) -delete
+	find $(BIN_DIR) -type f -name $(notdir $(BENCH_EXE)) -delete
 	find $(BUILD_DIR) -type f -name '*.o' -delete
 
 
