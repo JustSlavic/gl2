@@ -12,3 +12,5 @@ version.cpp
 gir1
 run
 test
+perf.data
+perf.data.old
