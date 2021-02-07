@@ -60,6 +60,20 @@ inline vec2 operator * (const mat2& m, const vec2& v) {
 inline vec2 operator * (const vec2& v, const mat2& m) {
     return vec2(v._1 * m._11 + v._2 * m._21,
                 v._1 * m._12 + v._2 * m._22);
+
+inline mat2 operator * (const mat2& m, f32 a) {
+    mat2 result;
+
+    result._11 = a * m._11;
+    result._12 = a * m._12;
+    result._21 = a * m._21;
+    result._22 = a * m._22;
+
+    return result;
+}
+
+inline mat2 operator * (f32 a, const mat2& m) {
+    return m * a;
 }
 
 } // math
