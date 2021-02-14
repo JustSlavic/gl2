@@ -132,6 +132,7 @@ namespace gl2 {
         LOG_INFO << "tf2 =  " << tf2;
         LOG_INFO << "       W = " << 2.f * NEAR_CLIP_DISTANCE * tf2 * w / h;
         LOG_INFO << "       H = " << 2.f * NEAR_CLIP_DISTANCE * tf2;
+                                
         auto my_proj_3 = math::projection(2.f * NEAR_CLIP_DISTANCE * tf2 * w / h, 2.f * NEAR_CLIP_DISTANCE * tf2, NEAR_CLIP_DISTANCE, FAR_CLIP_DISTANCE);
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {

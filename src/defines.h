@@ -9,21 +9,22 @@
 #include <logging/logging.h>
 
 
-// @todo works on my machine!
-//       how do I check it compile-time on other machines?
-#define ENDIANESS_LE 0
-#define ENDIANESS_BE 1
-#define ENDIANESS ENDIANESS_LE
-
 #define STRINGIFY2(X) #X
 #define STRINGIFY(X) STRINGIFY2(X)
 
 #ifdef DEBUG
 #define ASSERT(x) \
-    if (x) { } else { \
+    if (!(x)) { \
         LOG_ERROR << "Assertion failed at " __FILE__ ":" STRINGIFY(__LINE__); \
         std::exit(1); \
-    } void SEMICOLON__()
+    } void(0)
+
+#define ASSERT_MSG(x, msg) \
+    if (!(x)) { \
+        LOG_ERROR << "Assertion failed at " __FILE__ ":" STRINGIFY(__LINE__); \
+        LOG_ERROR << "    " << msg; \
+        std::exit(1); \
+    } void(0) \
 
 #define GL_CALL(call) call; ASSERT(check_gl_errors())
 #define GL_CHECK_ERRORS ASSERT(check_gl_errors())

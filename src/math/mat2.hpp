@@ -19,6 +19,8 @@ struct mat2 {
     f32 det() const;
 };
 
+f32 determinant(const mat2& matrix);
+
 inline mat2 operator + (const mat2& a, const mat2& b) {
     mat2 result;
 

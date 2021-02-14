@@ -47,7 +47,7 @@ SOURCES = \
 	logging/logging \
 	logging/handler \
 	service/str_id \
-	service/shader_library \
+	service/shader_manager \
 	utils \
 
 TESTCPP = \
@@ -55,11 +55,11 @@ TESTCPP = \
 	bit_masks \
 	float \
 	vec2 \
-	vec3 \
+vec3 \
 	vec4 \
 	mat4 \
 	color \
-	shader_library \
+	shader_manager \
 
 BIN_DIR   := ../bin
 BUILD_DIR := ../build

@@ -59,18 +59,12 @@ inline f64 sqrt(f64 x) {
 
 // =======================
 
+// @Warning! This works only on LITTLE ENDIAN setups
 using IEEE_754_f32_repr = union {
     struct {
-#if ENDIANESS == ENDIANESS_LE
         u32 mantissa : 23;
         u32 exponent : 8;
         u32 sign : 1;
-#endif
-#if ENDIANESS == ENDIANESS_BE
-        u32 sign : 1;
-        u32 exponent : 8;
-        u32 mantissa : 23;
-#endif
     };
 
     f32 value;
@@ -78,16 +72,9 @@ using IEEE_754_f32_repr = union {
 
 using IEEE_754_f64_repr = union {
     struct {
-#if ENDIANESS == ENDIANESS_LE
         u64 mantissa : 52;
         u64 exponent : 11;
         u64 sign : 1;
-#endif
-#if ENDIANESS == ENDIANESS_BE
-        u64 sign : 1;
-        u64 exponent : 11;
-        u64 mantissa : 52;
-#endif
     };
 
     f32 value;

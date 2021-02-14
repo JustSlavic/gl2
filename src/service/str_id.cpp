@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <cstring>
+#include <iostream>
 
 
 namespace service {
@@ -14,6 +15,12 @@ struct str_id_pool {
     char* end = nullptr;
     bool initialized = false;
 
+    struct {
+        size_t saved_ids = 0;
+        size_t consumed_space = 0; // in bytes
+        size_t used_space = 0;     // in bytes
+    } statistics;
+
     ~str_id_pool() {
         terminate();
     }
@@ -22,6 +29,8 @@ struct str_id_pool {
         data = (char*)calloc(POOL_SIZE, sizeof(char));
         end = data;
         initialized = true;
+
+        statistics.consumed_space = POOL_SIZE;
     }
 
     void terminate () {
@@ -32,9 +41,10 @@ struct str_id_pool {
     }
 
     // @Todo: Efficiency
-    // @Todo: Thread-safe
+    // @Todo: Thread-safety
     const char* create (const char* id) {
         char* word = data;
+        size_t id_len = strlen(id);
 
         while (word != end) {
             bool found = strcmp(word, id) == 0;
@@ -43,11 +53,26 @@ struct str_id_pool {
             word += strlen(word) + 1;
         }
 
-        if ((u64(word) + strlen(id) + 1) > (u64(data) + POOL_SIZE - 1)) {
-            ASSERT(false);
+        if ((u64(word) + id_len + 1) > (u64(data) + POOL_SIZE - 1)) {
+            ::std::cout << POOL_SIZE << " bytes is not enough for requested string IDs\n";
+            ASSERT_MSG(false, POOL_SIZE << " is not enough for requested string IDs");
         }
         strcpy(word, id);
-        end += strlen(word) + 1;
+        end += id_len + 1;
+
+        statistics.saved_ids += 1;
+        statistics.used_space += id_len + 1;
+
+        printf("statistics {\n"
+               "    saved_ids = %ld;\n"
+               "    consumed_space = %ld bytes;\n"
+               "    used_space = %ld bytes;\n"
+               "}\n",
+               statistics.saved_ids,
+               statistics.consumed_space,
+               statistics.used_space
+            );
+
         return word;
     }
 };
@@ -56,12 +81,27 @@ struct str_id_pool {
 str_id_pool pool;
 
 
-str_id::str_id (const char* id_) {
+str_id::str_id () {
     if (!pool.initialized) {
         pool.initialize();
     }
+}
 
+str_id::str_id (const char* id_)
+    : str_id()
+{
     id = pool.create(id_);
+}
+
+str_id::str_id (const char* buffer, size_t len)
+    : str_id(std::string(buffer, len))
+{
+}
+
+str_id::str_id (const std::string& id_)
+    : str_id()
+{
+    id = pool.create(id_.data());
 }
 
 bool operator == (const str_id& lhs, const str_id& rhs) {

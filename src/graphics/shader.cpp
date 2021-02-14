@@ -101,7 +101,6 @@ Shader &Shader::compile() {
 
     LOG_INFO << "Shaders linked successfully";
 
-    // @Investigate: Why I delete shaders here if I already deteted them in compile_shader()
     for (auto& shader_id : shader_ids) {
         glDeleteShader(shader_id); GL_CHECK_ERRORS;
         LOG_DEBUG << "glDeleteShader(" << shader_id << ");";
@@ -113,7 +112,6 @@ Shader &Shader::compile() {
 
 Shader& Shader::bind() {
     glUseProgram(id); GL_CHECK_ERRORS;
-    // LOG_DEBUG << "glUseProgram(" << id << ");";
     return *this;
 }
 
