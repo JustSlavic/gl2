@@ -59,7 +59,7 @@ Model::Model()
 }
 
 void Model::add_body(f32 x, f32 y) {
-    LOG_DEBUG << "Body added at (" << x << ", " << y << ");";
+    printf("Body added at (%5.2f, %5.2f)\n", x, y);
     auto b = body(x, y);
     b.m = 3.f;
     bodies.emplace_back(b);

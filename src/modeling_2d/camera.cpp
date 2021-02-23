@@ -28,8 +28,8 @@ Camera2D::Camera2D()
         update(this, e.dt);
     });
     Dispatcher<EventZoom>::subscribe([this](EventZoom e) {
-        auto z = this->position.z + e.factor;
-        if (z > -1.f) z = -1.f;
+        auto z = this->position.z + e.factor * 2.f;
+        if (z > -.11f) z = -.11f;
         this->position.z = z;
     });
 }

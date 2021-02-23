@@ -121,7 +121,7 @@ namespace gl2 {
         }
 
         void process_mouse_button_event(const SDL_Event& e) {
-            #define PRESS_OR_RELEASE(BUTTON) if (e.type == SDL_MOUSEBUTTONUP) { Mouse::release(BUTTON); } else { Mouse::press(BUTTON); } struct SEMICOLON__
+            #define PRESS_OR_RELEASE(BUTTON) if (e.type == SDL_MOUSEBUTTONUP) { Mouse::release(BUTTON); } else { Mouse::press(BUTTON); } void(0)
             switch (e.button.button) {
                 case SDL_BUTTON_LEFT:
                     PRESS_OR_RELEASE(Mouse::LEFT);
@@ -157,7 +157,7 @@ namespace gl2 {
         }
 
         void process_keyboard_event(const SDL_Event& e) {
-            #define PRESS_OR_RELEASE(KEY) if (e.type == SDL_KEYUP) { Keyboard::release(KEY); } else { Keyboard::press(KEY); } struct SEMICOLON__
+            #define PRESS_OR_RELEASE(KEY) if (e.type == SDL_KEYUP) { Keyboard::release(KEY); } else { Keyboard::press(KEY); } void(0)
             switch (e.key.keysym.scancode) {
                 case SDL_SCANCODE_ESCAPE: PRESS_OR_RELEASE(Keyboard::ESC); break;
                 case SDL_SCANCODE_SPACE:  PRESS_OR_RELEASE(Keyboard::SPACE); break;

@@ -26,11 +26,14 @@ struct mat4 {
     f32 det() const;
 };
 
-f32  determinant(const mat4& matrix);
+using matrix4 = mat4;
 
-mat4 projection(f32 width, f32 height, f32 near, f32 far);
-mat4 projection_fov(f32 fov, f32 width, f32 height, f32 near, f32 far);
-mat4 projection_fov(f32 fov, f32 ratio, f32 near, f32 far);
+f32     determinant(const mat4& matrix);
+
+matrix4 projection(f32 width, f32 height, f32 near, f32 far);
+matrix4 projection_fov(f32 fov, f32 width, f32 height, f32 near, f32 far);
+matrix4 projection_fov(f32 fov, f32 ratio, f32 near, f32 far);
+matrix4 projection_far(f32 width, f32 height, f32 near, f32 far);
 
 inline mat4 operator + (const mat4& lhs, const mat4& rhs) {
     mat4 result;

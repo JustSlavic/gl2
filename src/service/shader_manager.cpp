@@ -2,7 +2,6 @@
 #include "str_id.hpp"
 
 #include <stdio.h>
-#include <>
 
 
 namespace service {
@@ -15,7 +14,7 @@ void shader_manager::initialize (const char* filename) {
     FILE* input = fopen(filename, "r");
     if (!input) printf("File %s does not exist!\n", filename);
 
-    int characters_read = fread(buffer, sizeof(char), N, input);
+    size_t characters_read = fread(buffer, sizeof(char), N, input);
 
     size_t i = 0;
     while (i < characters_read) {

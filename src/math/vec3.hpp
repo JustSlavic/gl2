@@ -48,6 +48,8 @@ struct vec3 {
     }
 };
 
+using vector3 = vec3;
+
 
 inline f32 dot (const vec3& a, const vec3& b) {
     return a.x * b.x + a.y * b.y + a.z * b.z;

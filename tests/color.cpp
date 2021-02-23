@@ -4,12 +4,12 @@
 
 
 TEST(Color, SizeOf) {
-    ASSERT_EQ(sizeof(math::color_rgb),  sizeof(f32) * 3);
-    ASSERT_EQ(sizeof(math::color_rgba), sizeof(f32) * 4);
+    ASSERT_EQ(sizeof(math::color24),  sizeof(f32) * 3);
+    ASSERT_EQ(sizeof(math::color32), sizeof(f32) * 4);
 }
 
 TEST(Color, Make24) {
-    auto color = math::color_rgb::make(0.2f, 0.3f, 0.4f);
+    auto color = math::color24::make(0.2f, 0.3f, 0.4f);
 
     EXPECT_EQ(color.r, 0.2f);
     EXPECT_EQ(color.g, 0.3f);
@@ -17,7 +17,7 @@ TEST(Color, Make24) {
 }
 
 TEST(Color, Make32) {
-    auto color = math::color_rgba::make(0.2f, 0.3f, 0.4f, 0.5f);
+    auto color = math::color32::make(0.2f, 0.3f, 0.4f, 0.5f);
 
     EXPECT_EQ(color.r, 0.2f);
     EXPECT_EQ(color.g, 0.3f);

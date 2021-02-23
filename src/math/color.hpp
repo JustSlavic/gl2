@@ -4,14 +4,14 @@
 
 namespace math {
 
-struct color_rgb {
+struct color24 {
     struct { f32 r; f32 g; f32 b; };
 
-    static color_rgb make(f32 v);
-    static color_rgb make(f32 r, f32 g, f32 b);
+    static color24 make(f32 v);
+    static color24 make(f32 r, f32 g, f32 b);
 
-    static color_rgb from_24bit (u32 color_24bit);
-    static color_rgb from_32bit (u32 color_32bit);
+    static color24 from_24bit (u32 color_24bit);
+    static color24 from_32bit (u32 color_32bit);
 
     u32  to_24bit () const;
     u32  to_32bit (f32 alpha) const;
@@ -19,37 +19,35 @@ struct color_rgb {
     u32  to_32bit (u32 alpha) const;
 };
 
-inline bool operator == (const color_rgb& lhs, const color_rgb& rhs) {
+inline bool operator == (const color24& lhs, const color24& rhs) {
     return (lhs.r == rhs.r) && (lhs.g == rhs.g) && (lhs.b == rhs.b);
 }
 
 
-struct color_rgba {
+struct color32 {
     struct {
         union {
             struct { f32 r, g, b; };
-            color_rgb rgb;
+            color24 rgb;
         };
         f32 a;
     };
 
-    static color_rgba make(f32 r, f32 g, f32 b, f32 a);
+    static color32 make(f32 r, f32 g, f32 b, f32 a);
 
-    static color_rgba from_24bit (u32 color_24bit, f32 alpha);
-    static color_rgba from_24bit (u32 color_24bit, i32 alpha);
-    static color_rgba from_24bit (u32 color_24bit, u32 alpha);
-    static color_rgba from_32bit (u32 color_32bit);
+    static color32 from_24bit (u32 color_24bit, f32 alpha);
+    static color32 from_24bit (u32 color_24bit, i32 alpha);
+    static color32 from_24bit (u32 color_24bit, u32 alpha);
+    static color32 from_32bit (u32 color_32bit);
 
     u32  to_24bit () const;
     u32  to_32bit () const;
 };
 
-inline bool operator == (const color_rgba& lhs, const color_rgba& rhs) {
+inline bool operator == (const color32& lhs, const color32& rhs) {
     return (lhs.r == rhs.r) && (lhs.g == rhs.g) && (lhs.b == rhs.b) && (lhs.a == rhs.a);
 }
 
-using color24 = color_rgb;
-using color32 = color_rgba;
-using color   = color_rgba;
+using color = color32;
 
 } // math
