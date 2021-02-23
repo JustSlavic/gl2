@@ -1,5 +1,5 @@
 #include "abstract_object_parser.hpp"
-#include "lexer.hpp"
+#include "reader.hpp"
 #include <service/storage.hpp>
 
 
@@ -8,27 +8,56 @@ namespace service {
 
 struct token {
     enum kind_t {
-        UNDEFINED,
-        TOKEN_EOF,
+        TOKEN_UNDEFINED = 0,
 
-        TOKEN_NULL,
+        TOKEN_EQUAL_SIGN = '=',
+        TOKEN_SEMICOLON = ';',
+
+        TOKEN_BRACE_OPEN = '{',
+        TOKEN_BRACE_CLOSE = '}',
+
+        TOKEN_PAREN_OPEN = '(',
+        TOKEN_PAREN_CLOSE = ')',
+
+        TOKEN_BRACKET_OPEN = '[',
+        TOKEN_BRACKET_CLOSE = ']',
+
+        TOKEN_NULL = 300,
         TOKEN_INTEGER,
         TOKEN_FLOATING,
         TOKEN_BOOLEAN,
         TOKEN_STRING,
 
-        TOKEN_EQUAL_SIGN,
-        TOKEN_SEMICOLON,
-
-        TOKEN_BRACE_OPEN,
-        TOKEN_BRACE_CLOSE,
-
-        TOKEN_PAREN_OPEN,
-        TOKEN_PAREN_CLOSE,
-
-        TOKEN_BRACKET_OPEN,
-        TOKEN_BRACKET_CLOSE,
+        TOKEN_EOF,
     };
+
+    static const char* to_string(kind_t k) {
+        switch (k) {
+            case TOKEN_UNDEFINED: return "TOKEN_UNDEFINED";
+
+            case TOKEN_EQUAL_SIGN: return "TOKEN_EQUAL_SIGN";
+            case TOKEN_SEMICOLON: return "TOKEN_SEMICOLON";
+
+            case TOKEN_BRACE_OPEN: return "TOKEN_BRACE_OPEN";
+            case TOKEN_BRACE_CLOSE: return "TOKEN_BRACE_CLOSE";
+
+            case TOKEN_PAREN_OPEN: return "TOKEN_PAREN_OPEN";
+            case TOKEN_PAREN_CLOSE: return "TOKEN_PAREN_CLOSE";
+
+            case TOKEN_BRACKET_OPEN: return "TOKEN_BRACKET_OPEN";
+            case TOKEN_BRACKET_CLOSE: return "TOKEN_BRACKET_CLOSE";
+
+            case TOKEN_NULL: return "TOKEN_NULL";
+            case TOKEN_INTEGER: return "TOKEN_INTEGER";
+            case TOKEN_FLOATING: return "TOKEN_FLOATING";
+            case TOKEN_BOOLEAN: return "TOKEN_BOOLEAN";
+            case TOKEN_STRING: return "TOKEN_STRING";
+
+            case TOKEN_EOF: return "TOKEN_EOF";
+        }
+
+        return "ERROR";
+    }
 
     union value_t {
         i64 integer;
@@ -37,142 +66,179 @@ struct token {
     };
 
     const char* begin;
-    const char* end;
+    size_t length;
     kind_t kind;
     value_t value;
+};
+
+
+void print(token t) {
+    printf("token { kind = %20s; value = ", token::to_string(t.kind));
+    switch (t.kind) {
+        case token::TOKEN_INTEGER: 
+            printf("%ld; }\n", t.value.integer); 
+            break;
+        case token::TOKEN_FLOATING:
+            printf("%lf; }\n", t.value.floating);
+            break;
+        case token::TOKEN_BOOLEAN:
+            printf("%s; }\n", t.value.boolean ? "true" : "false");
+            break;
+        case token::TOKEN_NULL:
+            printf("null; }\n");
+            break;
+        case token::TOKEN_STRING:
+            printf("\"%.*s\"; }\n", i32(t.length), t.begin);
+            break;
+        case token::TOKEN_EQUAL_SIGN:
+        case token::TOKEN_SEMICOLON:
+        case token::TOKEN_BRACE_OPEN:
+        case token::TOKEN_BRACE_CLOSE:
+        case token::TOKEN_PAREN_OPEN:
+        case token::TOKEN_PAREN_CLOSE:
+        case token::TOKEN_BRACKET_OPEN:
+        case token::TOKEN_BRACKET_CLOSE:
+            printf("'%c'; }\n", char(t.kind));
+            break;
+        default:
+            printf("??? }\n");
+    }
+}
+
+
+bool is_double_quote (char c) { return c == '"'; }
+
+
+struct lexer {
+    reader r;
+
+    void initialize (const char* text, size_t size) {
+        r.initialize(text, size);
+    }
+
+    void terminate () {
+        r.terminate();
+    }
+
+    void run () {
+        char c;
+        while (r.skip_spaces(), (c = r.get_char()) != 0) {
+            if (c == '{' ||
+                c == '}' ||
+                c == '(' ||
+                c == ')' ||
+                c == '[' ||
+                c == ']' ||
+                c == '=' ||
+                c == ';')
+            {
+                token t;
+                t.begin = r.current;
+                t.length = 1;
+                t.kind = token::kind_t(c);
+                t.value.integer = 0;
+
+                r.skip_char();
+
+                print(t);
+                continue;
+            } else if (c == '\"') {
+                // read string
+                
+                r.skip_char(); // eat double quote
+                reader::result_t result = r.eat_until(is_double_quote);
+                if (result) {
+                    r.skip_char(); // eat double quote
+
+                    token t;
+                    t.begin = result.start;
+                    t.length = result.length;
+                    t.kind = token::TOKEN_STRING;
+                    t.value.integer = 0;
+
+                    print(t);
+                    continue;
+                }
+            } else if (is_digit(c)) {
+                // read number, integer or float is unknown
+                printf("Number\n");
+                continue;
+            } else if (is_alpha(c)) {
+                //
+                // !!! IMPORTANT:
+                // 
+                // I have to fix this next time, now it's reversed:
+                // Lexer reads strings equal to keywords, but have to read identifiers,
+                // and THEN compare them to the predefined keywords. Hashmap<string->token::kind_t> could be used.
+                //
+                
+                reader::result_t result;
+                result = r.eat_string("true");
+
+                if (result) {
+                    token t;
+                    t.begin = result.start;
+                    t.length = result.length;
+                    t.kind = token::TOKEN_BOOLEAN;
+                    t.value.boolean = true;
+
+                    print(t);
+                    continue;
+                }
+
+                result = r.eat_string("false");
+
+                if (result) {
+                    token t;
+                    t.begin = result.start;
+                    t.length = result.length;
+                    t.kind = token::TOKEN_BOOLEAN;
+                    t.value.boolean = false;
+
+                    print(t);
+                    continue;
+                }
+
+                result = r.eat_string("null");
+
+                if (result) {
+                    token t;
+                    t.begin = result.start;
+                    t.length = result.length;
+                    t.kind = token::TOKEN_NULL;
+                    t.value.integer = 0;
+
+                    print(t);
+                    continue;
+                }
+            }
+
+            auto result = r.eat_until(is_space);
+            printf("Parse Error! Unknown lexeme: %.*s\n", i32(result.length), result.start);
+            break;
+        }
+    }
 };
 
 
 struct abstract_object_parser_impl {
     const char* text;
     size_t size;
-    lexer lex;
 
-    storage<token> tokens;
-
-
-    void initialize (const char* text_, size_t size_) {
+    void initialize (const char* text_, size_t n) {
         text = text_;
-        size = size_;
-
-        lex.initialize(text, size);
+        size = n;
     }
-
 
     void terminate () {}
 
+    void parse () {
+        lexer l;
+        l.initialize(text, size);
 
-    bool parse_null () {
-        const char null_string[] = "null";
-        size_t size = sizeof(null_string);
+        l.run();
 
-        const char* start = lex.eat_string(null_string, size);
-
-        if (start == nullptr) { return false; }
-
-        token t;
-        t.begin = start;
-        t.end = lex.current;
-        t.kind = token::TOKEN_NULL;
-
-        tokens.push(t);
-        return true;
-    }
-
-
-    bool parse_boolean () {
-        const char true_string[] = "true";
-        const char false_string[] = "false";
-
-        {
-            const char* start = lex.eat_string(true_string, sizeof(true_string));
-
-            if (start != nullptr) {
-                token t;
-                t.begin = start;
-                t.end = lex.current;
-                t.kind = token::TOKEN_BOOLEAN;
-                t.value.boolean = true;
-
-                tokens.push(t);
-                return true;
-            }
-        }
-
-        {
-            const char* start = lex.eat_string(false_string, sizeof(false_string));
-
-            if (start != nullptr) {
-                token t;
-                t.begin = start;
-                t.end = lex.current;
-                t.kind = token::TOKEN_BOOLEAN;
-                t.value.boolean = false;
-
-                tokens.push(t);
-                return true;
-            }            
-        }
-
-        return false;
-    }
-
-
-    bool parse_one_character_token (token::kind_t kind, char ch) {
-        char c = lex.get_char();
-
-        if (c != ch) { return false; }
-
-        token t;
-        t.begin = lex.current;
-        t.end = lex.current + 1;
-        t.kind = kind;
-
-        tokens.push(t);
-
-        lex.skip_char();
-        return true;
-    }
-
-    bool parse_equal_sign    () { return parse_one_character_token(token::TOKEN_EQUAL_SIGN, '='); }
-    bool parse_semicolon     () { return parse_one_character_token(token::TOKEN_SEMICOLON, ';'); }
-    bool parse_brace_open    () { return parse_one_character_token(token::TOKEN_BRACE_OPEN, '{'); }
-    bool parse_brace_close   () { return parse_one_character_token(token::TOKEN_BRACE_CLOSE, '}'); }
-    bool parse_paren_open    () { return parse_one_character_token(token::TOKEN_PAREN_OPEN, '('); }
-    bool parse_paren_close   () { return parse_one_character_token(token::TOKEN_PAREN_CLOSE, ')'); }
-    bool parse_bracket_open  () { return parse_one_character_token(token::TOKEN_BRACKET_OPEN, '['); }
-    bool parse_bracket_close () { return parse_one_character_token(token::TOKEN_BRACKET_CLOSE, ']'); }
-
-
-    bool parse_string () {
-        char c = lex.get_char();
-        if (c != '\"') {
-            return false;
-        }
-
-        lex.skip_char();
-
-        while (c = lex.eat_char()) {
-            if (c == '\"') {
-                
-            }
-        }
-    }
-
-    value_object* parse_object () {
-        if (!parse_brace_open()) {
-            return nullptr;
-        }
-
-        auto* object = new value_object();
-
-
-
-        return nullptr;
-    }
-
-    abstract_object parse () {
-        return abstract_object();
+        l.terminate();
     }
 };
 
@@ -190,7 +256,8 @@ void abstract_object_parser::terminate () {
 
 
 abstract_object abstract_object_parser::parse () {
-    return impl->parse();
+    impl->parse();
+    return abstract_object();
 }
 
 

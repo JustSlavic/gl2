@@ -1,69 +1,40 @@
 #include <gtest/gtest.h>
-#include <service/parse/lexer.hpp>
+#include <service/parse/reader.hpp>
 #include <service/parse/abstract_object_parser.hpp>
 
 #include <stdio.h>
 
 
-TEST (PARSER, Lexer_Spaces) {
-    const char text[] = "\r   \t  \n  ";
-    size_t size = sizeof(text);
+TEST (PARSER, Reader) {
+    using namespace service;
 
-    service::lexer lex;
-    lex.initialize(text, size);
+    const char text[] = "Hello, Sailor!\n";
 
-    lex.skip_spaces();
+    reader r;
+    r.initialize(text, sizeof(text));
 
-    lex.terminate();
-}
+    reader::result_t result = r.eat_string("Hello, ");
 
-
-TEST (PARSER, Lexer_Text) {
-    const char text[] = 
-        "{\n"
-        "  screen = {\n"
-        "    width = 1980;\n"
-        "    height = 1080;\n"
-        "  };\n"
-        "};\n";
-
-    size_t size = sizeof(text);
-    
-    service::lexer lex;
-    lex.initialize(text, size);
-
-    char c = lex.get_char();
-    while (c != 0) {
-        lex.skip_spaces();
-
-        c = lex.eat_char();
-        printf("%c", c);
+    if (!result) {
+        printf("Failed to eat string\n");
     }
-    printf("\n");
 
-    lex.terminate();
+    printf("%s\n", r.current);
+
+    r.terminate();
 }
 
 
-TEST (PARSER, Abstract_Object_Parser) {
-    const char text[] = 
-        "{\n"
-        "  screen = {\n"
-        "    width = 1980;\n"
-        "    height = 1080;\n"
-        "  };\n"
-        "};\n";
+TEST (PARSER, Lexer) {
+    using namespace service;
 
-    size_t size = sizeof(text);
+    const char text[] = "{ \"key\" = truef }";
 
-    service::abstract_object_parser p;
+    abstract_object_parser p;
+    
+    p.initialize(text, sizeof(text));
 
-    p.initialize(text, size);
-
-    service::abstract_object obj = p.parse();
-
-    printf("Parsed object:\n");
-    obj.print();
+    p.parse();
 
     p.terminate();
 }

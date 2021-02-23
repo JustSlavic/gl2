@@ -47,9 +47,9 @@ SOURCES = \
 	logging/logging \
 	logging/handler \
 	service/abstract_object \
-	service/storage \
-	service/parse/lexer \
 	service/parse/abstract_object_parser \
+	service/storage \
+	service/parse/reader \
 	service/str_id \
 	service/shader_manager \
 	utils \
