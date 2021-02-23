@@ -97,4 +97,6 @@ inline bool operator != (const vec3& a, const vec3& b) {
     return !(a == b);
 }
 
+math::vec3 intersect_plane(math::vec3 ray_origin, math::vec3 ray_direction, math::vec3 point_on_plane, math::vec3 plane_normal);
+
 } // math
