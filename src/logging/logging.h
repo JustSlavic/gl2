@@ -8,14 +8,17 @@
 
 #include <defines.h>
 
-#ifndef _RELEASE
+#ifndef RELEASE
+
 #define LOG_CONTEXT(name) static LogLocalContext log_ctx_(name)
 #define LOG_DEBUG Log(LogLocalContext(__FILE__ ":" STRINGIFY(__LINE__))).debug()
 #define LOG_INFO Log(LogLocalContext(__FILE__ ":" STRINGIFY(__LINE__))).info()
 #define LOG_WARNING Log(LogLocalContext(__FILE__ ":" STRINGIFY(__LINE__))).warning()
 #define LOG_ERROR Log(LogLocalContext(__FILE__ ":" STRINGIFY(__LINE__))).error()
+
 #else
-#define LOG_CONTEXT(name) struct SEMICOLON__
+
+#define LOG_CONTEXT(name) void(0)
 struct DevNullSink {};
 template <typename T>
 DevNullSink const& operator<<(DevNullSink const& sink, T const&) { return sink; }
@@ -23,7 +26,8 @@ DevNullSink const& operator<<(DevNullSink const& sink, T const&) { return sink; 
 #define LOG_INFO DevNullSink()
 #define LOG_WARNING DevNullSink()
 #define LOG_ERROR DevNullSink()
-#endif
+
+#endif // RELEASE
 
 
 struct LogLocalContext {

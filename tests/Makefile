@@ -1,31 +1,31 @@
-PROJECT = gl2_test
+PROJECT = gl2
 CXX = g++
 CXX_STANDARD = c++17
 
 INC_DIR = \
-    /usr/include \
-    ../src \
-    ../libs \
+	/usr/include \
+	../src \
+	../libs \
 
 LIB_DIR = \
-    /usr/lib/ \
+	/usr/lib/ \
 
 LOCAL_LIBS = \
 
 LIBS = \
 	GL \
-    GLU \
-    GLEW\
+	GLU \
+	GLEW\
 	gtest \
 	gtest_main \
 
 CXXFLAGS = \
-    -Wall \
-    -std=$(CXX_STANDARD) \
-    -fno-rtti \
-    -pthread \
-    -ggdb3 \
-    -DDEBUG \
+	-Wall \
+	-std=$(CXX_STANDARD) \
+	-fno-rtti \
+	-pthread \
+	-ggdb3 \
+	-DDEBUG \
 #     -fsanitize=address \
 #     -fsanitize=undefined \
 #     -pedantic \
@@ -33,8 +33,8 @@ CXXFLAGS = \
 CXXFLAGS += $(addprefix -I, $(INC_DIR))
 
 LDFLAGS = \
-    $(addprefix -L, $(LIB_DIR)) \
-    $(addprefix -l, $(LIBS))
+	$(addprefix -L, $(LIB_DIR)) \
+	$(addprefix -l, $(LIBS))
 
 
 SOURCES = \
@@ -46,20 +46,27 @@ SOURCES = \
 	graphics/shader \
 	logging/logging \
 	logging/handler \
+	service/abstract_object \
+	service/storage \
+	service/parse/lexer \
+	service/parse/abstract_object_parser \
 	service/str_id \
 	service/shader_manager \
 	utils \
 
 TESTCPP = \
-	str_id \
-	bit_masks \
-	float \
-	vec2 \
-vec3 \
-	vec4 \
-	mat4 \
-	color \
-	shader_manager \
+	abstract_object \
+	parser \
+	storage \
+# 	str_id \
+# 	bit_masks \
+# 	float \
+# 	vec2 \
+# 	vec3 \
+# 	vec4 \
+# 	mat4 \
+# 	color \
+# 	shader_manager \
 
 BIN_DIR   := ../bin
 BUILD_DIR := ../build
@@ -99,8 +106,8 @@ prebuild:
 postbuild:
 
 clean:
-	find $(BIN_DIR) -type f -name $(notdir $(TEST_EXE)) -delete
-	find $(BUILD_DIR) -type f -name '*.o' -delete
+	@find $(BIN_DIR) -type f -name $(notdir $(TEST_EXE)) -delete
+	@find $(BUILD_DIR) -type f -name '*.o' -delete
 
 # ================= PROJECT ================= #
 
@@ -116,6 +123,7 @@ $(BUILD_DIR)/$(SUB_DIR)/%.o: %.cpp ./Makefile
 	@mkdir -p $(dir $@)
 	@g++ -MM -MT "$@" $(CXXFLAGS) $< > $(BUILD_DIR)/$(SUB_DIR)/$*.d
 	g++ $< -c -o $@ $(CXXFLAGS)
+
 
 -include $(OBJECTS:.o=.d)
 

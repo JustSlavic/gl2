@@ -103,7 +103,7 @@ PROJECT_EXE := bin/$(SUB_DIR)/$(PROJECT)
 # ================= RULES ================= #
 
 # Unconditional rules
-.PHONY: prebuild postbuild clean version
+.PHONY: prebuild postbuild clean version test
 
 # Silent rules
 # .SILENT:
@@ -112,9 +112,9 @@ all debug release: prebuild $(PROJECT_EXE) postbuild
 
 test:
 	$(MAKE) -C tests
-	@echo ""
-	@echo "========================="
-	./bin/test/$(PROJECT)_test
+	@echo "=========================\n"
+	ln -sfn bin/test/$(PROJECT) test
+	./test
 
 
 # ================= UTILITY ================= #
@@ -137,13 +137,14 @@ src/version.cpp: .git/HEAD $(GIT_REF)
 	@./version.sh
 
 clean:
-	find build -type f -name '*.o' -delete
-	find build -type f -name '*.d' -delete
-	rm -fv build/*/lib$(PROJECT).a
-	rm -fv bin/*/$(PROJECT)
-	rm -fv run
-	rm -fv perf.data
-	rm -fv perf.data.old
+	@find build -type f -name '*.o' -delete
+	@find build -type f -name '*.d' -delete
+	@rm -fv build/*/lib$(PROJECT).a
+	@rm -fv bin/*/$(PROJECT)
+	@rm -fv run
+	@rm -fv test
+	@rm -fv perf.data
+	@rm -fv perf.data.old
 	$(MAKE) -C tests clean
 
 # Cleaning local lib's builds

@@ -49,9 +49,5 @@
     }
 #define DEFINE_BIT_MASK(NAME, ...) DEFINE_BIT_MASK_T(NAME, u32, __VA_ARGS__)
 
-enum GIR1_ERROR {
-    ERROR_GLFW_FAILED = 256,
-    ERROR_GLEW_FAILED = 257,
-};
 
 #endif // GIR1_DEFINES_H
