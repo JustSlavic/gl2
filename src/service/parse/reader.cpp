@@ -5,7 +5,7 @@ namespace service {
 
 void reader::initialize (const char* text, size_t n) {
     buffer = text;
-    size = n;
+    buffer_size = n;
     current = buffer;
 }
 

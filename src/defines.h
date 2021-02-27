@@ -6,7 +6,6 @@
 #include <cstdint>
 
 #include "typedef.hpp"
-#include <logging/logging.h>
 
 
 #define STRINGIFY2(X) #X
@@ -15,14 +14,14 @@
 #ifdef DEBUG
 #define ASSERT(x) \
     if (!(x)) { \
-        LOG_ERROR << "Assertion failed at " __FILE__ ":" STRINGIFY(__LINE__); \
+        printf("Assertion failed at " __FILE__ ":" STRINGIFY(__LINE__)); \
         std::exit(1); \
     } void(0)
 
 #define ASSERT_MSG(x, msg) \
     if (!(x)) { \
-        LOG_ERROR << "Assertion failed at " __FILE__ ":" STRINGIFY(__LINE__); \
-        LOG_ERROR << "    " << msg; \
+        printf("Assertion failed at " __FILE__ ":" STRINGIFY(__LINE__)); \
+        printf("    %s\n", msg); \
         std::exit(1); \
     } void(0) \
 

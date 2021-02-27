@@ -28,13 +28,26 @@ TEST (PARSER, Reader) {
 TEST (PARSER, Lexer) {
     using namespace service;
 
-    const char text[] = "{ \"key\" = truef }";
+    const char text[] = 
+"{\n"
+"  screen = {\n"
+"    title   = \"Title\";\n"
+"    width   = 1980;\n"
+"    height  = 1080;\n"
+"  };\n"
+"  visible   = false;\n"
+"  something = null;\n"
+"  Geteroheneous_LIST = [\"fuck\", -42, 42.24, true, null, { a = \"AAAA\"; b = \"BBBB\"; object = { int = 199; n = null; }; }];\n"
+"  object    = {\n"
+"    int = 199;\n"
+"    null = null;\n"
+"  };\n"
+"  Empty_list = [];\n"
+"};\n";
 
     abstract_object_parser p;
     
     p.initialize(text, sizeof(text));
-
     p.parse();
-
     p.terminate();
 }

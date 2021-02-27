@@ -24,6 +24,12 @@ struct storage {
         }
     }
 
+    storage (const storage&) = delete;
+    storage (storage&&) = delete;
+
+    storage& operator = (const storage&) = delete;
+    storage& operator = (storage&&) = delete;
+
     void push (T val) {
         ASSERT(capacity >= size);
 
@@ -64,9 +70,6 @@ private:
         
         for (size_t i = 0; i < size; i++) {
             new_storage[i] = data[i];
-        }
-
-        for (size_t i = 0; i < size; i++) {
             (data + i)->~T();
         }
 

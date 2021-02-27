@@ -54,8 +54,8 @@ struct str_id_pool {
         }
 
         if ((u64(word) + id_len + 1) > (u64(data) + POOL_SIZE - 1)) {
-            ::std::cout << POOL_SIZE << " bytes is not enough for requested string IDs\n";
-            ASSERT_MSG(false, POOL_SIZE << " is not enough for requested string IDs");
+            printf("%ld  bytes is not enough for requested string IDs\n", POOL_SIZE);
+            ASSERT_MSG(false, "POOL_SIZE is not enough for requested string IDs");
         }
         strcpy(word, id);
         end += id_len + 1;
