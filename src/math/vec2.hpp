@@ -44,6 +44,8 @@ struct vec2 {
     }
 };
 
+using vector2 = vec2;
+
 
 inline f32 length (const vec2& a) {
     return a.length();

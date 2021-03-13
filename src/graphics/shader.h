@@ -42,6 +42,8 @@ struct Shader {
 
     Shader& set_uniform_3f(Uniform uniform, f32 x1, f32 x2, f32 x3);
     Shader& set_uniform_3f(const char *name, f32 x1, f32 x2, f32 x3);
+    Shader& set_uniform_3f(const char *name, const math::vector3& value);
+    Shader& set_uniform_3f(const char *name, const math::color24& value);
 
     Shader& set_uniform_vec3f(Uniform uniform, const glm::vec3 &vector);
     Shader& set_uniform_vec3f(const char *name, const glm::vec3 &vector);

@@ -1,11 +1,10 @@
-#include "abstract_object_parser.hpp"
+#include "object_parser.hpp"
 #include "reader.hpp"
-#include <service/storage.hpp>
 #include <unordered_map>
 #include <vector>
 
 
-namespace service {
+namespace parse {
 
 enum kind_t {
     TOKEN_UNDEFINED = 0,
@@ -35,33 +34,34 @@ enum kind_t {
     TOKEN_EOF,
 };
 
+
 static const char* to_string(kind_t k) {
     switch (k) {
-        case TOKEN_UNDEFINED: return "TOKEN_UNDEFINED";
+        case TOKEN_UNDEFINED:     return "TOKEN_UNDEFINED";
 
-        case TOKEN_EQUAL_SIGN: return "TOKEN_EQUAL_SIGN";
-        case TOKEN_SEMICOLON: return "TOKEN_SEMICOLON";
-        case TOKEN_COMMA: return "TOKEN_COMMA";
+        case TOKEN_EQUAL_SIGN:    return "TOKEN_EQUAL_SIGN";
+        case TOKEN_SEMICOLON:     return "TOKEN_SEMICOLON";
+        case TOKEN_COMMA:         return "TOKEN_COMMA";
 
-        case TOKEN_BRACE_OPEN: return "TOKEN_BRACE_OPEN";
-        case TOKEN_BRACE_CLOSE: return "TOKEN_BRACE_CLOSE";
+        case TOKEN_BRACE_OPEN:    return "TOKEN_BRACE_OPEN";
+        case TOKEN_BRACE_CLOSE:   return "TOKEN_BRACE_CLOSE";
 
-        case TOKEN_PAREN_OPEN: return "TOKEN_PAREN_OPEN";
-        case TOKEN_PAREN_CLOSE: return "TOKEN_PAREN_CLOSE";
+        case TOKEN_PAREN_OPEN:    return "TOKEN_PAREN_OPEN";
+        case TOKEN_PAREN_CLOSE:   return "TOKEN_PAREN_CLOSE";
 
-        case TOKEN_BRACKET_OPEN: return "TOKEN_BRACKET_OPEN";
+        case TOKEN_BRACKET_OPEN:  return "TOKEN_BRACKET_OPEN";
         case TOKEN_BRACKET_CLOSE: return "TOKEN_BRACKET_CLOSE";
 
-        case TOKEN_KW_NULL: return "TOKEN_KW_NULL";
-        case TOKEN_KW_TRUE: return "TOKEN_KW_TRUE";
-        case TOKEN_KW_FALSE: return "TOKEN_KW_FALSE";
+        case TOKEN_KW_NULL:       return "TOKEN_KW_NULL";
+        case TOKEN_KW_TRUE:       return "TOKEN_KW_TRUE";
+        case TOKEN_KW_FALSE:      return "TOKEN_KW_FALSE";
 
-        case TOKEN_IDENTIFIER: return "TOKEN_IDENTIFIER";
-        case TOKEN_INTEGER: return "TOKEN_INTEGER";
-        case TOKEN_FLOATING: return "TOKEN_FLOATING";
-        case TOKEN_STRING: return "TOKEN_STRING";
+        case TOKEN_IDENTIFIER:    return "TOKEN_IDENTIFIER";
+        case TOKEN_INTEGER:       return "TOKEN_INTEGER";
+        case TOKEN_FLOATING:      return "TOKEN_FLOATING";
+        case TOKEN_STRING:        return "TOKEN_STRING";
 
-        case TOKEN_EOF: return "TOKEN_EOF";
+        case TOKEN_EOF:           return "TOKEN_EOF";
     }
 
     return "ERROR";
@@ -80,31 +80,23 @@ struct token {
 };
 
 
-void print(token t) {
+void print (token t) {
     printf("token { kind = %20s; value = ", to_string(t.kind));
+
     switch (t.kind) {
-        case TOKEN_EOF:
-            printf("EOF; }\n");
-            break;
-        case TOKEN_KW_NULL:
-            printf("null; }\n");
-            break;
-        case TOKEN_KW_TRUE:
-            printf("true; }\n");
-            break;
-        case TOKEN_KW_FALSE:
-            printf("false; }\n");
-            break;
-        case TOKEN_INTEGER: 
-            printf("%ld; }\n", t.value.integer); 
-            break;
-        case TOKEN_FLOATING:
-            printf("%lf; }\n", t.value.floating);
-            break;
+        case TOKEN_UNDEFINED: printf("ERROR! }\n"); break;
+        case TOKEN_EOF:       printf("EOF; }\n"); break;
+        case TOKEN_KW_NULL:   printf("null; }\n"); break;
+        case TOKEN_KW_TRUE:   printf("true; }\n"); break;
+        case TOKEN_KW_FALSE:  printf("false; }\n"); break;
+        case TOKEN_INTEGER:   printf("%ld; }\n", t.value.integer); break;
+        case TOKEN_FLOATING:  printf("%lf; }\n", t.value.floating); break;
+
         case TOKEN_IDENTIFIER:
         case TOKEN_STRING:
             printf("%.*s; }\n", i32(t.length), t.begin);
             break;
+        
         case TOKEN_EQUAL_SIGN:
         case TOKEN_SEMICOLON:
         case TOKEN_COMMA:
@@ -116,9 +108,9 @@ void print(token t) {
         case TOKEN_BRACKET_CLOSE:
             printf("'%c'; }\n", char(t.kind));
             break;
-        default:
-            printf("??? }\n");
     }
+
+    printf("??? }\n");
 }
 
 
@@ -217,6 +209,15 @@ bucket_t* make_new_bucket() {
 }
 
 
+iterator iterator_make(bucket_t* bucket) {
+    iterator it;
+    it.bucket = bucket;
+    it.idx = 0;
+
+    return it;
+}
+
+
 void bucket_push_token(bucket_t* bucket, token t) {
     ASSERT(bucket);
 
@@ -242,6 +243,7 @@ void bucket_push_token(bucket_t* bucket, token t) {
 
 }
 
+
 void free_all_buckets(bucket_t* bucket) {
     bucket_t* next_bucket = nullptr;
 
@@ -263,23 +265,18 @@ void free_all_buckets(bucket_t* bucket) {
 }
 
 
-struct parser {
-    bucket_t* tokens = nullptr;
-    iterator current;
-
-    void push_token (token t) {
-        bucket_push_token(tokens, t);
-    }
-};
 
 
 
 struct lexer {
     reader* r = nullptr;
-    parser* p = nullptr;
+    bucket_t* storage = nullptr;
     std::unordered_map<std::string, kind_t> keywords;
 
-    void initialize () {
+    void initialize (reader* r_, bucket_t* storage_) {
+        r = r_;
+        storage = storage_;
+
         keywords.emplace("null", TOKEN_KW_NULL);
         keywords.emplace("true", TOKEN_KW_TRUE);
         keywords.emplace("false", TOKEN_KW_FALSE);
@@ -338,7 +335,8 @@ struct lexer {
         t.kind = TOKEN_STRING;
         t.value.integer = 0;
 
-        p->push_token(t);
+        bucket_push_token(storage, t);
+        // p->push_token(t);
         return true;
     }
 
@@ -362,7 +360,8 @@ struct lexer {
             t.kind = TOKEN_IDENTIFIER;
             t.value.integer = 0;
 
-            p->push_token(t);
+            bucket_push_token(storage, t);
+            // p->push_token(t);
             return true;
         }
 
@@ -372,7 +371,8 @@ struct lexer {
         t.kind = token_kind->second;
         t.value.integer = 0;
 
-        p->push_token(t);
+        bucket_push_token(storage, t);
+        // p->push_token(t);
         return true;
     }
 
@@ -422,7 +422,8 @@ struct lexer {
             t.kind = TOKEN_FLOATING;
             t.value.floating = sign*(integral + fractional);
 
-            p->push_token(t);
+            bucket_push_token(storage, t);
+            // p->push_token(t);
             return true;
         }
 
@@ -432,7 +433,8 @@ struct lexer {
         t.kind = TOKEN_INTEGER;
         t.value.integer = sign*integral;
 
-        p->push_token(t);
+        bucket_push_token(storage, t);
+        // p->push_token(t);
         return true;
     }
 
@@ -457,7 +459,8 @@ struct lexer {
 
                 r->skip_char();
 
-                p->push_token(t);
+                bucket_push_token(storage, t);
+                // p->push_token(t);
                 continue;
             }
             else if (c == '\"') {
@@ -485,49 +488,9 @@ struct lexer {
             t.kind = TOKEN_EOF;
             t.value.integer = 0;
 
-            p->push_token(t);
+            bucket_push_token(storage, t);
+            // p->push_token(t);
         }
-    }
-};
-
-
-struct abstract_object_parser_impl {
-    const char* text;
-    size_t size;
-
-    void initialize (const char* text_, size_t n) {
-        text = text_;
-        size = n;
-    }
-
-    void terminate () {}
-
-    void parse () {
-        reader r;
-        lexer l;
-
-        // @todo: remove std away
-        std::vector<token> tokens;
-
-        r.initialize(text, size);
-        l.initialize();
-
-        l.run();
-
-        l.terminate();
-        r.terminate();
-
-        for (token& t : tokens) {
-            print(t);
-
-            if (t.kind == TOKEN_BRACE_OPEN) {
-                parse_object(&tokens);
-            }
-        }
-    }
-
-    bool parse_object (std::vector<token>* tokens) {
-        return false;
     }
 };
 
@@ -543,10 +506,9 @@ void parser_report_error(iterator* it, kind_t expected) {
     printf("Parser error: expected %s, found %s\n", to_string(expected), to_string(t->kind));
 }
 
-
-bool parser_parse_object(iterator*, value_object*);
-bool parser_parse_list_of_things (iterator*, value_list*);
-bool parser_parse_key_value_pair (iterator* it, value_object* object) {
+bool parser_parse_object (iterator* it, object::object_t* result);
+bool parser_parse_list_of_things (iterator*, object::list_t*);
+bool parser_parse_key_value_pair (iterator* it, object::object_t* object) {
     ASSERT(it);
 
     iterator checkpoint = *it;
@@ -559,7 +521,7 @@ bool parser_parse_key_value_pair (iterator* it, value_object* object) {
     //    4. semicolon
     //
     token* key = nullptr;
-    value_base* value = nullptr;
+    object::value_t* value = nullptr;
 
     {
         // 1. Identifier
@@ -602,7 +564,7 @@ bool parser_parse_key_value_pair (iterator* it, value_object* object) {
 
         // In case if value is an object
         if (t->kind == TOKEN_BRACE_OPEN) {
-            auto* object = new value_object();            
+            auto* object = new object::object_t();            
             bool successful = parser_parse_object(it, object);
             if (not successful) {
                 *it = checkpoint;
@@ -612,7 +574,7 @@ bool parser_parse_key_value_pair (iterator* it, value_object* object) {
 
             value = object;
         } else if (t->kind == TOKEN_BRACKET_OPEN) {
-            auto* list = new value_list();
+            auto* list = new object::list_t();
             bool successful = parser_parse_list_of_things(it, list);
             if (not successful) {
                 *it = checkpoint;
@@ -625,22 +587,22 @@ bool parser_parse_key_value_pair (iterator* it, value_object* object) {
             switch (t->kind) {
                 case TOKEN_IDENTIFIER:
                 case TOKEN_STRING:
-                    value = new value_string(std::string(t->begin + 1, t->length - 2));
+                    value = new object::string_t(std::string(t->begin + 1, t->length - 2));
                     break;
                 case TOKEN_INTEGER:
-                    value = new value_integer(t->value.integer);
+                    value = new object::integer_t(t->value.integer);
                     break;
                 case TOKEN_FLOATING:
-                    value = new value_float(t->value.floating);
+                    value = new object::floating_t(t->value.floating);
                     break;
                 case TOKEN_KW_NULL:
-                    value = new value_null();
+                    value = new object::null_t();
                     break;
                 case TOKEN_KW_TRUE:
-                    value = new value_boolean(true);
+                    value = new object::boolean_t(true);
                     break;
                 case TOKEN_KW_FALSE:
-                    value = new value_boolean(false);
+                    value = new object::boolean_t(false);
                     break;
                 default:
                     ASSERT(false);
@@ -670,7 +632,7 @@ bool parser_parse_key_value_pair (iterator* it, value_object* object) {
 }
 
 
-bool parser_parse_object (iterator* it, value_object* result) {
+bool parser_parse_object (iterator* it, object::object_t* result) {
     ASSERT(it);
     iterator checkpoint = *it;
 
@@ -704,7 +666,7 @@ bool parser_parse_object (iterator* it, value_object* result) {
 }
 
 
-bool parser_parse_list_of_things (iterator* it, value_list* result) {
+bool parser_parse_list_of_things (iterator* it, object::list_t* result) {
     ASSERT(it);
 
     iterator checkpoint = *it;
@@ -732,7 +694,7 @@ bool parser_parse_list_of_things (iterator* it, value_list* result) {
                 case TOKEN_BRACKET_CLOSE: break;
                 case TOKEN_BRACE_OPEN: {
                     // This is an object
-                    value_object* obj = new value_object();
+                    object::object_t* obj = new object::object_t();
 
                     bool successful = parser_parse_object(it, obj);
                     if (not successful) {
@@ -746,27 +708,27 @@ bool parser_parse_list_of_things (iterator* it, value_list* result) {
                     break;
                 }
                 case TOKEN_KW_NULL:
-                    result->add(new value_null());
+                    result->add(new object::null_t());
                     it->next();
                     break;
                 case TOKEN_KW_TRUE:
-                    result->add(new value_boolean(true));
+                    result->add(new object::boolean_t(true));
                     it->next();
                     break;
                 case TOKEN_KW_FALSE:
-                    result->add(new value_boolean(false));
+                    result->add(new object::boolean_t(false));
                     it->next();
                     break;
                 case TOKEN_INTEGER:
-                    result->add(new value_integer(t->value.integer));
+                    result->add(new object::integer_t(t->value.integer));
                     it->next();
                     break;
                 case TOKEN_FLOATING:
-                    result->add(new value_float(t->value.floating));
+                    result->add(new object::floating_t(t->value.floating));
                     it->next();
                     break;
                 case TOKEN_STRING:
-                    result->add(new value_string(std::string(t->begin + 1, t->length - 2)));
+                    result->add(new object::string_t(std::string(t->begin + 1, t->length - 2)));
                     it->next();
                     break;
                 default:
@@ -809,91 +771,95 @@ bool parser_parse_list_of_things (iterator* it, value_list* result) {
 }
 
 
-bool parser_initialize (parser* p, const char* text, size_t length) {
-    p->tokens = make_new_bucket();
-    
-    reader r;
-    lexer  l;
-
-    r.initialize(text, length);
-
-    l.initialize();
-    l.r = &r;
-    l.p = p;
-
-    l.run();
+// ======================================================== //
 
 
-    iterator it;
-    it.bucket = p->tokens;
-    it.idx = 0;
+struct parser_t {
+    const char* text = nullptr;
+    size_t length;
 
-    while (it) {
-        token* t = it.get();
-        print(*t);
-        it.next();
+    bucket_t* tokens = nullptr;
+    iterator current;
+
+    void initialize (const char* text_, size_t length_) {
+        text = text_;
+        length = length_;
+
+        tokens = make_new_bucket();
     }
 
-    it.bucket = p->tokens;
-    it.idx = 0;
+    void terminate () {
+        free_all_buckets(tokens);
+    }
 
-    while (it) {
-        token* t = it.get();
+    object::object_t* parse () {
+        reader r;
+        r.initialize(text, length);
 
-        if (t->kind == TOKEN_EOF) {
-            printf("Reached EOF!\n");
-            break;
+        lexer l;
+        l.initialize(&r, tokens);
+
+        l.run();
+
+        auto* result = new object::object_t();
+        bool good = true;
+
+        iterator it = iterator_make(tokens);
+        while (it) {
+            token* t = it.get();
+
+            if (t->kind == TOKEN_EOF) {
+                printf("Reached EOF!\n");
+                break;
+            }
+
+            bool successful = parser_parse_object(&it, result);
+            if (not successful) {
+                printf("Could not parse object!\n");
+                good = false;
+                break;
+            }
         }
 
-        auto* result = new value_object();
-        bool successful = parser_parse_object(&it, result);
-        if (not successful) {
-            printf("Could not parse object!\n");
+        if (good) {
+            printf("Parsing successful\n");
+            result->print();
+            printf("\n");
+        } else {
             delete result;
-            break;
+            result = nullptr;
         }
 
-        result->print();
-        printf("\n");
-        delete result;
+        l.terminate();
+        r.terminate();
+
+        return result;
     }
+};
 
-    printf("Parsing ends.\n");
 
-    l.terminate();
-    r.terminate();
+// ======================================================== //
 
-    return false;
+
+void object_parser::initialize (const char* text, size_t size) {
+    auto* parser = new parser_t();
+    parser->initialize(text, size);
+    impl = (void*)parser;
 }
 
 
-void abstract_object_parser::initialize (const char* text, size_t size) {
-    auto* p_parser = new parser();
-
-    parser_initialize(p_parser, text, size);
-
-    free_all_buckets(p_parser->tokens);
-
-    // p_parser->initialize(text, size);
-
-    impl = (void*)p_parser;
+void object_parser::terminate () {
+    auto* parser = (parser_t*) impl;
+    delete parser;
 }
 
 
-void abstract_object_parser::terminate () {
-    auto* p_parser = (parser*) impl;
-    // p_parser->terminate();
-    delete p_parser;
+object::object_t* object_parser::parse () {
+    auto* parser = (parser_t*) impl;
+
+    return parser->parse();
 }
 
 
-abstract_object abstract_object_parser::parse () {
-    // auto* p_parser = (parser*) impl;
-
-    // p_parser->parse();
-    return abstract_object();
-}
-
-
-}
+} // parse
 

@@ -1,20 +1,20 @@
 #pragma once
 
 #include <defines.h>
-#include <service/abstract_object.hpp>
+#include <object.hpp>
 
 
-namespace service {
+namespace parse {
 
-struct abstract_object_parser {
+struct object_parser {
     void* impl = nullptr;
 
     void initialize (const char* text, size_t size);
     void terminate ();
 
-    abstract_object parse ();
+    object::object_t* parse ();
 };
 
-} // service
+} // parse
 
 

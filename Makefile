@@ -31,7 +31,8 @@ CXXFLAGS = \
     -Wall \
     -Werror \
     -fno-rtti \
-    -std=$(CXX_STANDARD)
+    -std=$(CXX_STANDARD) \
+    -DGRAVITY \
 
 CXXFLAGS += $(addprefix -I, $(INC_DIR))
 
@@ -86,6 +87,7 @@ SOURCES = \
     math/mat4 \
     modeling_2d/camera \
     modeling_2d/model \
+    modeling_2d/creatures \
     service/shader_library \
 
 
@@ -164,7 +166,7 @@ $(PROJECT_LIB): $(OBJECTS)
 
 -include $(OBJECTS:.o=.d)
 
-build/$(SUB_DIR)/%.o: src/%.cpp
+build/$(SUB_DIR)/%.o: src/%.cpp ./Makefile
 	@mkdir -p $(dir $@)
 	@g++ -MM -MT "$@" $(CXXFLAGS) $< > build/$(SUB_DIR)/$*.d
 	g++ $< -c -o $@ $(CXXFLAGS)

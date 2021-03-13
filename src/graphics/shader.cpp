@@ -205,6 +205,21 @@ Shader &Shader::set_uniform_3f(const char *name, float x1, float x2, float x3) {
     return *this;
 }
 
+
+Shader& Shader::set_uniform_3f(const char *name, const math::vector3& value) {
+    Uniform uniform = get_uniform(name);
+    set_uniform_3f(uniform, value.x, value.y, value.z);
+    return *this;
+}
+
+
+Shader& Shader::set_uniform_3f(const char *name, const math::color24& value) {
+    Uniform uniform = get_uniform(name);
+    set_uniform_3f(uniform, value.r, value.g, value.b);
+    return *this;
+}
+
+
 Shader &Shader::set_uniform_vec3f(Shader::Uniform uniform, const glm::vec3 &vector) {
     this->bind();
     glUniform3fv(uniform.location, 1, &vector.x);

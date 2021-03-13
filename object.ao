@@ -1,0 +1,7 @@
+{
+    window = {
+        title  = "GL2";
+        width  = 1980;
+        height = 1080;
+    };
+}

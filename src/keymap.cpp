@@ -9,13 +9,13 @@ void Keymap::update<Mouse::ButtonPressEvent>(Mouse::ButtonPressEvent event) {
 
     if (event.button == Mouse::LEFT) {
         if (Mouse::get_state(Mouse::RIGHT) == Mouse::ButtonState::PRESSED) {
-            LOG_INFO << "RIGHT->LEFT PRESSED";
+            // LOG_INFO << "RIGHT->LEFT PRESSED";
         }
     }
 
     if (event.button == Mouse::RIGHT) {
         if (Mouse::get_state(Mouse::LEFT) == Mouse::ButtonState::PRESSED) {
-            LOG_INFO << "LEFT->RIGHT PRESSED";
+            // LOG_INFO << "LEFT->RIGHT PRESSED";
         }
     }
 }

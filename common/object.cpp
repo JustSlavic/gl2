@@ -1,8 +1,9 @@
-#include "abstract_object.hpp"
+#include "object.hpp"
+
 #include <stdio.h>
 
 
-namespace service {
+namespace object {
 
 
 static const char* spaces = "                                                                       ";
@@ -11,32 +12,32 @@ static bool use_depth = true;
 static bool new_line = true;
 
 
-void value_null::print () const {
+void null_t::print () const {
     printf("null");
 }
 
 
-void value_integer::print () const {
+void integer_t::print () const {
     printf("%ld", value);
 }
 
 
-void value_float::print () const {
+void floating_t::print () const {
     printf("%lf", value);
 }
 
 
-void value_string::print () const {
+void string_t::print () const {
     printf("\"%s\"", value.c_str());
 }
 
 
-void value_boolean::print () const {
+void boolean_t::print () const {
     printf("%s", value ? "true" : "false");
 }
 
 
-void value_object::print () const {
+void object_t::print () const {
     printf("%.*s{", (new_line ? (int)print_depth : 0), spaces);
 
     if (use_depth) {
@@ -73,7 +74,7 @@ void value_object::print () const {
 }
 
 
-void value_list::print () const {
+void list_t::print () const {
     printf("[\n");
     new_line = true;
     print_depth += 2;
@@ -99,15 +100,5 @@ void value_list::print () const {
 }
 
 
-void abstract_object::print () const {
-    if (value) {
-        value->print();
-    } else {
-        printf("null");
-    }
-    printf(";\n");
-    new_line = true;
-}
 
-
-} // service
+} // object

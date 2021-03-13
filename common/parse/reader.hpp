@@ -3,7 +3,7 @@
 #include <defines.h>
 
 
-namespace service {
+namespace parse {
 
 
 inline bool is_alpha (char c) {
@@ -80,4 +80,4 @@ inline void reader::skip_char ()
 }
 
 
-} // service
+} // parse

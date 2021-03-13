@@ -20,6 +20,7 @@
 
 #include <modeling_2d/camera.hpp>
 #include <modeling_2d/model.hpp>
+#include <modeling_2d/creatures.hpp>
 
 #include <service/shader_library.hpp>
 
@@ -73,7 +74,13 @@ namespace gl2 {
         // glm::mat4 projection = glm::ortho(-(f32)w*.5f/h, (f32)w*.5f/h, -.5f, .5f);
         auto projection = math::projection(window_ratio * NEAR_CLIP_DISTANCE, NEAR_CLIP_DISTANCE, NEAR_CLIP_DISTANCE, FAR_CLIP_DISTANCE);
 
+#ifdef GRAVITY
         Model model;
+#endif
+
+#ifdef CREATURES
+        simulation model;
+#endif
         Camera2D camera;
 
         Dispatcher<Mouse::ButtonPressEvent>::subscribe([&] (Mouse::ButtonPressEvent e) {
@@ -113,7 +120,12 @@ namespace gl2 {
                 math::vec3 intersection = intersect_z0_plane(position, direction);
                 printf("intersection = (%5.2f, %5.2f, %5.2f)\n", intersection.x, intersection.y, intersection.z);
 
+#ifdef GRAVITY
                 model.add_body(intersection.x, intersection.y);
+#endif
+#ifdef CREATURES
+                model.add_creature(creature::make_random(math::vector2(intersection.x, intersection.y)));
+#endif
             }
         });
 
@@ -154,12 +166,12 @@ namespace gl2 {
 
         va.add_buffer(vb, vbl);
 
-
         model.shader = &body_shader;
         model.va = &va;
         model.ib = &ib;
+#ifdef GRAVITY
         model.arrow_shader = &arrow_shader;
-
+#endif
 
         auto t = std::chrono::steady_clock::now();
         std::this_thread::sleep_for(std::chrono::milliseconds(16));
@@ -170,7 +182,7 @@ namespace gl2 {
         while (running) {
             auto t_ = std::chrono::steady_clock::now();
             auto dt = std::chrono::duration_cast<std::chrono::microseconds>(t_ - t).count();
-            // LOG_DEBUG << "dt = " << dt << " μs; fps = " << (1000000.0 / dt);
+            printf("dt = %ld μs; fps = %lf\n", dt, 1000000.0 / dt);
             t = t_;
 
             auto view = camera.get_view_matrix();
@@ -181,7 +193,6 @@ namespace gl2 {
             arrow_shader.set_uniform_mat4f("u_view", view);
             arrow_shader.set_uniform_mat4f("u_model", glm::mat4(1.f));
 
-            // Renderer::clear(glm::vec3(.8f));
             Renderer::clear(math::color24::make(.8f));
             // Renderer::draw(va, ib, shdr);
 
@@ -203,7 +214,12 @@ namespace gl2 {
 
             arrow_shader.set_uniform_3f("u_color", 1.f, 1.f, 0.f);
 
+#ifdef GRAVITY
             model.draw_bodies();
+#endif
+#ifdef CREATURES
+            model.iterate();
+#endif 
 
             window->poll_events();
             window->swap_buffers();
@@ -221,3 +237,4 @@ namespace gl2 {
         running = false;
     }
 }
+
