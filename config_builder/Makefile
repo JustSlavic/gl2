@@ -81,8 +81,11 @@ postbuild:
 
 
 clean:
-	@rm -rfv build/*
-	@rm -rfv bin/*
+	@find build -type f -name '*.o' -delete
+	@find build -type f -name '*.d' -delete
+	@rm -fv build/*/lib$(PROJECT).a
+	@rm -fv bin/*/$(PROJECT)
+	@rm -fv builder
 
 
 # ================= PROJECT ================= #

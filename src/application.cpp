@@ -81,6 +81,7 @@ namespace gl2 {
 #ifdef CREATURES
         simulation model;
 #endif
+
         Camera2D camera;
 
         Dispatcher<Mouse::ButtonPressEvent>::subscribe([&] (Mouse::ButtonPressEvent e) {

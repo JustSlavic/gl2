@@ -3,12 +3,12 @@ CXX = g++
 CXX_STANDARD = c++17
 
 INC_DIR = \
-    /usr/include \
-    src \
-    libs \
+	/usr/include \
+	src \
+	libs \
 
 LIB_DIR = \
-    /usr/lib/ \
+	/usr/lib/ \
 
 LOCAL_LIBS = \
 #     stb \
@@ -21,74 +21,71 @@ LOCAL_LIBS = \
 # GLEW - Extention Wrangler that dynamically loads supported OpenGL functions
 # SDL2 - Simple DirectMedia Layer (managing window, input, audio, etc.)
 LIBS = \
-    GL \
-    GLU \
-    GLEW \
-    SDL2 \
+	GL \
+	GLU \
+	GLEW \
+	SDL2 \
 #     glfw \
 
 CXXFLAGS = \
-    -Wall \
-    -Werror \
-    -fno-rtti \
-    -std=$(CXX_STANDARD) \
-    -DGRAVITY \
+	-Wall \
+	-Werror \
+	-fno-rtti \
+	-std=$(CXX_STANDARD) \
+	-DGRAVITY \
 
 CXXFLAGS += $(addprefix -I, $(INC_DIR))
 
 LDFLAGS = \
-    $(addprefix -L, $(LIB_DIR)) \
-    $(addprefix -l, $(LIBS))
+	$(addprefix -L, $(LIB_DIR)) \
+	$(addprefix -l, $(LIBS))
 
 
 # Settings for debug/release build configurations
 ifndef MAKECMDGOALS
-    # If nothing is set => no debug info is included in binary, also no flags are set
-    SUB_DIR  := plain
+	# If nothing is set => no debug info is included in binary, also no flags are set
+	SUB_DIR  := plain
 else ifeq ($(MAKECMDGOALS),debug)
-    # In debug build put debug info into binary, set DEBUG definition
-    SUB_DIR  := debug
-    CXXFLAGS += -ggdb3 -DDEBUG
+	# In debug build put debug info into binary, set DEBUG definition
+	SUB_DIR  := debug
+	CXXFLAGS += -ggdb3 -DDEBUG
 else ifeq ($(MAKECMDGOALS),release)
-    # In release build set optimisation level O2, set RELEASE definition
-    SUB_DIR  := release
-    CXXFLAGS += -O2 -DRELEASE
+	# In release build set optimisation level O2, set RELEASE definition
+	SUB_DIR  := release
+	CXXFLAGS += -O2 -DRELEASE
 else ifeq ($(MAKECMDGOALS),test)
-    # Runs tests
-else ifeq ($(MAKECMDGOALS),perf)
-    SUB_DIR  := 
-    CXXFLAGS += -fno-omit-frame-pointer
+	# Runs tests
 else
-    SUB_DIR  := plain
+	SUB_DIR  := plain
 endif
 
 
 SOURCES = \
-    application \
-    keymap \
-    utils \
-    graphics/graphics_api \
-    api/keyboard \
-    api/mouse \
-    api/window \
-    fs/watcher \
-    graphics/shader \
-    graphics/vertex_array \
-    graphics/vertex_buffer \
-    graphics/vertex_buffer_layout \
-    graphics/index_buffer \
-    graphics/renderer \
-    logging/logging \
-    logging/handler \
-    math/color \
-    math/vec2 \
-    math/vec3 \
-    math/vec4 \
-    math/mat4 \
-    modeling_2d/camera \
-    modeling_2d/model \
-    modeling_2d/creatures \
-    service/shader_library \
+	application \
+	keymap \
+	utils \
+	graphics/graphics_api \
+	api/keyboard \
+	api/mouse \
+	api/window \
+	fs/watcher \
+	graphics/shader \
+	graphics/vertex_array \
+	graphics/vertex_buffer \
+	graphics/vertex_buffer_layout \
+	graphics/index_buffer \
+	graphics/renderer \
+	logging/logging \
+	logging/handler \
+	math/color \
+	math/vec2 \
+	math/vec3 \
+	math/vec4 \
+	math/mat4 \
+	modeling_2d/camera \
+	modeling_2d/model \
+	modeling_2d/creatures \
+	service/shader_library \
 
 
 OBJECTS      := $(addprefix build/$(SUB_DIR)/, $(addsuffix .o,   $(SOURCES)))
@@ -148,6 +145,7 @@ clean:
 	@rm -fv perf.data
 	@rm -fv perf.data.old
 	$(MAKE) -C tests clean
+	$(MAKE) -C config_builder clean
 
 # Cleaning local lib's builds
 # .PHONY: $(LOCAL_LIBS)
