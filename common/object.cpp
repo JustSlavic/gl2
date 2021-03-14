@@ -7,9 +7,14 @@ namespace object {
 
 
 static const char* spaces = "                                                                       ";
-static size_t print_depth = 0;
-static bool use_depth = true;
+static int indent = 0;
+static bool use_indent = true;
 static bool new_line = true;
+
+
+void print_indent() {
+    printf("%.*s", indent, spaces);
+}
 
 
 void null_t::print () const {
@@ -38,65 +43,78 @@ void boolean_t::print () const {
 
 
 void object_t::print () const {
-    printf("%.*s{", (new_line ? (int)print_depth : 0), spaces);
+    printf("{");
 
-    if (use_depth) {
-        printf("\n");
-    } else {
-        printf(" ");
+    size_t size = keys.size();
+    if (size > 0) {
+        if (use_indent) {
+            printf("\n");
+            new_line = true;
+        } else {
+            printf(" ");
+        }
     }
 
-    print_depth += 2;
-    size_t size = keys.size();
+    indent += 2;
     for (size_t i = 0; i < size; i++) {
-        if (use_depth)
-            printf("%.*s", (int)print_depth, spaces);
+        if (use_indent)
+            printf("%.*s", indent, spaces);
 
         printf("%s = ", keys[i].c_str());
         new_line = false;
         values[i]->print();
         printf(";");
 
-        if (not use_depth) {
+        if (not use_indent) {
             printf(" ");
         }
 
-        if (use_depth) {
+        if (use_indent) {
             printf("\n");
+            new_line = true;
         }
     }
-    print_depth -= 2;
+    indent -= 2;
 
-    if (use_depth)
-        printf("%.*s", (int)print_depth, spaces);
+    if (use_indent and size > 0)
+        printf("%.*s", indent, spaces);
 
     printf("}");
 }
 
 
 void list_t::print () const {
-    printf("[\n");
+    printf("[");
     new_line = true;
-    print_depth += 2;
+    indent += 2;
 
     size_t size = values.size();
     if (size > 0) {
+        printf("\n");
+        if (use_indent) {
+            print_indent();
+        }
         values[0]->print();
     }
 
     for (size_t i = 1; i < size; i++) {
-        if (use_depth) {
-            printf(",\n");
-            new_line = true;
+            printf(",");
+        if (use_indent) {
+            printf("\n");
+            print_indent();
         } else {
-            printf(", ");
+            printf(" ");
         }
 
         values[i]->print();
     }
 
-    print_depth -= 2;
-    printf("\n%.*s]", (int)print_depth, spaces);
+    if (use_indent and size > 0) {
+        printf("\n");
+    }
+
+    indent -= 2;
+    printf("%.*s]", (use_indent and size > 0 ? indent : 0), spaces);
 }
 
 

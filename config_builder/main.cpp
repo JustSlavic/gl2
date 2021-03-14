@@ -4,6 +4,20 @@
 #include <parse/object_parser.hpp>
 
 
+size_t read_file (const char* filename, char* buffer, size_t size) {
+    FILE* f = fopen(filename, "r");
+    if (f == nullptr) {
+        printf("Could not find file \"%s\"\n", filename);
+        return 0;
+    }
+
+    size_t count = fread(buffer, sizeof(char), size, f);
+    
+    fclose(f);
+    return count;
+}
+
+
 void print_help () {
     printf(
         "usage: ./config_builder [INPUT] [KEYS]\n"
@@ -18,6 +32,13 @@ struct command_line_arguments {
     char* input_filename = nullptr;
     bool print_content = false;
 };
+
+
+
+object::object_t* create_config_signature (object::object_t* config) {
+    return nullptr;
+}
+
 
 
 int main (int argc, char** argv) {
@@ -44,18 +65,28 @@ int main (int argc, char** argv) {
 
     printf("Parsing %s\n", args.input_filename);
 
-    char buffer[10000];
-    memset(buffer, 0, 10000);
-    FILE* f = fopen(args.input_filename, "r");
-    u64 count = fread(buffer, sizeof(char), 10000, f);
-    fclose(f);
+    const size_t capacity = 10000;
+    char* buffer = (char*)calloc(capacity, sizeof(char));
+    size_t size = read_file(args.input_filename, buffer, capacity);
 
     parse::object_parser parser;
-    parser.initialize(buffer, count);
+    parser.initialize(buffer, size);
 
     auto* result = parser.parse();
-    delete result;
+    if (result == nullptr) {
+        parser.terminate();
+        free(buffer);
+        return 1;
+    }
 
+    if (args.print_content) {
+        result->print();
+        printf("\n");
+    }
+    
     parser.terminate();
+    free(buffer);
+
+    delete result;
     return 0;
 }

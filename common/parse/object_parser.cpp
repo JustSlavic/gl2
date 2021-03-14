@@ -2,6 +2,7 @@
 #include "reader.hpp"
 #include <unordered_map>
 #include <vector>
+#include <stack>
 
 
 namespace parse {
@@ -31,11 +32,13 @@ enum kind_t {
     TOKEN_FLOATING,
     TOKEN_STRING,
 
+    TOKEN_DOUBLE_SLASH,
+
     TOKEN_EOF,
 };
 
 
-static const char* to_string(kind_t k) {
+static const char* to_debug_string(kind_t k) {
     switch (k) {
         case TOKEN_UNDEFINED:     return "TOKEN_UNDEFINED";
 
@@ -61,11 +64,49 @@ static const char* to_string(kind_t k) {
         case TOKEN_FLOATING:      return "TOKEN_FLOATING";
         case TOKEN_STRING:        return "TOKEN_STRING";
 
+        case TOKEN_DOUBLE_SLASH:  return "TOKEN_DOUBLE_SLASH";
+
         case TOKEN_EOF:           return "TOKEN_EOF";
     }
 
     return "ERROR";
 }
+
+
+static const char* to_string(kind_t k) {
+    switch (k) {
+        case TOKEN_UNDEFINED:     return "? undefined";
+
+        case TOKEN_EQUAL_SIGN:    return "=";
+        case TOKEN_SEMICOLON:     return ";";
+        case TOKEN_COMMA:         return ",";
+
+        case TOKEN_BRACE_OPEN:    return "{";
+        case TOKEN_BRACE_CLOSE:   return "}";
+
+        case TOKEN_PAREN_OPEN:    return "(";
+        case TOKEN_PAREN_CLOSE:   return ")";
+
+        case TOKEN_BRACKET_OPEN:  return "[";
+        case TOKEN_BRACKET_CLOSE: return "]";
+
+        case TOKEN_KW_NULL:       return "null";
+        case TOKEN_KW_TRUE:       return "true";
+        case TOKEN_KW_FALSE:      return "false";
+
+        case TOKEN_IDENTIFIER:    return "identifier";
+        case TOKEN_INTEGER:       return "integer";
+        case TOKEN_FLOATING:      return "floating";
+        case TOKEN_STRING:        return "string";
+
+        case TOKEN_DOUBLE_SLASH:  return "//";
+
+        case TOKEN_EOF:           return "EOF";
+    }
+
+    return "ERROR";
+}
+
 
 struct token {
     union value_t {
@@ -75,13 +116,18 @@ struct token {
 
     const char* begin;
     size_t length;
+
+    size_t line_number;
+    size_t char_number;
+    reader::result_t line;
+
     kind_t kind;
     value_t value;
 };
 
 
 void print (token t) {
-    printf("token { kind = %20s; value = ", to_string(t.kind));
+    printf("%lu:%lu token { kind = %20s; value = ", t.line_number, t.char_number, to_debug_string(t.kind));
 
     switch (t.kind) {
         case TOKEN_UNDEFINED: printf("ERROR! }\n"); break;
@@ -108,6 +154,10 @@ void print (token t) {
         case TOKEN_BRACKET_CLOSE:
             printf("'%c'; }\n", char(t.kind));
             break;
+
+        case TOKEN_DOUBLE_SLASH:
+            printf("//; }\n");
+            break;
     }
 
     printf("??? }\n");
@@ -117,6 +167,20 @@ void print (token t) {
 static inline bool is_double_quote (char c) { return c == '"'; }
 static inline bool is_valid_identifier_head (char c) { return is_alpha(c) || c == '_'; }
 static inline bool is_valid_identifier_body (char c) { return is_digit(c) || is_alpha(c) || c == '_'; }
+
+static const char* spaces = "                                                                         ";
+static const char* carets = "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^";
+
+static inline i32 digits_in_number (i32 n) {
+    i32 result = 0;
+
+    while (n != 0) {
+        n /= 10;
+        result += 1;
+    }
+
+    return result;
+}
 
 
 constexpr size_t BUFFER_LENGTH = 64;
@@ -138,7 +202,7 @@ struct iterator {
         return bucket != nullptr && idx < bucket->counter;
     }
 
-    token* get() const {
+    token* get () const {
         if (bucket == nullptr) {
             return nullptr;
         }
@@ -150,7 +214,7 @@ struct iterator {
         return bucket->buffer + idx;
     }
 
-    bool next() {
+    bool next () {
         if (bucket == nullptr) {
             // Iterator not valid.
             return false;
@@ -176,7 +240,7 @@ struct iterator {
         return idx < bucket->counter;
     }
 
-    bool prev() {
+    bool prev () {
         if (bucket == nullptr) {
             return false;
         }
@@ -200,7 +264,7 @@ struct iterator {
 };
 
 
-bucket_t* make_new_bucket() {
+bucket_t* make_new_bucket () {
     auto* bucket = new bucket_t();
     bucket->buffer = (token*) malloc(sizeof(token) * BUFFER_LENGTH);
     bucket->buffer_size = BUFFER_LENGTH;
@@ -209,7 +273,7 @@ bucket_t* make_new_bucket() {
 }
 
 
-iterator iterator_make(bucket_t* bucket) {
+iterator iterator_make (bucket_t* bucket) {
     iterator it;
     it.bucket = bucket;
     it.idx = 0;
@@ -218,7 +282,7 @@ iterator iterator_make(bucket_t* bucket) {
 }
 
 
-void bucket_push_token(bucket_t* bucket, token t) {
+void bucket_push_token (bucket_t* bucket, token t) {
     ASSERT(bucket);
 
     size_t n = 0;
@@ -244,7 +308,7 @@ void bucket_push_token(bucket_t* bucket, token t) {
 }
 
 
-void free_all_buckets(bucket_t* bucket) {
+void free_all_buckets (bucket_t* bucket) {
     bucket_t* next_bucket = nullptr;
 
     size_t n = 0;
@@ -265,7 +329,21 @@ void free_all_buckets(bucket_t* bucket) {
 }
 
 
+// void lexer_report_error (
+//     const char* message,
+//     const char* filename,
+//     reader::result_t line,
+//     reader::checkpoint_t checkpoint,
+//     size_t error_length)
+// {
+//     printf("%s:%lu:%lu: error: %s\n", filename, checkpoint.line_counter, checkpoint.char_counter, message);
 
+//     printf("   %lu |%.*s\n", checkpoint.line_counter, (int)line.length, line.start);
+//     printf("   %.*s |%.*s%.*s\n", 
+//         (int)(digits_in_number(checkpoint.line_counter)), spaces,
+//         (int)(checkpoint.current - line.start), spaces,
+//         (int)(line.length - (checkpoint.current - line.start)), carets);
+// }
 
 
 struct lexer {
@@ -286,7 +364,7 @@ struct lexer {
 
     // @make that escaped newlines do not show up in resulted string
     bool eat_quoted_string () {
-        auto* checkpoint = r->current;
+        auto checkpoint = r->get_checkpoint();
         u64 length = 0;
 
         char c = r->get_char();
@@ -308,30 +386,35 @@ struct lexer {
                 continue;
             }
 
-            // Newlines are not allowed to intercept string
-            if (c == '\0' || c == '\n') {
-                r->current = checkpoint;
-                printf("ERROR: Unclosed double quote!\n");
+            // Newlines are not allowed to intercept string.
+            if (c == '\0' || is_newline(c)) {
+                r->restore_checkpoint(checkpoint);
+
+                auto line = r->get_line();
+
+                printf("<INSERT FILENAME>%lu:%lu: error: unclosed double quote\n", checkpoint.line_counter, checkpoint.char_counter);
+                printf("   %lu |%.*s\n", checkpoint.line_counter, (int)line.length, line.start);
+                printf("   %.*s |%.*s%.*s\n", 
+                    (int)(digits_in_number(checkpoint.line_counter)), spaces,
+                    (int)(checkpoint.current - line.start), spaces,
+                    (int)(line.length - (checkpoint.current - line.start)), carets);
                 return false;
             }
 
-            // If it is not an escape symbol, just skip is once;
+            // If it is not an escape symbol, just skip it once.
             r->skip_char();
             length += 1;
-        }
-
-        if (c != '"') {
-            r->current = checkpoint;
-            printf("ERROR: Unclosed double quote!\n");
-            return false;
         }
 
         r->skip_char(); // Skip double quote.
         length += 1;
 
         token t;
-        t.begin = checkpoint;
+        t.begin = checkpoint.current;
         t.length = length;
+        t.line_number = r->line_counter;
+        t.char_number = r->char_counter;
+        t.line = r->get_line();
         t.kind = TOKEN_STRING;
         t.value.integer = 0;
 
@@ -357,6 +440,9 @@ struct lexer {
             token t;
             t.begin = result.start;
             t.length = result.length;
+            t.line_number = r->line_counter;
+            t.char_number = r->char_counter;
+            t.line = r->get_line();
             t.kind = TOKEN_IDENTIFIER;
             t.value.integer = 0;
 
@@ -368,6 +454,9 @@ struct lexer {
         token t;
         t.begin = result.start;
         t.length = result.length;
+        t.line_number = r->line_counter;
+        t.char_number = r->char_counter;
+        t.line = r->get_line();
         t.kind = token_kind->second;
         t.value.integer = 0;
 
@@ -419,26 +508,30 @@ struct lexer {
             token t;
             t.begin = start;
             t.length = len;
+            t.line_number = r->line_counter;
+            t.char_number = r->char_counter;
+            t.line = r->get_line();
             t.kind = TOKEN_FLOATING;
             t.value.floating = sign*(integral + fractional);
 
             bucket_push_token(storage, t);
-            // p->push_token(t);
             return true;
         }
 
         token t;
         t.begin = start;
         t.length = len;
+        t.line_number = r->line_counter;
+        t.char_number = r->char_counter;
+        t.line = r->get_line();
         t.kind = TOKEN_INTEGER;
         t.value.integer = sign*integral;
 
         bucket_push_token(storage, t);
-        // p->push_token(t);
         return true;
     }
 
-    void run () {
+    bool run () {
         char c;
         while (r->skip_spaces(), (c = r->get_char()) != 0) {
             if (c == '{' ||
@@ -454,324 +547,83 @@ struct lexer {
                 token t;
                 t.begin = r->current;
                 t.length = 1;
+                t.line_number = r->line_counter;
+                t.char_number = r->char_counter;
+                t.line = r->get_line();
                 t.kind = kind_t(c);
                 t.value.integer = 0;
 
                 r->skip_char();
 
                 bucket_push_token(storage, t);
-                // p->push_token(t);
                 continue;
+            }
+            else if (c == '/') {
+                reader::result_t result = r->eat_string("//");
+                if (result) {
+                    r->eat_until(is_newline);
+                    r->eat_while(is_newline);
+                    continue;
+                }
             }
             else if (c == '\"') {
                 bool successful = eat_quoted_string();
-                if (successful) continue;
+                if (not successful) return false;
             }
             else if (is_digit(c) || (c == '.') || (c == '+') || (c == '-')) { // Read number, integer or float is unknown.
                 bool successful = eat_number();
-                if (successful) continue;
+                if (not successful) return false;
             }
             else if (is_valid_identifier_head(c)) {
                 bool successful = eat_keyword_or_identifier();
-                if (successful) continue;
+                if (not successful) return false;
             }
+            else {
+                auto checkpoint = r->get_checkpoint();
+                auto result = r->eat_until(is_space);
 
-            auto result = r->eat_until(is_space);
-            printf("Parse Error! Unknown lexeme: %.*s\n", i32(result.length), result.start);
-            break;
+                printf("<INSERT FILENAME>%lu:%lu: error: unknown lexeme ’%.*s’\n", checkpoint.line_counter, checkpoint.char_counter, (int)result.length, result.start);
+
+                auto line = r->get_line();
+                printf("   %lu |%.*s\n", checkpoint.line_counter, (int)line.length, line.start);
+                printf("   %.*s |%.*s%.*s\n", 
+                    (int)(digits_in_number(checkpoint.line_counter)), spaces,
+                    (int)(checkpoint.current - line.start), spaces,
+                    (int)result.length, carets);
+
+                // printf("Parse Error! Unknown lexeme: %.*s\n", i32(result.length), result.start);
+                return false;
+            }
         }
 
         if (c == '\0') {
             token t;
             t.begin = r->current;
             t.length = 1;
+            t.line_number = r->line_counter;
+            t.char_number = r->char_counter;
+            t.line = r->get_line();
             t.kind = TOKEN_EOF;
             t.value.integer = 0;
 
             bucket_push_token(storage, t);
-            // p->push_token(t);
+            return true;
         }
+
+        return false;
     }
 };
 
 
-void parser_report_error(iterator* it, kind_t expected) {
-    ASSERT(it);
-    token* t = it->get();
-    if (t == nullptr) {
-        printf("Unexpectedly reached end of token stream!\n");
-        return;
-    }
-
-    printf("Parser error: expected %s, found %s\n", to_string(expected), to_string(t->kind));
-}
-
-bool parser_parse_object (iterator* it, object::object_t* result);
-bool parser_parse_list_of_things (iterator*, object::list_t*);
-bool parser_parse_key_value_pair (iterator* it, object::object_t* object) {
-    ASSERT(it);
-
-    iterator checkpoint = *it;
-
-    //
-    // Key-value pair is consists of the following tokens:
-    //    1. identifier
-    //    2. equal sign
-    //    3. value (could be keywords, strings, numbers, other objects)
-    //    4. semicolon
-    //
-    token* key = nullptr;
-    object::value_t* value = nullptr;
-
-    {
-        // 1. Identifier
-        token* t = it->get();
-        if (t == nullptr || t->kind != TOKEN_IDENTIFIER) {
-            *it = checkpoint;
-            return false;
-        }
-
-        key = t;
-        it->next();
-    }
-
-    {
-        // 2. Equal sign
-        token* t = it->get();
-        if (t == nullptr || t->kind != TOKEN_EQUAL_SIGN) {
-            *it = checkpoint;
-            return false;
-        }
-        it->next();
-    }
-
-    {
-        // 3. Value
-        token* t = it->get();
-        if (t == nullptr || (
-            t->kind != TOKEN_KW_NULL &&
-            t->kind != TOKEN_KW_TRUE &&
-            t->kind != TOKEN_KW_FALSE &&
-            t->kind != TOKEN_INTEGER &&
-            t->kind != TOKEN_FLOATING &&
-            t->kind != TOKEN_STRING &&
-            t->kind != TOKEN_BRACE_OPEN &&
-            t->kind != TOKEN_BRACKET_OPEN))
-        {
-            *it = checkpoint;
-            return false;
-        }
-
-        // In case if value is an object
-        if (t->kind == TOKEN_BRACE_OPEN) {
-            auto* object = new object::object_t();            
-            bool successful = parser_parse_object(it, object);
-            if (not successful) {
-                *it = checkpoint;
-                delete object;
-                return false;
-            }
-
-            value = object;
-        } else if (t->kind == TOKEN_BRACKET_OPEN) {
-            auto* list = new object::list_t();
-            bool successful = parser_parse_list_of_things(it, list);
-            if (not successful) {
-                *it = checkpoint;
-                delete list;
-                return false;
-            }
-
-            value = list;
-        } else {
-            switch (t->kind) {
-                case TOKEN_IDENTIFIER:
-                case TOKEN_STRING:
-                    value = new object::string_t(std::string(t->begin + 1, t->length - 2));
-                    break;
-                case TOKEN_INTEGER:
-                    value = new object::integer_t(t->value.integer);
-                    break;
-                case TOKEN_FLOATING:
-                    value = new object::floating_t(t->value.floating);
-                    break;
-                case TOKEN_KW_NULL:
-                    value = new object::null_t();
-                    break;
-                case TOKEN_KW_TRUE:
-                    value = new object::boolean_t(true);
-                    break;
-                case TOKEN_KW_FALSE:
-                    value = new object::boolean_t(false);
-                    break;
-                default:
-                    ASSERT(false);
-            }
-
-            it->next();
-        }
-    }
-
-    {
-        // 4. Semicolon
-        token* t = it->get();
-        if (t == nullptr || t->kind != TOKEN_SEMICOLON) {
-            *it = checkpoint;
-            return false;
-        }
-        it->next();
-    }
-
-    // We reached the end => it's all good
-    // printf("PARSED: { key: %.*s", key->length, key->begin);
-    // printf(", value: ");
-    // value->print();
-    // printf(" }\n");
-    object->add(std::string(key->begin, key->length), value);
-    return true;
-}
-
-
-bool parser_parse_object (iterator* it, object::object_t* result) {
-    ASSERT(it);
-    iterator checkpoint = *it;
-
-    {
-        token* t = it->get();
-        if (t == nullptr || t->kind != TOKEN_BRACE_OPEN) {
-            *it = checkpoint;
-            return false;
-        }
-    }
-
-    it->next();
-
-    {
-        bool successful;
-        do {
-            successful = parser_parse_key_value_pair(it, result);
-        } while (successful);
-    }
-
-    {
-        token* t = it->get();
-        if (t == nullptr || t->kind != TOKEN_BRACE_CLOSE) {
-            *it = checkpoint;
-            return false;
-        }
-    }
-
-    it->next();
-    return true;
-}
-
-
-bool parser_parse_list_of_things (iterator* it, object::list_t* result) {
-    ASSERT(it);
-
-    iterator checkpoint = *it;
-
-    {
-        token* t = it->get();
-        if (t == nullptr || t->kind != TOKEN_BRACKET_OPEN) {
-            *it = checkpoint;
-            return false;
-        }
-
-        it->next();
-    }
-
-    do {
-        {
-            token* t = it->get();
-            ASSERT(t);
-
-            if (t->kind == TOKEN_BRACKET_CLOSE) {
-                break;
-            }
-
-            switch (t->kind) {
-                case TOKEN_BRACKET_CLOSE: break;
-                case TOKEN_BRACE_OPEN: {
-                    // This is an object
-                    object::object_t* obj = new object::object_t();
-
-                    bool successful = parser_parse_object(it, obj);
-                    if (not successful) {
-                        *it = checkpoint;
-                        delete obj;
-                        return false;
-                    }
-
-                    // add obj to list
-                    result->add(obj);
-                    break;
-                }
-                case TOKEN_KW_NULL:
-                    result->add(new object::null_t());
-                    it->next();
-                    break;
-                case TOKEN_KW_TRUE:
-                    result->add(new object::boolean_t(true));
-                    it->next();
-                    break;
-                case TOKEN_KW_FALSE:
-                    result->add(new object::boolean_t(false));
-                    it->next();
-                    break;
-                case TOKEN_INTEGER:
-                    result->add(new object::integer_t(t->value.integer));
-                    it->next();
-                    break;
-                case TOKEN_FLOATING:
-                    result->add(new object::floating_t(t->value.floating));
-                    it->next();
-                    break;
-                case TOKEN_STRING:
-                    result->add(new object::string_t(std::string(t->begin + 1, t->length - 2)));
-                    it->next();
-                    break;
-                default:
-                    *it = checkpoint;
-                    return false;
-            }            
-        }
-
-        {
-            // Comma or end of the list.
-            token* t = it->get();
-            if (t == nullptr || (
-                t->kind != TOKEN_COMMA &&
-                t->kind != TOKEN_BRACKET_CLOSE))
-            {
-                *it = checkpoint;
-                return false;
-            }
-
-            if (t->kind == TOKEN_BRACKET_CLOSE) {
-                // List ended, exit the loop and let final read consume closed bracket.
-                break;
-            }            
-
-            it->next();
-        }
-    } while (true);
-
-    {
-        // Consume closing bracket.
-        token* t = it->get();
-        if (t == nullptr || t->kind != TOKEN_BRACKET_CLOSE) {
-            *it = checkpoint;
-            return false;
-        }
-        it->next();
-    }
-
-    return true;
-}
-
-
 // ======================================================== //
+
+void highlight_token (token* t) {
+    printf("   %lu |%.*s\n", t->line_number, (int)t->line.length, t->line.start);
+    printf("   %.*s |%.*s%.*s\n", 
+        (int)(digits_in_number(t->line_number)), spaces,
+        (int)(t->begin - t->line.start), spaces,
+        (int)(t->length), carets);
+}
 
 
 struct parser_t {
@@ -779,7 +631,13 @@ struct parser_t {
     size_t length;
 
     bucket_t* tokens = nullptr;
-    iterator current;
+    iterator it;
+
+    struct error_t {
+        char message[200];
+    };
+
+    std::stack<error_t> error_stack;
 
     void initialize (const char* text_, size_t length_) {
         text = text_;
@@ -799,32 +657,42 @@ struct parser_t {
         lexer l;
         l.initialize(&r, tokens);
 
-        l.run();
+        bool successful = l.run();
+        if (not successful) {
+            l.terminate();
+            r.terminate();
+            return nullptr;
+        }
 
         auto* result = new object::object_t();
-        bool good = true;
+        bool good = false;
 
-        iterator it = iterator_make(tokens);
+        it = iterator_make(tokens);
         while (it) {
             token* t = it.get();
 
             if (t->kind == TOKEN_EOF) {
                 printf("Reached EOF!\n");
+                good = true;
                 break;
             }
 
-            bool successful = parser_parse_object(&it, result);
+            bool successful = parse_object(result);
             if (not successful) {
-                printf("Could not parse object!\n");
-                good = false;
+                if (error_stack.empty()) {
+                    printf("Could not parse object!\n");
+                } else {
+                    auto error = error_stack.top();
+                    error_stack.pop();
+
+                    printf("%s", error.message);
+                }
                 break;
             }
         }
 
         if (good) {
             printf("Parsing successful\n");
-            result->print();
-            printf("\n");
         } else {
             delete result;
             result = nullptr;
@@ -834,6 +702,299 @@ struct parser_t {
         r.terminate();
 
         return result;
+    }
+
+    bool parse_object (object::object_t* result) {
+        iterator checkpoint = it;
+
+        {
+            token* t = it.get();
+            if (t == nullptr || t->kind != TOKEN_BRACE_OPEN) {
+                printf("<INSERT FILENAME>:%lu:%lu: error: '{' expected, found %s ’%.*s’\n",
+                    t->line_number, t->char_number, to_string(t->kind), (int)t->length, t->begin);
+                highlight_token(t);
+
+                it = checkpoint;
+                return false;
+            }
+        }
+
+        it.next();
+
+        {
+            bool successful;
+            do {
+                successful = parse_key_value_pair(result);
+            } while (successful);
+        }
+
+        {
+            token* t = it.get();
+            if (t == nullptr || t->kind != TOKEN_BRACE_CLOSE) {
+                it = checkpoint;
+                return false;
+            }
+        }
+
+        it.next();
+        return true;
+    }
+
+    bool parse_key_value_pair (object::object_t* object) {
+        iterator checkpoint = it;
+
+        token* key = nullptr;
+        object::value_t* value = nullptr;
+
+        {
+            // 1. Identifier
+            token* t = it.get();
+            if (t == nullptr || t->kind != TOKEN_IDENTIFIER) {
+                if (t->kind != TOKEN_BRACE_CLOSE) {
+                    // error_t error;
+                    printf("<INSERT FILENAME>:%lu:%lu: error: identifier expected, found ’%s’\n",
+                        t->line_number, t->char_number, to_string(t->kind));
+                    highlight_token(t);
+                }
+
+                it = checkpoint;
+                return false;
+            }
+
+            key = t;
+            it.next();
+        }
+
+        {
+            // 2. Equal sign
+            token* t = it.get();
+            if (t == nullptr || t->kind != TOKEN_EQUAL_SIGN) {
+                printf("<INSERT FILENAME>:%lu:%lu: error: '=' expected, found ’%.*s’\n",
+                    t->line_number, t->char_number, (int)t->length, t->begin);
+                highlight_token(t);
+
+                it = checkpoint;
+                return false;
+            }
+            it.next();
+        }
+
+        {
+            // 3. Value
+            token* t = it.get();
+            if (t == nullptr || (
+                t->kind != TOKEN_KW_NULL &&
+                t->kind != TOKEN_KW_TRUE &&
+                t->kind != TOKEN_KW_FALSE &&
+                t->kind != TOKEN_INTEGER &&
+                t->kind != TOKEN_FLOATING &&
+                t->kind != TOKEN_STRING &&
+                t->kind != TOKEN_BRACE_OPEN &&
+                t->kind != TOKEN_BRACKET_OPEN))
+            {
+                printf("<INSERT FILENAME>:%lu:%lu: error: value is expected, found ’%.*s’\n",
+                    t->line_number, t->char_number, (int)t->length, t->begin);
+                highlight_token(t);
+
+                it = checkpoint;
+                return false;
+            }
+
+            // In case if value is an object
+            if (t->kind == TOKEN_BRACE_OPEN) {
+                auto* object = new object::object_t();            
+                bool successful = parse_object(object);
+                if (not successful) {
+                    printf("<INSERT FILENAME>:%lu:%lu: error: value is expected, found ’%.*s’\n",
+                        t->line_number, t->char_number, (int)t->length, t->begin);
+                    highlight_token(t);
+
+                    it = checkpoint;
+                    delete object;
+                    return false;
+                }
+
+                value = object;
+            } else if (t->kind == TOKEN_BRACKET_OPEN) {
+                auto* list = new object::list_t();
+                bool successful = parse_list_of_things(list);
+                if (not successful) {
+                    it = checkpoint;
+                    delete list;
+                    return false;
+                }
+
+                value = list;
+            } else {
+                switch (t->kind) {
+                    case TOKEN_IDENTIFIER:
+                    case TOKEN_STRING:
+                        value = new object::string_t(std::string(t->begin + 1, t->length - 2));
+                        break;
+                    case TOKEN_INTEGER:
+                        value = new object::integer_t(t->value.integer);
+                        break;
+                    case TOKEN_FLOATING:
+                        value = new object::floating_t(t->value.floating);
+                        break;
+                    case TOKEN_KW_NULL:
+                        value = new object::null_t();
+                        break;
+                    case TOKEN_KW_TRUE:
+                        value = new object::boolean_t(true);
+                        break;
+                    case TOKEN_KW_FALSE:
+                        value = new object::boolean_t(false);
+                        break;
+                    default:
+                        ASSERT(false);
+                }
+
+                it.next();
+            }
+        }
+
+        {
+            // 4. Semicolon
+            token* t = it.get();
+            if (t == nullptr || t->kind != TOKEN_SEMICOLON) {
+                // Semicolon is optional.
+            } else {
+                it.next(); // Skip semicolon.
+            }
+        }
+
+        // We reached the end, it's all good.
+        object->add(std::string(key->begin, key->length), value);
+        return true;
+    }
+
+    bool parse_list_of_things (object::list_t* result) {
+        iterator checkpoint = it;
+
+        token* t_bracket_open = nullptr;
+        {
+            token* t = it.get();
+            if (t == nullptr || t->kind != TOKEN_BRACKET_OPEN) {
+                it = checkpoint;
+                return false;
+            }
+
+            t_bracket_open = t;
+            it.next();
+        }
+
+        do {
+            {
+                token* t = it.get();
+                ASSERT(t);
+
+                if (t->kind == TOKEN_BRACKET_CLOSE) {
+                    break;
+                }
+
+                switch (t->kind) {
+                    case TOKEN_BRACKET_CLOSE: break;
+                    case TOKEN_BRACE_OPEN: {
+                        // This is an object
+                        object::object_t* obj = new object::object_t();
+
+                        bool successful = parse_object(obj);
+                        if (not successful) {
+                            it = checkpoint;
+                            delete obj;
+                            return false;
+                        }
+
+                        // add obj to list
+                        result->add(obj);
+                        break;
+                    }
+                    case TOKEN_BRACKET_OPEN: {
+                        // This is a nested list
+                        object::list_t* plist = new object::list_t();
+
+                        bool successful = parse_list_of_things(plist);
+                        if (not successful) {
+                            it = checkpoint;
+                            delete plist;
+                            return false;
+                        }
+
+                        result->add(plist);
+                        break;
+                    }
+                    case TOKEN_KW_NULL:
+                        result->add(new object::null_t());
+                        it.next();
+                        break;
+                    case TOKEN_KW_TRUE:
+                        result->add(new object::boolean_t(true));
+                        it.next();
+                        break;
+                    case TOKEN_KW_FALSE:
+                        result->add(new object::boolean_t(false));
+                        it.next();
+                        break;
+                    case TOKEN_INTEGER:
+                        result->add(new object::integer_t(t->value.integer));
+                        it.next();
+                        break;
+                    case TOKEN_FLOATING:
+                        result->add(new object::floating_t(t->value.floating));
+                        it.next();
+                        break;
+                    case TOKEN_STRING:
+                        result->add(new object::string_t(std::string(t->begin + 1, t->length - 2)));
+                        it.next();
+                        break;
+                    default:
+
+                        printf("<INSERT FILENAME>:%lu:%lu: error: expected ’]’ before ’%.*s’\n",
+                            t->line_number, t->char_number, (int)t->length, t->begin);
+                        highlight_token(t_bracket_open);
+                        highlight_token(t); // @TODO This formatting is shit. Fix it.
+
+                        it = checkpoint;
+                        return false;
+                }            
+            }
+
+            {
+                // Comma or end of the list.
+                token* t = it.get();
+                if (t == nullptr || (
+                    t->kind != TOKEN_COMMA &&
+                    t->kind != TOKEN_BRACKET_CLOSE))
+                {
+                    // it = checkpoint;
+                    // return false;
+                }
+                else if (t->kind == TOKEN_BRACKET_CLOSE) {
+                    // List ended, exit the loop and let final read consume closed bracket.
+                    break;
+                } else {
+                    // Consume comma
+                    it.next();
+                }
+            }
+        } while (true);
+
+        {
+            // Consume closing bracket.
+            token* t = it.get();
+            if (t == nullptr || t->kind != TOKEN_BRACKET_CLOSE) {
+                printf("<INSERT FILENAME>:%lu:%lu: error: ??? is expected, found '%.*s'\n",
+                    t->line_number, t->char_number, (int)t->length, t->begin);
+                highlight_token(t);
+
+                it = checkpoint;
+                return false;
+            }
+            it.next();
+        }
+
+        return true;
     }
 };
 

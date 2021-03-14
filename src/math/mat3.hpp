@@ -13,13 +13,15 @@ struct mat3 {
         f32 at[9];
     };
 
-    static mat3 zero();
-    static mat3 eye();
+    static mat3 zero ();
+    static mat3 eye  ();
 
-    f32 det() const;
+    f32 det () const;
 };
 
-f32 determinant(const mat3& matrix);
+using matrix3 = mat3;
+
+f32 determinant (const mat3& matrix);
 
 inline mat3 operator + (const mat3& a, const mat3& b) {
     mat3 result;

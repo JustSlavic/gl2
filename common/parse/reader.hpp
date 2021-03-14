@@ -18,14 +18,41 @@ inline bool is_space (char c) {
     return c == ' ' || c == '\t' || c == '\n' || c == '\r';
 }
 
+inline bool is_newline (char c) {
+    return c == '\n' || c == '\r';
+}
+
 
 struct reader {
     size_t buffer_size = 0;
     const char* buffer = nullptr;
+
+    const char* current_line = nullptr;
     const char* current = nullptr;
 
-    size_t char_counter = 0;
-    size_t line_counter = 0;
+    size_t char_counter = 1;
+    size_t line_counter = 1;
+
+    struct checkpoint_t {
+        const char* current = nullptr;
+        size_t char_counter = 0;
+        size_t line_counter = 0;
+    };
+
+    checkpoint_t get_checkpoint () const {
+        checkpoint_t result;
+        result.current = current;
+        result.char_counter = char_counter;
+        result.line_counter = line_counter;
+
+        return result;
+    }
+
+    void restore_checkpoint(checkpoint_t checkpoint) {
+        current = checkpoint.current;
+        char_counter = checkpoint.char_counter;
+        line_counter = checkpoint.line_counter;
+    }
 
     struct result_t {
         const char* start = nullptr;
@@ -46,6 +73,8 @@ struct reader {
     inline char eat_char  ();
     inline void skip_char ();
 
+    result_t get_line () const;
+
     result_t eat_while (bool (*predicate)(char));
     result_t eat_until (bool (*predicate)(char));
 
@@ -56,8 +85,7 @@ struct reader {
 };
 
 
-inline char reader::get_char ()
-{
+inline char reader::get_char () {
     ASSERT(current);
     if (current == buffer + buffer_size) { return 0; }
 
@@ -65,17 +93,23 @@ inline char reader::get_char ()
 }
 
 
-inline char reader::eat_char ()
-{
+inline char reader::eat_char () {
     ASSERT(current);
     if (current == buffer + buffer_size) { return 0; }
+
+    if (is_newline(*current)) {
+        char_counter = 0;
+        line_counter += 1;
+        current_line = current + 1;
+    }
+
+    char_counter += 1;
 
     return *current++;
 }
 
 
-inline void reader::skip_char ()
-{
+inline void reader::skip_char () {
     eat_char();
 }
 

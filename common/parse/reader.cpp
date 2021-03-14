@@ -8,10 +8,26 @@ void reader::initialize (const char* text, size_t n) {
     buffer = text;
     buffer_size = n;
     current = buffer;
+    current_line = buffer;
 }
 
 
 void reader::terminate () {}
+
+
+reader::result_t reader::get_line () const
+{
+    auto* p = current_line;
+    size_t counter = 0;
+
+    char c;
+    while ((c = *p++) != 0) {
+        if (is_newline(c)) { break; }
+        counter += 1;
+    }
+
+    return result_t(current_line, counter);
+}
 
 
 reader::result_t reader::eat_while (bool (*predicate)(char))
@@ -54,15 +70,14 @@ reader::result_t reader::eat_until (bool (*predicate)(char))
 
 reader::result_t reader::eat_string (const char* str, size_t n)
 {
-    auto* checkpoint = current;
+    auto checkpoint = get_checkpoint();
     size_t count = 0;
 
-    char c;
     while (count < n) {
-        c = get_char();
+        char c = get_char();
 
         if ((c == 0) || (c != str[count])) {
-            current = checkpoint;
+            restore_checkpoint(checkpoint);
             return result_t();
         }
 
@@ -70,21 +85,20 @@ reader::result_t reader::eat_string (const char* str, size_t n)
         count += 1;
     }
 
-    return result_t(checkpoint, count);
+    return result_t(checkpoint.current, count);
 }
 
 
 reader::result_t reader::eat_string (const char* str)
 {
-    auto* checkpoint = current;
+    auto checkpoint = get_checkpoint();
     size_t count = 0;
 
-    char c;
     while (str[count]) {
-        c = get_char();
+        char c = get_char();
 
         if ((c == 0) || (c != str[count])) {
-            current = checkpoint;
+            restore_checkpoint(checkpoint);
             return result_t();
         }
 
@@ -92,7 +106,7 @@ reader::result_t reader::eat_string (const char* str)
         count += 1;
     }
 
-    return result_t(checkpoint, count);
+    return result_t(checkpoint.current, count);
 }
 
 
