@@ -1,7 +1,5 @@
 #include <stdio.h>
 #include <string.h>
-#include <object.hpp>
-#include <parse/object_parser.hpp>
 #include <son.hpp>
 #include <stdarg.h>
 
@@ -112,9 +110,9 @@ int main (int argc, char** argv) {
     char* buffer = (char*)calloc(capacity, sizeof(char));
     size_t size = read_file(args.input_filename, buffer, capacity);
 
-    parse::object_parser parser;
+    SON::Parser parser;
     parser.verbose = args.verbose;
-    parser.initialize(buffer, size);
+    parser.initialize(buffer, size, args.input_filename);
 
     auto* result = parser.parse();
     if (result == nullptr) {
@@ -135,6 +133,7 @@ int main (int argc, char** argv) {
         scheme_visitor->visit(result);
 
         printer->visit(scheme_visitor->scheme);
+        printf("\n");
     }
     
     parser.terminate();

@@ -1,11 +1,12 @@
-#include "object_parser.hpp"
-#include "reader.hpp"
+#include "parser.hpp"
+#include <parse/reader.hpp>
 #include <unordered_map>
 #include <vector>
 #include <stack>
 
 
-namespace parse {
+namespace SON {
+
 
 enum kind_t {
     TOKEN_UNDEFINED = 0,
@@ -119,7 +120,7 @@ struct token {
 
     size_t line_number;
     size_t char_number;
-    reader::result_t line;
+    parse::reader::result_t line;
 
     kind_t kind;
     value_t value;
@@ -165,8 +166,8 @@ void print (token t) {
 
 
 static inline bool is_double_quote (char c) { return c == '"'; }
-static inline bool is_valid_identifier_head (char c) { return is_alpha(c) || c == '_'; }
-static inline bool is_valid_identifier_body (char c) { return is_digit(c) || is_alpha(c) || c == '_'; }
+static inline bool is_valid_identifier_head (char c) { return parse::is_alpha(c) || c == '_'; }
+static inline bool is_valid_identifier_body (char c) { return parse::is_digit(c) || parse::is_alpha(c) || c == '_'; }
 
 static const char* spaces = "                                                                         ";
 static const char* carets = "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^";
@@ -347,13 +348,15 @@ void free_all_buckets (bucket_t* bucket) {
 
 
 struct lexer {
-    reader* r = nullptr;
+    const char* filename = nullptr;
+    parse::reader* r = nullptr;
     bucket_t* storage = nullptr;
     std::unordered_map<std::string, kind_t> keywords;
 
-    void initialize (reader* r_, bucket_t* storage_) {
+    void initialize (parse::reader* r_, bucket_t* storage_, const char* filename_) {
         r = r_;
         storage = storage_;
+        filename = filename_;
 
         keywords.emplace("null", TOKEN_KW_NULL);
         keywords.emplace("true", TOKEN_KW_TRUE);
@@ -387,12 +390,12 @@ struct lexer {
             }
 
             // Newlines are not allowed to intercept string.
-            if (c == '\0' || is_newline(c)) {
+            if (c == '\0' || parse::is_newline(c)) {
                 r->restore_checkpoint(checkpoint);
 
                 auto line = r->get_line();
 
-                printf("<INSERT FILENAME>%lu:%lu: error: unclosed double quote\n", checkpoint.line_counter, checkpoint.char_counter);
+                printf("%s:%lu:%lu: error: unclosed double quote\n", filename, checkpoint.line_counter, checkpoint.char_counter);
                 printf("   %lu |%.*s\n", checkpoint.line_counter, (int)line.length, line.start);
                 printf("   %.*s |%.*s%.*s\n", 
                     (int)(digits_in_number(checkpoint.line_counter)), spaces,
@@ -470,7 +473,7 @@ struct lexer {
         u64 len = 0;
 
         char c = r->get_char();
-        if (!is_digit(c) && c != '.' && c != '-' && c != '+') {
+        if (!parse::is_digit(c) && c != '.' && c != '-' && c != '+') {
             return false;
         }
 
@@ -485,7 +488,7 @@ struct lexer {
             len += 1;
         }
 
-        while (is_digit(c = r->get_char())) {
+        while (parse::is_digit(c = r->get_char())) {
             r->skip_char();
             len += 1;
 
@@ -497,7 +500,7 @@ struct lexer {
             r->skip_char();
             len += 1;
 
-            while(is_digit(c = r->get_char())) {
+            while(parse::is_digit(c = r->get_char())) {
                 r->skip_char();
                 len += 1;
 
@@ -559,10 +562,10 @@ struct lexer {
                 continue;
             }
             else if (c == '/') {
-                reader::result_t result = r->eat_string("//");
+                parse::reader::result_t result = r->eat_string("//");
                 if (result) {
-                    r->eat_until(is_newline);
-                    r->eat_while(is_newline);
+                    r->eat_until(parse::is_newline);
+                    r->eat_while(parse::is_newline);
                     continue;
                 }
             }
@@ -570,7 +573,7 @@ struct lexer {
                 bool successful = eat_quoted_string();
                 if (not successful) return false;
             }
-            else if (is_digit(c) || (c == '.') || (c == '+') || (c == '-')) { // Read number, integer or float is unknown.
+            else if (parse::is_digit(c) || (c == '.') || (c == '+') || (c == '-')) { // Read number, integer or float is unknown.
                 bool successful = eat_number();
                 if (not successful) return false;
             }
@@ -580,9 +583,9 @@ struct lexer {
             }
             else {
                 auto checkpoint = r->get_checkpoint();
-                auto result = r->eat_until(is_space);
+                auto result = r->eat_until(parse::is_space);
 
-                printf("<INSERT FILENAME>%lu:%lu: error: unknown lexeme ’%.*s’\n", checkpoint.line_counter, checkpoint.char_counter, (int)result.length, result.start);
+                printf("%s:%lu:%lu: error: unknown lexeme ’%.*s’\n", filename, checkpoint.line_counter, checkpoint.char_counter, (int)result.length, result.start);
 
                 auto line = r->get_line();
                 printf("   %lu |%.*s\n", checkpoint.line_counter, (int)line.length, line.start);
@@ -628,6 +631,7 @@ void highlight_token (token* t) {
 
 struct parser_t {
     bool verbose = false;
+    const char* filename = nullptr;
     const char* text = nullptr;
     size_t length;
 
@@ -640,9 +644,10 @@ struct parser_t {
 
     std::stack<error_t> error_stack;
 
-    void initialize (const char* text_, size_t length_) {
+    void initialize (const char* text_, size_t length_, const char* filename_) {
         text = text_;
         length = length_;
+        filename = filename_;
 
         tokens = make_new_bucket();
     }
@@ -652,11 +657,11 @@ struct parser_t {
     }
 
     SON::IValue* parse () {
-        reader r;
+        parse::reader r;
         r.initialize(text, length);
 
         lexer l;
-        l.initialize(&r, tokens);
+        l.initialize(&r, tokens, filename);
 
         bool successful = l.run();
         if (not successful) {
@@ -711,7 +716,8 @@ struct parser_t {
         {
             token* t = it.get();
             if (t == nullptr || t->kind != TOKEN_BRACE_OPEN) {
-                printf("<INSERT FILENAME>:%lu:%lu: error: '{' expected, found %s ’%.*s’\n",
+                printf("%s:%lu:%lu: error: '{' expected, found %s ’%.*s’\n",
+                    filename,
                     t->line_number, t->char_number, to_string(t->kind), (int)t->length, t->begin);
                 highlight_token(t);
 
@@ -753,7 +759,8 @@ struct parser_t {
             if (t == nullptr || t->kind != TOKEN_IDENTIFIER) {
                 if (t->kind != TOKEN_BRACE_CLOSE) {
                     // error_t error;
-                    printf("<INSERT FILENAME>:%lu:%lu: error: identifier expected, found ’%s’\n",
+                    printf("%s:%lu:%lu: error: identifier expected, found ’%s’\n",
+                        filename,
                         t->line_number, t->char_number, to_string(t->kind));
                     highlight_token(t);
                 }
@@ -770,7 +777,8 @@ struct parser_t {
             // 2. Equal sign
             token* t = it.get();
             if (t == nullptr || t->kind != TOKEN_EQUAL_SIGN) {
-                printf("<INSERT FILENAME>:%lu:%lu: error: '=' expected, found ’%.*s’\n",
+                printf("%s:%lu:%lu: error: '=' expected, found ’%.*s’\n",
+                    filename,
                     t->line_number, t->char_number, (int)t->length, t->begin);
                 highlight_token(t);
 
@@ -793,7 +801,8 @@ struct parser_t {
                 t->kind != TOKEN_BRACE_OPEN &&
                 t->kind != TOKEN_BRACKET_OPEN))
             {
-                printf("<INSERT FILENAME>:%lu:%lu: error: value is expected, found ’%.*s’\n",
+                printf("%s:%lu:%lu: error: value is expected, found ’%.*s’\n",
+                    filename,
                     t->line_number, t->char_number, (int)t->length, t->begin);
                 highlight_token(t);
 
@@ -806,7 +815,8 @@ struct parser_t {
                 auto* object = new SON::Object();            
                 bool successful = parse_object(object);
                 if (not successful) {
-                    printf("<INSERT FILENAME>:%lu:%lu: error: value is expected, found ’%.*s’\n",
+                    printf("%s:%lu:%lu: error: value is expected, found ’%.*s’\n",
+                        filename,
                         t->line_number, t->char_number, (int)t->length, t->begin);
                     highlight_token(t);
 
@@ -951,7 +961,8 @@ struct parser_t {
                         break;
                     default:
 
-                        printf("<INSERT FILENAME>:%lu:%lu: error: expected ’]’ before ’%.*s’\n",
+                        printf("%s:%lu:%lu: error: expected ’]’ before ’%.*s’\n",
+                            filename,
                             t->line_number, t->char_number, (int)t->length, t->begin);
                         highlight_token(t_bracket_open);
                         highlight_token(t); // @TODO This formatting is shit. Fix it.
@@ -985,7 +996,8 @@ struct parser_t {
             // Consume closing bracket.
             token* t = it.get();
             if (t == nullptr || t->kind != TOKEN_BRACKET_CLOSE) {
-                printf("<INSERT FILENAME>:%lu:%lu: error: ??? is expected, found '%.*s'\n",
+                printf("%s:%lu:%lu: error: ??? is expected, found '%.*s'\n",
+                    filename,
                     t->line_number, t->char_number, (int)t->length, t->begin);
                 highlight_token(t);
 
@@ -1003,26 +1015,25 @@ struct parser_t {
 // ======================================================== //
 
 
-void object_parser::initialize (const char* text, size_t size) {
+void Parser::initialize (const char* text, size_t size, const char* filename) {
     auto* parser = new parser_t();
-    parser->initialize(text, size);
+    parser->initialize(text, size, filename);
     parser->verbose = verbose;
     impl = (void*)parser;
 }
 
 
-void object_parser::terminate () {
+void Parser::terminate () {
     auto* parser = (parser_t*) impl;
     delete parser;
 }
 
 
-SON::IValue* object_parser::parse () {
+SON::IValue* Parser::parse () {
     auto* parser = (parser_t*) impl;
 
     return parser->parse();
 }
 
-
-} // parse
+} // SON
 

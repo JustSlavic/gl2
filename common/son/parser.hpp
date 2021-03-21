@@ -4,18 +4,20 @@
 #include <son.hpp>
 
 
-namespace parse {
+namespace SON {
 
-struct object_parser {
+
+struct Parser {
     bool verbose = false;
     void* impl = nullptr;
 
-    void initialize (const char* text, size_t size);
+    void initialize (const char* text, size_t size, const char* filename);
     void terminate ();
 
     SON::IValue* parse ();
 };
 
-} // parse
+
+} // SON
 
 

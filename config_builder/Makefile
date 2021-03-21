@@ -39,10 +39,10 @@ else ifeq ($(MAKECMDGOALS),debug)
 	CXXFLAGS += -ggdb3 -DDEBUG
 else ifeq ($(MAKECMDGOALS),asan)
 	SUB_DIR  := asan
-	CXX_FLAGS += -ggdb3 -DDEBUG -fsanitize=address
+	CXXFLAGS += -ggdb3 -DDEBUG -fsanitize=address
 else ifeq ($(MAKECMDGOALS),ubsan)
 	SUB_DIR  := ubsan
-	CXX_FLAGS += -ggdb3 -DDEBUG -fsanitize=undefined
+	CXXFLAGS += -ggdb3 -DDEBUG -fsanitize=undefined
 else ifeq ($(MAKECMDGOALS),release)
 	# In release build set optimisation level O2, set RELEASE definition
 	SUB_DIR  := release
@@ -53,10 +53,10 @@ endif
 
 SOURCES = \
 	main \
-	common/SON/object \
-	common/object \
+	common/son/object \
+	common/son/visitor \
+	common/son/parser \
 	common/parse/reader \
-	common/parse/object_parser
 	
 
 OBJECTS      := $(addprefix build/$(SUB_DIR)/, $(addsuffix .o,   $(SOURCES)))
