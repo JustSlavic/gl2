@@ -16,7 +16,6 @@ LIBS = \
 
 CXXFLAGS = \
 	-Wall \
-	-Werror \
 	-fno-rtti \
 	-fno-exceptions \
 	-std=$(CXX_STANDARD)
@@ -53,6 +52,8 @@ else
 endif
 
 SOURCES = \
+	main \
+	common/SON/object \
 	common/object \
 	common/parse/reader \
 	common/parse/object_parser
@@ -90,8 +91,8 @@ clean:
 
 # ================= PROJECT ================= #
 
-$(PROJECT_EXE): main.cpp $(PROJECT_LIB) $(STATIC_LIBS)
-	g++ main.cpp $(PROJECT_LIB) $(STATIC_LIBS) -o $(PROJECT_EXE) $(CXXFLAGS) $(LDFLAGS)
+$(PROJECT_EXE): build/$(SUB_DIR)/main.o $(PROJECT_LIB) $(STATIC_LIBS)
+	g++ build/$(SUB_DIR)/main.o $(PROJECT_LIB) $(STATIC_LIBS) -o $(PROJECT_EXE) $(CXXFLAGS) $(LDFLAGS)
 
 
 $(PROJECT_LIB): $(OBJECTS)
@@ -101,13 +102,13 @@ $(PROJECT_LIB): $(OBJECTS)
 -include $(OBJECTS:.o=.d)
 
 
-build/$(SUB_DIR)/%.o: src/%.cpp ./Makefile
+build/$(SUB_DIR)/%.o: %.cpp ./Makefile
 	@mkdir -p $(dir $@)
 	@g++ -MM -MT "$@" $(CXXFLAGS) $< > build/$(SUB_DIR)/$*.d
 	g++ $< -c -o $@ $(CXXFLAGS)
 
 
-build/$(SUB_DIR)/%.o: ../%.cpp ./Makefile
+build/$(SUB_DIR)/common/%.o: ../common/%.cpp ./Makefile
 	@mkdir -p $(dir $@)
-	@g++ -MM -MT "$@" $(CXXFLAGS) $< > build/$(SUB_DIR)/$*.d
+	@g++ -MM -MT "$@" $(CXXFLAGS) $< > build/$(SUB_DIR)/common/$*.d
 	g++ $< -c -o $@ $(CXXFLAGS)

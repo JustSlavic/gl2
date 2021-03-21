@@ -2,6 +2,8 @@
 #include <string.h>
 #include <object.hpp>
 #include <parse/object_parser.hpp>
+#include <son.hpp>
+#include <stdarg.h>
 
 
 size_t read_file (const char* filename, char* buffer, size_t size) {
@@ -20,10 +22,20 @@ size_t read_file (const char* filename, char* buffer, size_t size) {
 
 void print_help () {
     printf(
-        "usage: ./config_builder [INPUT] [KEYS]\n"
-        "    Keys:\n"
-        "    --output, -o     Specify name of the output file.\n"
-        "    --help, -h       Print this message.\n"
+        "Usage: config_builder [options] file...\n"
+        "Options:\n"
+        "    --output, -o                   Specify name of the output file.\n"
+        "    --print, -p                    Print formatted SON object.\n"
+        "    --indent [INTEGER]             Specify indent size.\n"
+        "    --multiline=[auto|true|false]  Multiline mode[1].\n"
+        "    --verbose, -v                  Print log messages.\n"
+        "    --help, -h                     Print this message.\n"
+        "\n"
+        "[1]: Multiline mode defines how SON object will be printed:\n"
+        "     - auto:  objects of size <= 3 and lists of size <= 5 will be printed in one line,\n"
+        "other objects and lists will be printed with every entry on the new line;\n"
+        "     - true:  every object entry and list element will start on the new line;\n"
+        "     - false: everything will be printed in one line.\n"
         );
 }
 
@@ -31,14 +43,12 @@ void print_help () {
 struct command_line_arguments {
     char* input_filename = nullptr;
     bool print_content = false;
+    bool multiline = false;
+    bool multiline_auto = true;
+    int indent_size = 2;
+    bool use_separator = true;
+    bool verbose = false;
 };
-
-
-
-object::object_t* create_config_signature (object::object_t* config) {
-    return nullptr;
-}
-
 
 
 int main (int argc, char** argv) {
@@ -55,6 +65,39 @@ int main (int argc, char** argv) {
             continue;
         }
 
+        if (strcmp(argv[i], "--indent") == 0) {
+            args.indent_size = atoi(argv[++i]);
+            continue;
+        }
+
+        if (strcmp(argv[i], "--multiline=true") == 0) {
+            args.multiline_auto = false;
+            args.multiline = true;
+            continue;
+        }
+
+        if (strcmp(argv[i], "--multiline=false") == 0) {
+            args.multiline_auto = false;
+            args.multiline = false;
+            continue;
+        }
+
+        if (strcmp(argv[i], "--multiline=auto") == 0) {
+            args.multiline_auto = true;
+            args.multiline = true;
+            continue;
+        }
+
+        if (strcmp(argv[i], "--no-separators") == 0) {
+            args.use_separator = false;
+            continue;
+        }
+
+        if (strcmp(argv[i], "--verbose") == 0 || strcmp(argv[i], "-v") == 0) {
+            args.verbose = true;
+            continue;
+        }
+
         args.input_filename = argv[i];
     }
 
@@ -63,13 +106,14 @@ int main (int argc, char** argv) {
         return 1;
     }
 
-    printf("Parsing %s\n", args.input_filename);
+    if (args.verbose) printf("Parsing %s\n", args.input_filename);
 
     const size_t capacity = 10000;
     char* buffer = (char*)calloc(capacity, sizeof(char));
     size_t size = read_file(args.input_filename, buffer, capacity);
 
     parse::object_parser parser;
+    parser.verbose = args.verbose;
     parser.initialize(buffer, size);
 
     auto* result = parser.parse();
@@ -80,8 +124,17 @@ int main (int argc, char** argv) {
     }
 
     if (args.print_content) {
-        result->print();
-        printf("\n");
+        auto* printer = new SON::VisitorPrint();
+        printer->indent_size = args.indent_size;
+        printer->multiline = args.multiline;
+        printer->multiline_auto = args.multiline_auto;
+        printer->use_separator = args.use_separator;
+        // printer->visit(result);
+
+        auto* scheme_visitor = new SON::VisitorIntoScheme();
+        scheme_visitor->visit(result);
+
+        printer->visit(scheme_visitor->scheme);
     }
     
     parser.terminate();

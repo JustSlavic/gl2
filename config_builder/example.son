@@ -5,23 +5,23 @@
     //   3. Key and value are separated by equal sign '='
     //   4. Value can be:
     //      - double quoted string
-    name = "Slavic";
     //      - integer number
-    age = 28;
     //      - floating number
-    height = 1.85;
     //      - boolean (true or false)
-    human = true;
     //      - null value (null)
-    dependencies = null;
     //      - objects
+    //      - lists
+    name = "Slavic";
+    age = 28;
+    height = 1.85;
+    human = true;
+    dependencies = null;
     window = {
         title  = "GL2";
         width  = 1980;
         height = 1080;
-        mode = "window";
+        mode = "window"
     }
-    //      - lists
     characters = [
         {
             name = "Asuka"
@@ -38,5 +38,5 @@
     ]
     // Note that lists are geterogenerous and can be nested
     // Also note that trailing semicolons are optional as well as commas in lists.
-    GeteroList = [ null true false "foo" 1 2 3.4 {} [] [[]] ]
+    GeteroList = [ null true false "foo" 1 2 3.4 { a = 1 b = 2 c = 3  d = 4 } {} { a = 1 } [[null] [1 3 "" "" "" true] [1 2] [1 2] [1 2]] ]
 }

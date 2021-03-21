@@ -627,6 +627,7 @@ void highlight_token (token* t) {
 
 
 struct parser_t {
+    bool verbose = false;
     const char* text = nullptr;
     size_t length;
 
@@ -650,7 +651,7 @@ struct parser_t {
         free_all_buckets(tokens);
     }
 
-    object::object_t* parse () {
+    SON::IValue* parse () {
         reader r;
         r.initialize(text, length);
 
@@ -664,7 +665,7 @@ struct parser_t {
             return nullptr;
         }
 
-        auto* result = new object::object_t();
+        auto* result = new SON::Object();
         bool good = false;
 
         it = iterator_make(tokens);
@@ -672,7 +673,7 @@ struct parser_t {
             token* t = it.get();
 
             if (t->kind == TOKEN_EOF) {
-                printf("Reached EOF!\n");
+                if (verbose) printf("Reached EOF!\n");
                 good = true;
                 break;
             }
@@ -692,7 +693,7 @@ struct parser_t {
         }
 
         if (good) {
-            printf("Parsing successful\n");
+            if (verbose) printf("Parsing successful\n");
         } else {
             delete result;
             result = nullptr;
@@ -704,7 +705,7 @@ struct parser_t {
         return result;
     }
 
-    bool parse_object (object::object_t* result) {
+    bool parse_object (SON::Object* result) {
         iterator checkpoint = it;
 
         {
@@ -740,11 +741,11 @@ struct parser_t {
         return true;
     }
 
-    bool parse_key_value_pair (object::object_t* object) {
+    bool parse_key_value_pair (SON::Object* object) {
         iterator checkpoint = it;
 
         token* key = nullptr;
-        object::value_t* value = nullptr;
+        SON::IValue* value = nullptr;
 
         {
             // 1. Identifier
@@ -802,7 +803,7 @@ struct parser_t {
 
             // In case if value is an object
             if (t->kind == TOKEN_BRACE_OPEN) {
-                auto* object = new object::object_t();            
+                auto* object = new SON::Object();            
                 bool successful = parse_object(object);
                 if (not successful) {
                     printf("<INSERT FILENAME>:%lu:%lu: error: value is expected, found ’%.*s’\n",
@@ -816,7 +817,7 @@ struct parser_t {
 
                 value = object;
             } else if (t->kind == TOKEN_BRACKET_OPEN) {
-                auto* list = new object::list_t();
+                auto* list = new SON::List();
                 bool successful = parse_list_of_things(list);
                 if (not successful) {
                     it = checkpoint;
@@ -829,22 +830,22 @@ struct parser_t {
                 switch (t->kind) {
                     case TOKEN_IDENTIFIER:
                     case TOKEN_STRING:
-                        value = new object::string_t(std::string(t->begin + 1, t->length - 2));
+                        value = new SON::String(std::string(t->begin + 1, t->length - 2));
                         break;
                     case TOKEN_INTEGER:
-                        value = new object::integer_t(t->value.integer);
+                        value = new SON::Integer(t->value.integer);
                         break;
                     case TOKEN_FLOATING:
-                        value = new object::floating_t(t->value.floating);
+                        value = new SON::Floating(t->value.floating);
                         break;
                     case TOKEN_KW_NULL:
-                        value = new object::null_t();
+                        value = new SON::Null();
                         break;
                     case TOKEN_KW_TRUE:
-                        value = new object::boolean_t(true);
+                        value = new SON::Boolean(true);
                         break;
                     case TOKEN_KW_FALSE:
-                        value = new object::boolean_t(false);
+                        value = new SON::Boolean(false);
                         break;
                     default:
                         ASSERT(false);
@@ -865,11 +866,11 @@ struct parser_t {
         }
 
         // We reached the end, it's all good.
-        object->add(std::string(key->begin, key->length), value);
+        object->emplace(std::string(key->begin, key->length), value);
         return true;
     }
 
-    bool parse_list_of_things (object::list_t* result) {
+    bool parse_list_of_things (SON::List* result) {
         iterator checkpoint = it;
 
         token* t_bracket_open = nullptr;
@@ -897,7 +898,7 @@ struct parser_t {
                     case TOKEN_BRACKET_CLOSE: break;
                     case TOKEN_BRACE_OPEN: {
                         // This is an object
-                        object::object_t* obj = new object::object_t();
+                        SON::Object* obj = new SON::Object();
 
                         bool successful = parse_object(obj);
                         if (not successful) {
@@ -907,12 +908,12 @@ struct parser_t {
                         }
 
                         // add obj to list
-                        result->add(obj);
+                        result->emplace(obj);
                         break;
                     }
                     case TOKEN_BRACKET_OPEN: {
                         // This is a nested list
-                        object::list_t* plist = new object::list_t();
+                        SON::List* plist = new SON::List();
 
                         bool successful = parse_list_of_things(plist);
                         if (not successful) {
@@ -921,31 +922,31 @@ struct parser_t {
                             return false;
                         }
 
-                        result->add(plist);
+                        result->emplace(plist);
                         break;
                     }
                     case TOKEN_KW_NULL:
-                        result->add(new object::null_t());
+                        result->emplace(new SON::Null());
                         it.next();
                         break;
                     case TOKEN_KW_TRUE:
-                        result->add(new object::boolean_t(true));
+                        result->emplace(new SON::Boolean(true));
                         it.next();
                         break;
                     case TOKEN_KW_FALSE:
-                        result->add(new object::boolean_t(false));
+                        result->emplace(new SON::Boolean(false));
                         it.next();
                         break;
                     case TOKEN_INTEGER:
-                        result->add(new object::integer_t(t->value.integer));
+                        result->emplace(new SON::Integer(t->value.integer));
                         it.next();
                         break;
                     case TOKEN_FLOATING:
-                        result->add(new object::floating_t(t->value.floating));
+                        result->emplace(new SON::Floating(t->value.floating));
                         it.next();
                         break;
                     case TOKEN_STRING:
-                        result->add(new object::string_t(std::string(t->begin + 1, t->length - 2)));
+                        result->emplace(new SON::String(std::string(t->begin + 1, t->length - 2)));
                         it.next();
                         break;
                     default:
@@ -1005,6 +1006,7 @@ struct parser_t {
 void object_parser::initialize (const char* text, size_t size) {
     auto* parser = new parser_t();
     parser->initialize(text, size);
+    parser->verbose = verbose;
     impl = (void*)parser;
 }
 
@@ -1015,7 +1017,7 @@ void object_parser::terminate () {
 }
 
 
-object::object_t* object_parser::parse () {
+SON::IValue* object_parser::parse () {
     auto* parser = (parser_t*) impl;
 
     return parser->parse();
