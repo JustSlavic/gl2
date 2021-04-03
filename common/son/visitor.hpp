@@ -387,46 +387,4 @@ methods:
 };
 
 
-struct VisitorIntoJson : public IVisitor {
-    using Super = IVisitor;
-
-    virtual void visit (IValue* value) override {
-        Super::visit(value);
-    }
-
-    virtual void visit (const std::string&, IValue* value) override {
-        printf("kv_pair\n");
-    }
-
-    virtual void visit (Null*) override {
-        printf("null\n");
-    }
-
-    virtual void visit (Boolean*) override {
-        printf("boolean\n");
-    }
-
-    virtual void visit (Integer*) override {
-        printf("integer\n");
-    }
-
-    virtual void visit (Floating*) override {
-        printf("floating\n");
-    }
-
-    virtual void visit (String*) override {
-        printf("string\n");
-    }
-
-    virtual void visit (Object*) override {
-        printf("object\n");
-    }
-
-    virtual void visit (List*) override {
-        printf("list\n");
-    }
-
-};
-
-
 } // SON
