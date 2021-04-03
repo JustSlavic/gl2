@@ -634,6 +634,7 @@ struct parser_t {
     struct error_t {
         char message[256] = {0};
         size_t length = 0;
+        bool critical = true;
     };
 
 #define eprintf(ERROR, ...) \
@@ -716,33 +717,37 @@ struct parser_t {
             return nullptr;
         }
 
-        auto* object = new SON::Object();
-        if (parse_object(object, true)) {
-            return object;
+        SON::IValue* result = nullptr;
+
+        result = parse_object(true);
+        if (result) {
+            return result;
         }
 
-        delete object;
+        if (not error_stack.top().critical) {
+            error_stack = std::stack<error_t>();
+            
+            result = parse_list_of_things(true);
 
-        auto* list = new SON::List();
-        if (parse_list_of_things(list, true)) {
-            return list;
+            if (result) {
+                return result;
+            }
         }
 
-        delete list;
-
-        // while (error_stack.size() > 0) {
-        error_t error = error_stack.top();
-        error_stack.pop();
-
-        printf("%.*s\n", (int)error.length, error.message);
-        // }
+        while (not error_stack.empty()) {
+            error_t error = error_stack.top();
+            error_stack.pop();
+            
+            printf("%.*s\n", (int)error.length, error.message);
+        }
 
         return nullptr;
     }
 
-    bool parse_object (SON::Object* result, bool top_level = false) {
+    SON::Object* parse_object (bool top_level = false) {
         iterator checkpoint = it;
         bool have_open_brace = false;
+        SON::Object* result = new SON::Object();
 
         {
             token* t = it.get();
@@ -752,20 +757,19 @@ struct parser_t {
                     (t->kind == TOKEN_IDENTIFIER and top_level)))
             {
                 error_t error;
+                error.critical = false;
                 eprintf(error, "%s:%lu:%lu: error: '{' expected, found %s ’%.*s’\n",
                     filename,
                     t->line_number, t->char_number, to_string(t->kind), (int)t->length, t->begin);
                 highlight_token(t, &error);
                 error_stack.push(error);
 
-                return false; // This is definetely not an object!
+                delete result;
+                return nullptr; // This is definetely not an object!
             }
 
             have_open_brace = t->kind == TOKEN_BRACE_OPEN;
-        }
 
-        {
-            token* t = it.get();
             if (t->kind == TOKEN_BRACE_OPEN) {
                 it.next();
             }
@@ -794,7 +798,8 @@ struct parser_t {
                 error_stack.push(error);
 
                 it = checkpoint;
-                return false;
+                delete result;
+                return nullptr;
             }
 
             if (top_level and not have_open_brace and t->kind != TOKEN_EOF) {
@@ -806,7 +811,8 @@ struct parser_t {
                 error_stack.push(error);
 
                 it = checkpoint;
-                return false;
+                delete result;
+                return nullptr;
             }
 
             if (not top_level and not have_open_brace) {
@@ -822,7 +828,8 @@ struct parser_t {
                 error_stack.push(error);
 
                 it = checkpoint;
-                return false;
+                delete result;
+                return nullptr;
             }
 
             if (t->kind == TOKEN_BRACE_CLOSE) {
@@ -830,10 +837,10 @@ struct parser_t {
             }
         }
 
-        return true;
+        return result;
     }
 
-    bool parse_key_value_pair (SON::Object* object, bool top_level = false) {
+    bool parse_key_value_pair (SON::Object* result, bool top_level = false) {
         iterator checkpoint = it;
 
         token* key = nullptr;
@@ -855,6 +862,7 @@ struct parser_t {
 
             if (t->kind != TOKEN_IDENTIFIER) {
                 error_t error;
+                error.critical = false;
                 eprintf(error, "%s:%lu:%lu: error: expected identifier, but found %s ’%.*s’\n",
                     filename,
                     t->line_number, t->char_number, to_string(t->kind), (int)t->length, t->begin);
@@ -943,7 +951,7 @@ struct parser_t {
                 case TOKEN_BRACKET_OPEN: {
                     auto* list = new SON::List();
 
-                    bool successful = parse_list_of_things(list);
+                    bool successful = parse_list_of_things();
 
                     if (not successful) {
                         error_t error;
@@ -978,14 +986,14 @@ struct parser_t {
         }
 
         // We reached the end, it's all good.
-        object->emplace(std::string(key->begin, key->length), value);
+        result->emplace(std::string(key->begin, key->length), value);
         return true;
     }
 
-    bool parse_list_of_things (SON::List* result, bool top_level = false) {
-        ASSERT(result);
+    SON::List* parse_list_of_things (bool top_level = false) {
         iterator checkpoint = it;
 
+        SON::List* result = new SON::List();
         token* t_bracket_open = nullptr;
         bool have_open_bracket = false;
 
@@ -1001,7 +1009,8 @@ struct parser_t {
                 highlight_token(t, &error);
                 error_stack.push(error);
 
-                return false;
+                delete result;
+                return nullptr;
             }
 
             have_open_bracket = t->kind == TOKEN_BRACKET_OPEN;
@@ -1010,7 +1019,7 @@ struct parser_t {
                 it.next();
             }
         }
-
+middle:
         do {
             {
                 token* t = it.get();
@@ -1031,7 +1040,8 @@ struct parser_t {
                         if (not successful) {
                             it = checkpoint;
                             delete obj;
-                            return false;
+                            delete result;
+                            return nullptr;
                         }
 
                         // add obj to list
@@ -1040,16 +1050,15 @@ struct parser_t {
                     }
                     case TOKEN_BRACKET_OPEN: {
                         // This is a nested list
-                        SON::List* plist = new SON::List();
+                        SON::List* p_list = parse_list_of_things();
 
-                        bool successful = parse_list_of_things(plist);
-                        if (not successful) {
+                        if (p_list == nullptr) {
                             it = checkpoint;
-                            delete plist;
-                            return false;
+                            delete result;
+                            return nullptr;
                         }
 
-                        result->emplace(plist);
+                        result->emplace(p_list);
                         break;
                     }
                     default:
@@ -1072,8 +1081,8 @@ struct parser_t {
                         error_stack.push(error);
 
                         it = checkpoint;
-                        return false;
-                        break;
+                        delete result;
+                        return nullptr;
                 }
             }
 
@@ -1114,7 +1123,8 @@ struct parser_t {
                 error_stack.push(error);
 
                 it = checkpoint;
-                return false;
+                delete result;
+                return nullptr;
             }
             else if (have_open_bracket and t->kind != TOKEN_BRACKET_CLOSE) {
                 error_t error;
@@ -1137,22 +1147,23 @@ struct parser_t {
                 error_stack.push(error);
 
                 it = checkpoint;
-                return false;
+                delete result;
+                return nullptr;
             }
         }
 
         {
             token* t = it.get();
-            if (t->kind != TOKEN_EOF) {
+            if (t->kind != TOKEN_EOF and top_level) {
                 auto* top_level_list = new SON::List();
                 top_level_list->emplace(result);
                 result = top_level_list;
-                printf("Hmm this is not how it's should work\n");
-                parse_list_of_things(result, true);
+                have_open_bracket = false;
+                goto middle; // @FIX BAD BAD BAD!!!
             }
         }
 
-        return true;
+        return result;
     }
 };
 
