@@ -127,13 +127,15 @@ int main (int argc, char** argv) {
         printer->multiline = args.multiline;
         printer->multiline_auto = args.multiline_auto;
         printer->use_separator = args.use_separator;
-        // printer->visit(result);
+        printer->visit(result);
 
         auto* scheme_visitor = new SON::VisitorIntoScheme();
         scheme_visitor->visit(result);
 
+        FILE* output = fopen("config.scheme.son", "w");
+        printer->output = output;
         printer->visit(scheme_visitor->scheme);
-        printf("\n");
+        fclose(output);
     }
     
     parser.terminate();

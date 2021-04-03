@@ -45,6 +45,7 @@ struct VisitorPrint : public IVisitor {
         STATUS_IN_LIST,
     };
 
+    FILE* output = stdout;
     const char* spaces = "                                                  "; // 50 spaces
     const int max_spaces = 50;
     
@@ -62,11 +63,11 @@ struct VisitorPrint : public IVisitor {
 
 methods:
 #define print_(...) \
-    { printf(__VA_ARGS__); new_lined = false; } void(0)
+    { fprintf(output, __VA_ARGS__); new_lined = false; } void(0)
 
     inline void new_line () {
         if (multiline) {
-            printf("\n");
+            fprintf(output, "\n");
             new_lined = true;
         }
     }
