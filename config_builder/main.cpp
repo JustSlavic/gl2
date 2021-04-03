@@ -108,18 +108,40 @@ int main (int argc, char** argv) {
 
     const size_t capacity = 10000;
     char* buffer = (char*)calloc(capacity, sizeof(char));
-    size_t size = read_file(args.input_filename, buffer, capacity);
 
-    SON::Parser parser;
-    parser.verbose = args.verbose;
-    parser.initialize(buffer, size, args.input_filename);
+    SON::IValue* config = nullptr;
+    SON::IValue* scheme = nullptr;
+    SON::IValue* saved_scheme = nullptr;
+    {
+        size_t size = read_file(args.input_filename, buffer, capacity);
 
-    auto* result = parser.parse();
-    if (result == nullptr) {
+        SON::Parser parser;
+        parser.verbose = args.verbose;
+        parser.initialize(buffer, size, args.input_filename);
+
+        config = parser.parse();
+        if (config == nullptr) {
+            parser.terminate();
+            free(buffer);
+            return 1;
+        }
+
+        memset(buffer, 0, capacity);
+
+        size = read_file("config.scheme.son", buffer, capacity);
+        parser.initialize(buffer, size, "config.scheme.son");
+
+        saved_scheme = parser.parse();
+        if (saved_scheme == nullptr) {
+            parser.terminate();
+            free(buffer);
+            return 1;
+        }
+
         parser.terminate();
-        free(buffer);
-        return 1;
     }
+ 
+    free(buffer);
 
     if (args.print_content) {
         auto* printer = new SON::VisitorPrint();
@@ -127,20 +149,35 @@ int main (int argc, char** argv) {
         printer->multiline = args.multiline;
         printer->multiline_auto = args.multiline_auto;
         printer->use_separator = args.use_separator;
-        printer->visit(result);
+        
+
+        printf("============= CONFIG =============\n");
+        printer->visit(config);
+
+        printf("\n==================================\n\n"
+               "============= SCHEME =============\n");
+
 
         auto* scheme_visitor = new SON::VisitorIntoScheme();
-        scheme_visitor->visit(result);
+        scheme_visitor->visit(config);
 
-        FILE* output = fopen("config.scheme.son", "w");
-        printer->output = output;
         printer->visit(scheme_visitor->scheme);
-        fclose(output);
+
+        printf("\n==================================\n\n"
+               "========== SAVED SCHEME ==========\n");
+
+        printer->visit(saved_scheme);
+
+        printf("\n==================================\n\n");
+
+        printf("THEY ARE EQUAL ? : %s\n", scheme_visitor->scheme->equal_to(saved_scheme) ? "true" : "false");
+
+        auto* cpp_visitor = new SON::VisitorIntoCpp();
     }
     
-    parser.terminate();
-    free(buffer);
 
-    delete result;
+    delete config;
+    delete scheme;
+    delete saved_scheme;
     return 0;
 }

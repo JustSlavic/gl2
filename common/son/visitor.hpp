@@ -292,11 +292,12 @@ methods:
 struct VisitorIntoScheme : public IVisitor {
     using Super = IVisitor;
 
-    List* scheme = nullptr;
+    Object* scheme = nullptr;
+    List* values = nullptr;
+
+    bool in_list = false;
 
 methods:
-    // VisitorIntoScheme () : scheme(new List()) {} 
-
     virtual void visit (IValue* value) override {
         Super::visit(value);
     }
@@ -304,13 +305,11 @@ methods:
     inline void visit_value (IValue* value) {
         if (not value) return;
 
-        String* kind = new String(to_string(value->get_kind()));
+        Object* entry = new Object();
+        entry->emplace("key", new Null());
+        entry->emplace("type", new String(to_string(value->get_kind())));
 
-        if (not scheme) {
-            scheme = new List();
-        }
-
-        scheme->emplace(kind);
+        values->emplace(entry);
     }
 
     virtual void visit (Null* value)     override { visit_value(value); }
@@ -321,6 +320,7 @@ methods:
 
     virtual void visit (const std::string& key, IValue* value) override {
         if (not value) return;
+        if (not values) return;
 
         IValue::Kind kind = value->get_kind();
 
@@ -328,17 +328,20 @@ methods:
         entry->emplace("key", new String(key));
         entry->emplace("type", new String(to_string(kind)));
 
-        if (kind == IValue::VALUE_OBJECT || kind == IValue::VALUE_LIST) {
-            List* upper = scheme;
-            scheme = new List();
+        if (kind == IValue::VALUE_OBJECT or kind == IValue::VALUE_LIST) {
+            Object* upper_scheme = scheme;
+            List* upper_values = values;
+            values = new List();
 
+            in_list = true;
             value->visit(this);
 
-            entry->emplace("values", scheme);
-            scheme = upper;
+            entry->emplace("values", values);
+            values = upper_values;
+            scheme = upper_scheme;
         }
 
-        scheme->emplace(entry);
+        values->emplace(entry);
     }
 
     virtual void visit (Object* value) override {
@@ -348,19 +351,22 @@ methods:
         entry->emplace("key", new Null());
         entry->emplace("type", new String(to_string(value->get_kind())));
 
-        List* upper = scheme;
-        scheme = new List();
+        bool upper_in_list = in_list;
+        in_list = false;
+        List* upper_values = values;
+        values = new List();
 
         value->visit(this);
 
-        entry->emplace("values", scheme);
-        scheme = upper;
+        entry->emplace("values", values);
+        values = upper_values;
+        in_list = upper_in_list;
 
-        if (not scheme) {
-            scheme = new List();
+        if (in_list) {
+            values->emplace(entry);
+        } else {
+            scheme = entry;
         }
-
-        scheme->emplace(entry);
     }
 
     virtual void visit (List* value) override {
@@ -370,19 +376,83 @@ methods:
         entry->emplace("key", new Null());
         entry->emplace("type", new String(to_string(value->get_kind())));
 
-        List* upper = scheme;
-        scheme = new List();
+        bool upper_in_list = in_list;
+        in_list = true;
+
+        List* upper_values = values;
+        values = new List();
 
         value->visit(this);
 
-        entry->emplace("values", scheme);
-        scheme = upper;
+        entry->emplace("values", values);
 
-        if (not scheme) {
-            scheme = new List();
+        values = upper_values;
+        in_list = upper_in_list;
+
+        if (in_list) {
+            values->emplace(entry);
+        } else {
+            scheme = entry;
         }
+    }
+};
 
-        scheme->emplace(entry);
+
+struct VisitorIntoCpp : public IVisitor {
+    using Super = IVisitor;
+
+    bool multiline = true;
+
+    int indent_size = 2;
+    int depth = 0;
+
+    FILE* output = stdout;
+    const char* spaces = "                                                  "; // 50 spaces
+    const int max_spaces = 50;
+
+    bool new_lined = false;
+
+methods:
+#define print_(...) \
+    { fprintf(output, __VA_ARGS__); new_lined = false; } void(0)
+
+    inline void new_line () {
+        if (multiline) {
+            fprintf(output, "\n");
+            new_lined = true;
+        }
+    }
+
+    inline void indent () {
+        if (multiline and new_lined) {
+            print_("%.*s", depth * indent_size > max_spaces ? max_spaces : depth * indent_size, spaces);
+        }
+    }
+
+    void visit (IValue* value) override {
+        Super::visit(value);
+    }
+
+    void visit (Null* value)     override { print_("nullptr"); }
+    void visit (Boolean* value)  override { print_("%s", value->value ? "true" : "false"); }
+    void visit (Integer* value)  override { print_("%ld", value->value); }
+    void visit (Floating* value) override { print_("%lf", value->value); }
+    void visit (String* value)   override { print_("%s", value->value.c_str()); }
+
+    void visit (const std::string& key, IValue* value) override {  }
+
+    void visit (Object* value) override {
+        indent();
+        print_("struct {");
+        depth += 1;
+        value->visit(this);
+        depth -= 1;
+        print_("};");
+    }
+
+    void visit (List* value) override {
+        print_("??? HOW TO DO LIST ???");
+        // value->visit(this);
     }
 };
 

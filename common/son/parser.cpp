@@ -632,7 +632,7 @@ struct parser_t {
     iterator it;
 
     struct error_t {
-        char message[256] = {0};
+        char message[512] = {0};
         size_t length = 0;
         bool critical = true;
     };
@@ -945,11 +945,9 @@ struct parser_t {
                     break;
                 }
                 case TOKEN_BRACKET_OPEN: {
-                    auto* list = new SON::List();
+                    auto* list = parse_list_of_things();
 
-                    bool successful = parse_list_of_things();
-
-                    if (not successful) {
+                    if (list == nullptr) {
                         error_t error;
                         eprintf(error, "%s:%lu:%lu: error: value is expected, found %s ’%.*s’\n",
                             filename,
@@ -1054,6 +1052,8 @@ middle:
                         result->emplace(p_list);
                         break;
                     }
+                    case TOKEN_BRACKET_CLOSE: // If empty list
+                        break;
                     default:
                         error_t error;
                         eprintf(error, "%s:%lu:%lu: error: ’]’ is expected, found %s ’%.*s’\n",
