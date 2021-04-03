@@ -726,7 +726,7 @@ struct parser_t {
 
         if (not error_stack.top().critical) {
             error_stack = std::stack<error_t>();
-            
+
             result = parse_list_of_things(true);
 
             if (result) {
@@ -927,19 +927,15 @@ struct parser_t {
                 case TOKEN_FLOATING: value = new SON::Floating(t->value.floating); it.next(); break;
                 case TOKEN_STRING: value = new SON::String(std::string(t->begin + 1, t->length - 2)); it.next(); break;
                 case TOKEN_BRACE_OPEN: {
-                    auto* object = new SON::Object();
+                    auto* object = parse_object();
 
-                    bool successful = parse_object(object);
-
-                    if (not successful) {
+                    if (object == nullptr) {
                         error_t error;
                         eprintf(error, "%s:%lu:%lu: error: value is expected, found %s ’%.*s’\n",
                             filename,
                             t->line_number, t->char_number, to_string(t->kind), (int)t->length, t->begin);
                         highlight_token(t, &error);
                         error_stack.push(error);
-
-                        delete object;
 
                         it = checkpoint;
                         return false;
@@ -1034,18 +1030,15 @@ middle:
                     case TOKEN_STRING: result->emplace(new SON::String(std::string(t->begin + 1, t->length - 2))); it.next(); break;
                     case TOKEN_BRACE_OPEN: {
                         // This is an object
-                        SON::Object* obj = new SON::Object();
+                        auto* object = parse_object();
 
-                        bool successful = parse_object(obj);
-                        if (not successful) {
+                        if (object == nullptr) {
                             it = checkpoint;
-                            delete obj;
                             delete result;
                             return nullptr;
                         }
 
-                        // add obj to list
-                        result->emplace(obj);
+                        result->emplace(object);
                         break;
                     }
                     case TOKEN_BRACKET_OPEN: {
