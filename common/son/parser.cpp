@@ -159,9 +159,9 @@ void print (token t) {
         case TOKEN_DOUBLE_SLASH:
             printf("//; }\n");
             break;
+        default:
+            printf("??? }\n");
     }
-
-    printf("??? }\n");
 }
 
 
@@ -588,8 +588,8 @@ struct lexer {
                 printf("%s:%lu:%lu: error: unknown lexeme ’%.*s’\n", filename, checkpoint.line_counter, checkpoint.char_counter, (int)result.length, result.start);
 
                 auto line = r->get_line();
-                printf("   %lu |%.*s\n", checkpoint.line_counter, (int)line.length, line.start);
-                printf("   %.*s |%.*s%.*s\n", 
+                printf("   %lu | %.*s\n", checkpoint.line_counter, (int)line.length, line.start);
+                printf("   %.*s | %.*s%.*s\n", 
                     (int)(digits_in_number(checkpoint.line_counter)), spaces,
                     (int)(checkpoint.current - line.start), spaces,
                     (int)result.length, carets);
@@ -620,13 +620,6 @@ struct lexer {
 
 // ======================================================== //
 
-void highlight_token (token* t) {
-    printf("   %lu |%.*s\n", t->line_number, (int)t->line.length, t->line.start);
-    printf("   %.*s |%.*s%.*s\n", 
-        (int)(digits_in_number(t->line_number)), spaces,
-        (int)(t->begin - t->line.start), spaces,
-        (int)(t->length), carets);
-}
 
 
 struct parser_t {
@@ -639,8 +632,43 @@ struct parser_t {
     iterator it;
 
     struct error_t {
-        char message[200];
+        char message[256] = {0};
+        size_t length = 0;
     };
+
+#define eprintf(ERROR, ...) \
+    if ((ERROR).length > 0) \
+        (ERROR).length += sprintf((ERROR).message + (ERROR).length, __VA_ARGS__); \
+    else \
+        (ERROR).length = sprintf((ERROR).message, __VA_ARGS__); \
+    (void)0
+
+    void highlight_token (token* t) {
+        printf("   %lu |%.*s\n", t->line_number, (int)t->line.length, t->line.start);
+        printf("   %.*s |%.*s%.*s\n", 
+            (int)(digits_in_number(t->line_number)), spaces,
+            (int)(t->begin - t->line.start), spaces,
+            (int)(t->length), carets);
+    }
+
+
+    void highlight_token (token* t, char* buffer) {
+        int n = 0;
+        n += sprintf(buffer + n, "   %lu |%.*s\n", t->line_number, (int)t->line.length, t->line.start);
+        n += sprintf(buffer + n, "   %.*s |%.*s%.*s\n", 
+            (int)(digits_in_number(t->line_number)), spaces,
+            (int)(t->begin - t->line.start), spaces,
+            (int)(t->length), carets);
+    }
+
+    void highlight_token (token* t, error_t* e) {
+        eprintf(*e, "   %lu | %.*s\n", t->line_number, (int)t->line.length, t->line.start);
+        eprintf(*e, "   %.*s | %.*s%.*s\n", 
+            (int)(digits_in_number(t->line_number)), spaces,
+            (int)(t->begin - t->line.start), spaces,
+            (int)(t->length), carets);
+    }
+
 
     std::stack<error_t> error_stack;
 
@@ -670,38 +698,11 @@ struct parser_t {
             return nullptr;
         }
 
-        auto* result = new SON::Object();
-        bool good = false;
-
         it = iterator_make(tokens);
-        while (it) {
-            token* t = it.get();
+        SON::IValue* result = parse_something(it);
 
-            if (t->kind == TOKEN_EOF) {
-                if (verbose) printf("Reached EOF!\n");
-                good = true;
-                break;
-            }
-
-            bool successful = parse_object(result);
-            if (not successful) {
-                if (error_stack.empty()) {
-                    printf("Could not parse object!\n");
-                } else {
-                    auto error = error_stack.top();
-                    error_stack.pop();
-
-                    printf("%s", error.message);
-                }
-                break;
-            }
-        }
-
-        if (good) {
-            if (verbose) printf("Parsing successful\n");
-        } else {
-            delete result;
-            result = nullptr;
+        if (result and verbose) {
+            printf("Parsing successful\n");
         }
 
         l.terminate();
@@ -710,62 +711,156 @@ struct parser_t {
         return result;
     }
 
-    bool parse_object (SON::Object* result) {
+    SON::IValue* parse_something (iterator it) {
+        if (not it) {
+            return nullptr;
+        }
+
+        auto* object = new SON::Object();
+        if (parse_object(object, true)) {
+            return object;
+        }
+
+        delete object;
+
+        auto* list = new SON::List();
+        if (parse_list_of_things(list, true)) {
+            return list;
+        }
+
+        delete list;
+
+        // while (error_stack.size() > 0) {
+        error_t error = error_stack.top();
+        error_stack.pop();
+
+        printf("%.*s\n", (int)error.length, error.message);
+        // }
+
+        return nullptr;
+    }
+
+    bool parse_object (SON::Object* result, bool top_level = false) {
         iterator checkpoint = it;
+        bool have_open_brace = false;
 
         {
             token* t = it.get();
-            if (t == nullptr || t->kind != TOKEN_BRACE_OPEN) {
-                printf("%s:%lu:%lu: error: '{' expected, found %s ’%.*s’\n",
+            ASSERT(t);
+
+            if (not (t->kind == TOKEN_BRACE_OPEN or
+                    (t->kind == TOKEN_IDENTIFIER and top_level)))
+            {
+                error_t error;
+                eprintf(error, "%s:%lu:%lu: error: '{' expected, found %s ’%.*s’\n",
                     filename,
                     t->line_number, t->char_number, to_string(t->kind), (int)t->length, t->begin);
-                highlight_token(t);
+                highlight_token(t, &error);
+                error_stack.push(error);
 
-                it = checkpoint;
-                return false;
+                return false; // This is definetely not an object!
             }
-        }
 
-        it.next();
-
-        {
-            bool successful;
-            do {
-                successful = parse_key_value_pair(result);
-            } while (successful);
+            have_open_brace = t->kind == TOKEN_BRACE_OPEN;
         }
 
         {
             token* t = it.get();
-            if (t == nullptr || t->kind != TOKEN_BRACE_CLOSE) {
-                it = checkpoint;
-                return false;
+            if (t->kind == TOKEN_BRACE_OPEN) {
+                it.next();
             }
         }
 
-        it.next();
+        {    
+            do {
+                token* t = it.get();
+                ASSERT(t);
+
+                if (t->kind != TOKEN_IDENTIFIER) break;
+                if (not parse_key_value_pair(result, top_level)) break;
+            } while (true);
+        }
+
+        {
+            token* t = it.get();
+            ASSERT(t);
+
+            if (top_level and have_open_brace and t->kind != TOKEN_BRACE_CLOSE) {
+                error_t error;
+                eprintf(error, "%s:%lu:%lu: error: '}' expected, found %s ’%.*s’\n",
+                    filename,
+                    t->line_number, t->char_number, to_string(t->kind), (int)t->length, t->begin);
+                highlight_token(t, &error);
+                error_stack.push(error);
+
+                it = checkpoint;
+                return false;
+            }
+
+            if (top_level and not have_open_brace and t->kind != TOKEN_EOF) {
+                error_t error;
+                eprintf(error, "%s:%lu:%lu: error: expected EOF (end of naked top level object), but found %s ’%.*s’\n",
+                    filename,
+                    t->line_number, t->char_number, to_string(t->kind), (int)t->length, t->begin);
+                highlight_token(t, &error);
+                error_stack.push(error);
+
+                it = checkpoint;
+                return false;
+            }
+
+            if (not top_level and not have_open_brace) {
+                ASSERT(false); // I don't know is this even possible
+            }
+
+            if (have_open_brace and t->kind != TOKEN_BRACE_CLOSE) {
+                error_t error;
+                eprintf(error, "%s:%lu:%lu: error: '}' expected, found %s ’%.*s’\n",
+                    filename,
+                    t->line_number, t->char_number, to_string(t->kind), (int)t->length, t->begin);
+                highlight_token(t, &error);
+                error_stack.push(error);
+
+                it = checkpoint;
+                return false;
+            }
+
+            if (t->kind == TOKEN_BRACE_CLOSE) {
+                it.next(); // Consume '}'
+            }
+        }
+
         return true;
     }
 
-    bool parse_key_value_pair (SON::Object* object) {
+    bool parse_key_value_pair (SON::Object* object, bool top_level = false) {
         iterator checkpoint = it;
 
         token* key = nullptr;
         SON::IValue* value = nullptr;
 
         {
-            // 1. Identifier
             token* t = it.get();
-            if (t == nullptr || t->kind != TOKEN_IDENTIFIER) {
-                if (t->kind != TOKEN_BRACE_CLOSE) {
-                    // error_t error;
-                    printf("%s:%lu:%lu: error: identifier expected, found ’%s’\n",
-                        filename,
-                        t->line_number, t->char_number, to_string(t->kind));
-                    highlight_token(t);
-                }
+            ASSERT(t);
 
-                it = checkpoint;
+            if (top_level and t->kind == TOKEN_EOF) {
+                // Return without errors
+                return false;
+            }
+
+            if (not top_level and t->kind == TOKEN_BRACE_CLOSE) {
+                // Return without errors
+                return false;
+            }
+
+            if (t->kind != TOKEN_IDENTIFIER) {
+                error_t error;
+                eprintf(error, "%s:%lu:%lu: error: expected identifier, but found %s ’%.*s’\n",
+                    filename,
+                    t->line_number, t->char_number, to_string(t->kind), (int)t->length, t->begin);
+                highlight_token(t, &error);
+                error_stack.push(error);
+
                 return false;
             }
 
@@ -774,104 +869,111 @@ struct parser_t {
         }
 
         {
-            // 2. Equal sign
             token* t = it.get();
-            if (t == nullptr || t->kind != TOKEN_EQUAL_SIGN) {
-                printf("%s:%lu:%lu: error: '=' expected, found ’%.*s’\n",
+            ASSERT(t);
+
+            if (t->kind != TOKEN_EQUAL_SIGN) {
+                error_t error;
+                eprintf(error, "%s:%lu:%lu: error: expected ’=’, but found %s ’%.*s’\n",
                     filename,
-                    t->line_number, t->char_number, (int)t->length, t->begin);
-                highlight_token(t);
+                    t->line_number, t->char_number, to_string(t->kind), (int)t->length, t->begin);
+                highlight_token(t, &error);
+                error_stack.push(error);
 
                 it = checkpoint;
                 return false;
             }
+
             it.next();
         }
 
         {
-            // 3. Value
             token* t = it.get();
-            if (t == nullptr || (
-                t->kind != TOKEN_KW_NULL &&
+            ASSERT(t);
+
+            if (t->kind != TOKEN_KW_NULL &&
                 t->kind != TOKEN_KW_TRUE &&
                 t->kind != TOKEN_KW_FALSE &&
                 t->kind != TOKEN_INTEGER &&
                 t->kind != TOKEN_FLOATING &&
                 t->kind != TOKEN_STRING &&
-                t->kind != TOKEN_BRACE_OPEN &&
-                t->kind != TOKEN_BRACKET_OPEN))
+                t->kind != TOKEN_BRACE_OPEN && // List
+                t->kind != TOKEN_BRACKET_OPEN) // Object
             {
-                printf("%s:%lu:%lu: error: value is expected, found ’%.*s’\n",
+                error_t error;
+                eprintf(error, "%s:%lu:%lu: error: value is expected, found ’%.*s’\n",
                     filename,
                     t->line_number, t->char_number, (int)t->length, t->begin);
-                highlight_token(t);
+                highlight_token(t, &error);
+                error_stack.push(error);
 
                 it = checkpoint;
                 return false;
             }
 
-            // In case if value is an object
-            if (t->kind == TOKEN_BRACE_OPEN) {
-                auto* object = new SON::Object();            
-                bool successful = parse_object(object);
-                if (not successful) {
-                    printf("%s:%lu:%lu: error: value is expected, found ’%.*s’\n",
-                        filename,
-                        t->line_number, t->char_number, (int)t->length, t->begin);
-                    highlight_token(t);
+            switch (t->kind) {
+                case TOKEN_KW_NULL: value = new SON::Null(); it.next(); break;
+                case TOKEN_KW_TRUE: value = new SON::Boolean(true); it.next(); break;
+                case TOKEN_KW_FALSE: value = new SON::Boolean(false); it.next(); break;
+                case TOKEN_INTEGER: value = new SON::Integer(t->value.integer); it.next(); break;
+                case TOKEN_FLOATING: value = new SON::Floating(t->value.floating); it.next(); break;
+                case TOKEN_STRING: value = new SON::String(std::string(t->begin + 1, t->length - 2)); it.next(); break;
+                case TOKEN_BRACE_OPEN: {
+                    auto* object = new SON::Object();
 
-                    it = checkpoint;
-                    delete object;
-                    return false;
+                    bool successful = parse_object(object);
+
+                    if (not successful) {
+                        error_t error;
+                        eprintf(error, "%s:%lu:%lu: error: value is expected, found %s ’%.*s’\n",
+                            filename,
+                            t->line_number, t->char_number, to_string(t->kind), (int)t->length, t->begin);
+                        highlight_token(t, &error);
+                        error_stack.push(error);
+
+                        delete object;
+
+                        it = checkpoint;
+                        return false;
+                    }
+
+                    value = object;
+                    break;
                 }
+                case TOKEN_BRACKET_OPEN: {
+                    auto* list = new SON::List();
 
-                value = object;
-            } else if (t->kind == TOKEN_BRACKET_OPEN) {
-                auto* list = new SON::List();
-                bool successful = parse_list_of_things(list);
-                if (not successful) {
-                    it = checkpoint;
-                    delete list;
-                    return false;
+                    bool successful = parse_list_of_things(list);
+
+                    if (not successful) {
+                        error_t error;
+                        eprintf(error, "%s:%lu:%lu: error: value is expected, found %s ’%.*s’\n",
+                            filename,
+                            t->line_number, t->char_number, to_string(t->kind), (int)t->length, t->begin);
+                        highlight_token(t, &error);
+                        error_stack.push(error);
+
+                        delete list;
+
+                        it = checkpoint;
+                        return false;
+                    }
+
+                    value = list;
+                    break;
                 }
-
-                value = list;
-            } else {
-                switch (t->kind) {
-                    case TOKEN_IDENTIFIER:
-                    case TOKEN_STRING:
-                        value = new SON::String(std::string(t->begin + 1, t->length - 2));
-                        break;
-                    case TOKEN_INTEGER:
-                        value = new SON::Integer(t->value.integer);
-                        break;
-                    case TOKEN_FLOATING:
-                        value = new SON::Floating(t->value.floating);
-                        break;
-                    case TOKEN_KW_NULL:
-                        value = new SON::Null();
-                        break;
-                    case TOKEN_KW_TRUE:
-                        value = new SON::Boolean(true);
-                        break;
-                    case TOKEN_KW_FALSE:
-                        value = new SON::Boolean(false);
-                        break;
-                    default:
-                        ASSERT(false);
-                }
-
-                it.next();
+                default: ASSERT(false);
             }
         }
 
         {
-            // 4. Semicolon
             token* t = it.get();
-            if (t == nullptr || t->kind != TOKEN_SEMICOLON) {
-                // Semicolon is optional.
-            } else {
+            ASSERT(t);
+
+            if (t->kind == TOKEN_SEMICOLON) {
                 it.next(); // Skip semicolon.
+            } else {
+                // Semicolon is optional.
             }
         }
 
@@ -880,19 +982,33 @@ struct parser_t {
         return true;
     }
 
-    bool parse_list_of_things (SON::List* result) {
+    bool parse_list_of_things (SON::List* result, bool top_level = false) {
+        ASSERT(result);
         iterator checkpoint = it;
 
         token* t_bracket_open = nullptr;
+        bool have_open_bracket = false;
+
         {
             token* t = it.get();
-            if (t == nullptr || t->kind != TOKEN_BRACKET_OPEN) {
-                it = checkpoint;
+            ASSERT(t);
+
+            if (t->kind != TOKEN_BRACKET_OPEN and not top_level) {
+                error_t error;
+                eprintf(error, "%s:%lu:%lu: error: ’[’ is expected, found %s ’%.*s’\n",
+                    filename,
+                    t->line_number, t->char_number, to_string(t->kind), (int)t->length, t->begin);
+                highlight_token(t, &error);
+                error_stack.push(error);
+
                 return false;
             }
 
-            t_bracket_open = t;
-            it.next();
+            have_open_bracket = t->kind == TOKEN_BRACKET_OPEN;
+            if (have_open_bracket) {
+                t_bracket_open = t;
+                it.next();
+            }
         }
 
         do {
@@ -900,12 +1016,13 @@ struct parser_t {
                 token* t = it.get();
                 ASSERT(t);
 
-                if (t->kind == TOKEN_BRACKET_CLOSE) {
-                    break;
-                }
-
                 switch (t->kind) {
-                    case TOKEN_BRACKET_CLOSE: break;
+                    case TOKEN_KW_NULL: result->emplace(new SON::Null()); it.next(); break;
+                    case TOKEN_KW_TRUE: result->emplace(new SON::Boolean(true)); it.next(); break;
+                    case TOKEN_KW_FALSE: result->emplace(new SON::Boolean(false)); it.next(); break;
+                    case TOKEN_INTEGER: result->emplace(new SON::Integer(t->value.integer)); it.next(); break;
+                    case TOKEN_FLOATING: result->emplace(new SON::Floating(t->value.floating)); it.next(); break;
+                    case TOKEN_STRING: result->emplace(new SON::String(std::string(t->begin + 1, t->length - 2))); it.next(); break;
                     case TOKEN_BRACE_OPEN: {
                         // This is an object
                         SON::Object* obj = new SON::Object();
@@ -935,76 +1052,104 @@ struct parser_t {
                         result->emplace(plist);
                         break;
                     }
-                    case TOKEN_KW_NULL:
-                        result->emplace(new SON::Null());
-                        it.next();
-                        break;
-                    case TOKEN_KW_TRUE:
-                        result->emplace(new SON::Boolean(true));
-                        it.next();
-                        break;
-                    case TOKEN_KW_FALSE:
-                        result->emplace(new SON::Boolean(false));
-                        it.next();
-                        break;
-                    case TOKEN_INTEGER:
-                        result->emplace(new SON::Integer(t->value.integer));
-                        it.next();
-                        break;
-                    case TOKEN_FLOATING:
-                        result->emplace(new SON::Floating(t->value.floating));
-                        it.next();
-                        break;
-                    case TOKEN_STRING:
-                        result->emplace(new SON::String(std::string(t->begin + 1, t->length - 2)));
-                        it.next();
-                        break;
                     default:
-
-                        printf("%s:%lu:%lu: error: expected ’]’ before ’%.*s’\n",
+                        error_t error;
+                        eprintf(error, "%s:%lu:%lu: error: ’]’ is expected, found %s ’%.*s’\n",
                             filename,
-                            t->line_number, t->char_number, (int)t->length, t->begin);
-                        highlight_token(t_bracket_open);
-                        highlight_token(t); // @TODO This formatting is shit. Fix it.
+                            t->line_number, t->char_number, to_string(t->kind), (int)t->length, t->begin);
+                        if (have_open_bracket) {
+                            highlight_token(t_bracket_open, &error);
+                            eprintf(error, "   %.*s | %.*s%s\n", 
+                                (int)(digits_in_number(t_bracket_open->line_number)), spaces,
+                                (int)(t_bracket_open->begin - t_bracket_open->line.start), spaces,
+                                "open bracket is here");
+                        }
+                        highlight_token(t, &error);
+                        eprintf(error, "   %.*s | %.*s%s\n", 
+                            (int)(digits_in_number(t->line_number)), spaces,
+                            (int)(t->begin - t->line.start), spaces,
+                            to_string(t->kind));
+                        error_stack.push(error);
 
                         it = checkpoint;
                         return false;
-                }            
+                        break;
+                }
             }
 
             {
-                // Comma or end of the list.
                 token* t = it.get();
-                if (t == nullptr || (
-                    t->kind != TOKEN_COMMA &&
-                    t->kind != TOKEN_BRACKET_CLOSE))
-                {
-                    // it = checkpoint;
-                    // return false;
-                }
-                else if (t->kind == TOKEN_BRACKET_CLOSE) {
-                    // List ended, exit the loop and let final read consume closed bracket.
-                    break;
-                } else {
-                    // Consume comma
+                ASSERT(t);
+
+                if (t->kind == TOKEN_COMMA) {
                     it.next();
+                }
+                
+                if (t->kind == TOKEN_BRACKET_CLOSE or t->kind == TOKEN_EOF) {
+                    break;
                 }
             }
         } while (true);
 
         {
-            // Consume closing bracket.
             token* t = it.get();
-            if (t == nullptr || t->kind != TOKEN_BRACKET_CLOSE) {
-                printf("%s:%lu:%lu: error: ??? is expected, found '%.*s'\n",
+            ASSERT(t);
+
+            if (have_open_bracket and t->kind == TOKEN_BRACKET_CLOSE) {
+                // Consume ']'
+                it.next();
+            }
+            else if (not have_open_bracket and t->kind == TOKEN_BRACKET_CLOSE) {
+                error_t error;
+                eprintf(error, "%s:%lu:%lu: error: expected EOF (end of naked top level list), found %s ’%.*s’\n",
                     filename,
-                    t->line_number, t->char_number, (int)t->length, t->begin);
-                highlight_token(t);
+                    t->line_number, t->char_number, to_string(t->kind), (int)t->length, t->begin);
+
+                highlight_token(t, &error);
+                eprintf(error, "   %.*s | %.*s%s is here\n", 
+                    (int)(digits_in_number(t->line_number)), spaces,
+                    (int)(t->begin - t->line.start), spaces,
+                    to_string(t->kind));
+
+                error_stack.push(error);
 
                 it = checkpoint;
                 return false;
             }
-            it.next();
+            else if (have_open_bracket and t->kind != TOKEN_BRACKET_CLOSE) {
+                error_t error;
+                eprintf(error, "%s:%lu:%lu: error: ’]’ is expected, found %s ’%.*s’\n",
+                    filename,
+                    t->line_number, t->char_number, to_string(t->kind), (int)t->length, t->begin);
+
+                highlight_token(t_bracket_open, &error);
+                eprintf(error, "   %.*s | %.*s%s\n", 
+                    (int)(digits_in_number(t_bracket_open->line_number)), spaces,
+                    (int)(t_bracket_open->begin - t_bracket_open->line.start), spaces,
+                    "open bracket is here");
+
+                highlight_token(t, &error);
+                eprintf(error, "   %.*s | %.*s%s is here\n", 
+                    (int)(digits_in_number(t->line_number)), spaces,
+                    (int)(t->begin - t->line.start), spaces,
+                    to_string(t->kind));
+
+                error_stack.push(error);
+
+                it = checkpoint;
+                return false;
+            }
+        }
+
+        {
+            token* t = it.get();
+            if (t->kind != TOKEN_EOF) {
+                auto* top_level_list = new SON::List();
+                top_level_list->emplace(result);
+                result = top_level_list;
+                printf("Hmm this is not how it's should work\n");
+                parse_list_of_things(result, true);
+            }
         }
 
         return true;
