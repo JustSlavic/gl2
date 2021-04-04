@@ -56,8 +56,8 @@ config_holder& config_holder::get_mutable_instance() {
 bool config_holder::initialize(const char* filename) {
     if (not filename) return false;
 
-    int ec = get_mutable_instance().parse(filename);
-    return ec == 0;
+    int err = get_mutable_instance().parse(filename);
+    return err == 0;
 }
 
 

@@ -180,13 +180,16 @@ int main (int argc, char** argv) {
             fclose(f);
         }
 
-        FILE* fconfig = fopen("config.cpp", "w");
+        FILE* fconfig_hpp = fopen("config.hpp", "w");
+        FILE* fconfig_cpp = fopen("config.cpp", "w");
 
         auto* cpp_visitor = new SON::VisitorIntoCpp();
-        cpp_visitor->output = fconfig;
+        cpp_visitor->hpp = fconfig_hpp;
+        cpp_visitor->cpp = fconfig_cpp;
         cpp_visitor->visit(scheme);
         delete cpp_visitor;
-        fclose(fconfig);
+        fclose(fconfig_hpp);
+        fclose(fconfig_cpp);
     }
     
 

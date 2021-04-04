@@ -405,7 +405,8 @@ struct VisitorIntoCpp : public IVisitor {
     int indent_size = 4;
     int depth = 0;
 
-    FILE* output = stdout;
+    FILE* hpp = stdout;
+    FILE* cpp = stdout;
     const char* spaces = "                                                  "; // 50 spaces
     const int max_spaces = 50;
 
@@ -414,16 +415,16 @@ struct VisitorIntoCpp : public IVisitor {
 
 methods:
 #define print_(...) \
-    { indent(); fprintf(output, __VA_ARGS__); new_line(); } void(0)
+    { indent(); fprintf(hpp, __VA_ARGS__); new_line(); } void(0)
 
     inline void new_line () {
-        fprintf(output, "\n");
+        fprintf(hpp, "\n");
         new_lined = true;
     }
 
     inline void indent () {
         if (new_lined) {
-            fprintf(output, "%.*s", depth * indent_size > max_spaces ? max_spaces : depth * indent_size, spaces);
+            fprintf(hpp, "%.*s", depth * indent_size > max_spaces ? max_spaces : depth * indent_size, spaces);
         }
     }
 
@@ -435,24 +436,37 @@ methods:
         if (not members) return;
 
         if (top_level) {
-            print_("struct config {");
+            print_("struct Config {");
         } else {
             print_("struct {");
         }
+        bool top = top_level;
         top_level = false;
 
         depth += 1;
         members->visit(this);
         depth -= 1;
 
+        if (top) {
+            fprintf(hpp,
+                "\n"
+                "    static const Config& get_instance ();\n"
+                "    static bool initialize (const char* filename);\n"
+                "private:\n"
+                "    Config() = default;\n"
+                "    Config(const Config&) = delete;\n"
+                "    Config(Config&&) = delete;\n"
+                );
+        }
+
         indent();
-        fprintf(output, "}");
+        fprintf(hpp, "}");
     }
 
     void print_struct_member (Object* value) {
         String* type = value->get("type")->as_string();
         if (not type) {
-            fprintf(output, "Object value have no \"type\" member!\n");
+            fprintf(hpp, "Object value have no \"type\" member!\n");
             return;
         }
 
@@ -461,12 +475,12 @@ methods:
             print_struct(value->get("values")->as_list());
         } else {
             indent();
-            fprintf(output, "%s", son_to_cpp_type(type->value.c_str()));
+            fprintf(hpp, "%s", son_to_cpp_type(type->value.c_str()));
         }
         if (key) {            
-            fprintf(output, " %s;", key->value.c_str());
+            fprintf(hpp, " %s;", key->value.c_str());
         } else {
-            fprintf(output, ";");
+            fprintf(hpp, ";");
         }
         new_line();
     }
@@ -475,7 +489,7 @@ methods:
         if (strcmp(s, "boolean") == 0)  return "bool";
         if (strcmp(s, "integer") == 0)  return "int";
         if (strcmp(s, "floating") == 0) return "float";
-        if (strcmp(s, "string") == 0)   return "const char*";
+        if (strcmp(s, "string") == 0)   return "std::string";
 
         return "unknown";
     }
@@ -499,29 +513,37 @@ methods:
 
         // HPP
         if (top) {
-            fprintf(output, "#pragma once\n\n");
+            fprintf(hpp, 
+                "#pragma once\n"
+                "#include <string>\n"
+                "\n"
+                );
+
+            fprintf(cpp,
+                "#include \"config.hpp\"\n"
+                "\n"
+                "static Config* instance = nullptr;\n"
+                "const Config& Config::get_instance() {\n"
+                "    if (not instance) instance = new Config();\n"
+                "\n"
+                "    return *instance;\n"
+                "}\n"
+                "\n"
+                "bool Config::initialize(const char* filename) {\n"
+                "    get_instance(); // Create instance if it is not already\n"
+                "    int ec = instance->parse(filename);\n"
+                "    return ec == 0;\n"
+                "}\n"
+                );
         }
 
         print_struct_member(value);
 
         if (top) {
-            fprintf(output, "\nconst config& get_config();\n");
         }
 
         // CPP
         if (top) {
-            fprintf(output, 
-                "\n"
-                "static config* instance;\n"
-                "\n"
-                "const config& get_config {\n"
-                "    if (instance) return *instance;\n"
-                "\n"
-                "    instance = new config();\n"
-                "}\n"
-                "\n"
-                ""
-                );
         }
     }
 
