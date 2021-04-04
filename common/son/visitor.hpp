@@ -1,6 +1,7 @@
 #pragma once
 
 #include <defines.h>
+#include <cstring>
 #include "object.hpp"
 
 
@@ -401,31 +402,28 @@ methods:
 struct VisitorIntoCpp : public IVisitor {
     using Super = IVisitor;
 
-    bool multiline = true;
-
-    int indent_size = 2;
+    int indent_size = 4;
     int depth = 0;
 
     FILE* output = stdout;
     const char* spaces = "                                                  "; // 50 spaces
     const int max_spaces = 50;
 
+    bool top_level = true;
     bool new_lined = false;
 
 methods:
 #define print_(...) \
-    { fprintf(output, __VA_ARGS__); new_lined = false; } void(0)
+    { indent(); fprintf(output, __VA_ARGS__); new_line(); } void(0)
 
     inline void new_line () {
-        if (multiline) {
-            fprintf(output, "\n");
-            new_lined = true;
-        }
+        fprintf(output, "\n");
+        new_lined = true;
     }
 
     inline void indent () {
-        if (multiline and new_lined) {
-            print_("%.*s", depth * indent_size > max_spaces ? max_spaces : depth * indent_size, spaces);
+        if (new_lined) {
+            fprintf(output, "%.*s", depth * indent_size > max_spaces ? max_spaces : depth * indent_size, spaces);
         }
     }
 
@@ -433,26 +431,102 @@ methods:
         Super::visit(value);
     }
 
-    void visit (Null* value)     override { print_("nullptr"); }
-    void visit (Boolean* value)  override { print_("%s", value->value ? "true" : "false"); }
-    void visit (Integer* value)  override { print_("%ld", value->value); }
-    void visit (Floating* value) override { print_("%lf", value->value); }
-    void visit (String* value)   override { print_("%s", value->value.c_str()); }
+    void print_struct (List* members) {
+        if (not members) return;
 
-    void visit (const std::string& key, IValue* value) override {  }
+        if (top_level) {
+            print_("struct config {");
+        } else {
+            print_("struct {");
+        }
+        top_level = false;
+
+        depth += 1;
+        members->visit(this);
+        depth -= 1;
+
+        indent();
+        fprintf(output, "}");
+    }
+
+    void print_struct_member (Object* value) {
+        String* type = value->get("type")->as_string();
+        if (not type) {
+            fprintf(output, "Object value have no \"type\" member!\n");
+            return;
+        }
+
+        String* key = value->get("key")->as_string();
+        if (type->value == "object") {
+            print_struct(value->get("values")->as_list());
+        } else {
+            indent();
+            fprintf(output, "%s", son_to_cpp_type(type->value.c_str()));
+        }
+        if (key) {            
+            fprintf(output, " %s;", key->value.c_str());
+        } else {
+            fprintf(output, ";");
+        }
+        new_line();
+    }
+
+    const char* son_to_cpp_type(const char* s) {
+        if (strcmp(s, "boolean") == 0)  return "bool";
+        if (strcmp(s, "integer") == 0)  return "int";
+        if (strcmp(s, "floating") == 0) return "float";
+        if (strcmp(s, "string") == 0)   return "const char*";
+
+        return "unknown";
+    }
+
+    void visit (Null* value)     override {}
+    void visit (Boolean* value)  override {}
+    void visit (Integer* value)  override {}
+    void visit (Floating* value) override {}
+    void visit (String* value)   override {}
+
+    void visit (const std::string& key, IValue* value) override {}
 
     void visit (Object* value) override {
-        indent();
-        print_("struct {");
-        depth += 1;
-        value->visit(this);
-        depth -= 1;
-        print_("};");
+        String* type = value->get("type")->as_string();
+        if (not type) {
+            printf("Object value have no \"type\" member!\n");
+            return;
+        }
+
+        bool top = top_level;
+
+        // HPP
+        if (top) {
+            fprintf(output, "#pragma once\n\n");
+        }
+
+        print_struct_member(value);
+
+        if (top) {
+            fprintf(output, "\nconst config& get_config();\n");
+        }
+
+        // CPP
+        if (top) {
+            fprintf(output, 
+                "\n"
+                "static config* instance;\n"
+                "\n"
+                "const config& get_config {\n"
+                "    if (instance) return *instance;\n"
+                "\n"
+                "    instance = new config();\n"
+                "}\n"
+                "\n"
+                ""
+                );
+        }
     }
 
     void visit (List* value) override {
-        print_("??? HOW TO DO LIST ???");
-        // value->visit(this);
+        print_("We do not support lists yet.");
     }
 };
 

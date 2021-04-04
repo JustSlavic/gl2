@@ -44,6 +44,14 @@ struct IValue {
     virtual Kind get_kind () const = 0;
     virtual void visit (IVisitor* visitor) = 0;
     virtual bool equal_to(const IValue*) const = 0;
+
+    virtual Null* as_null() { return nullptr; }
+    virtual Boolean* as_boolean() { return nullptr; }
+    virtual Integer* as_integer() { return nullptr; }
+    virtual Floating* as_floating() { return nullptr; }
+    virtual String* as_string() { return nullptr; }
+    virtual Object* as_object() { return nullptr; }
+    virtual List* as_list() { return nullptr; }
 };
 
 
@@ -82,6 +90,7 @@ struct Null : public IValue {
     virtual Kind get_kind () const override { return VALUE_NULL; }
     virtual void visit (IVisitor* visitor) override { visitor->visit(this); }
     virtual bool equal_to(const IValue* other) const override { return other->get_kind() == this->get_kind(); }
+    virtual Null* as_null() override { return this; }
 };
 
 
@@ -98,6 +107,7 @@ struct Boolean : public IValue {
         const Boolean* v = (const Boolean*)other;
         return value == v->value;
     }
+    virtual Boolean* as_boolean() override { return this; }
 };
 
 
@@ -114,6 +124,7 @@ struct Integer : public IValue {
         const Integer* v = (const Integer*)other;
         return value == v->value;
     }
+    virtual Integer* as_integer() override { return this; }
 };
 
 
@@ -130,6 +141,7 @@ struct Floating : public IValue {
         const Floating* v = (const Floating*)other;
         return value == v->value;
     }
+    virtual Floating* as_floating() override { return this; }
 };
 
 
@@ -146,6 +158,7 @@ struct String : public IValue {
         const String* v = (const String*)other;
         return value == v->value;
     }
+    virtual String* as_string() override { return this; }
 };
 
 
@@ -153,6 +166,8 @@ struct Object : public IValue {
     ugly::dynamic_array<ugly::string> keys;
     ugly::dynamic_array<IValue*> values;
 
+
+    virtual Object* as_object() override { return this; }
     virtual Kind get_kind () const override { return VALUE_OBJECT; }
     virtual bool equal_to(const IValue* other) const override {
         if (other->get_kind() != this->get_kind()) return false;
@@ -178,9 +193,19 @@ struct Object : public IValue {
         }
     }
 
-    void emplace (ugly::string key, IValue* value) {
+    void emplace (const ugly::string& key, IValue* value) {
         keys.push_back(key);
         values.push_back(value);
+    }
+
+    IValue* get(const std::string& key) {
+        for (size_t i = 0; i < keys.size(); i++) {
+            if (keys[i] == key) {
+                return values[i];
+            }
+        }
+
+        return nullptr;
     }
 };
 
@@ -188,6 +213,7 @@ struct Object : public IValue {
 struct List : public IValue {
     ugly::dynamic_array<IValue*> values;
 
+    virtual List* as_list() override { return this; }
     virtual Kind get_kind () const override { return VALUE_LIST; }
     virtual bool equal_to(const IValue* other) const override {
         if (other->get_kind() != this->get_kind()) return false;

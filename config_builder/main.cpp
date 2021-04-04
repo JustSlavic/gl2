@@ -132,11 +132,6 @@ int main (int argc, char** argv) {
         parser.initialize(buffer, size, "config.scheme.son");
 
         saved_scheme = parser.parse();
-        if (saved_scheme == nullptr) {
-            parser.terminate();
-            free(buffer);
-            return 1;
-        }
 
         parser.terminate();
     }
@@ -151,28 +146,47 @@ int main (int argc, char** argv) {
         printer->use_separator = args.use_separator;
         
 
-        printf("============= CONFIG =============\n");
+        // printf("============= CONFIG =============\n");
         printer->visit(config);
+        printf("\n\n");
 
-        printf("\n==================================\n\n"
-               "============= SCHEME =============\n");
+        // printf("\n==================================\n\n"
+        //        "============= SCHEME =============\n");
 
 
         auto* scheme_visitor = new SON::VisitorIntoScheme();
         scheme_visitor->visit(config);
+        scheme = scheme_visitor->scheme;
 
-        printer->visit(scheme_visitor->scheme);
+        // printer->visit(scheme);
 
-        printf("\n==================================\n\n"
-               "========== SAVED SCHEME ==========\n");
+        // printf("\n==================================\n\n"
+        //        "========== SAVED SCHEME ==========\n");
 
-        printer->visit(saved_scheme);
+        // printer->visit(saved_scheme);
 
-        printf("\n==================================\n\n");
+        // printf("\n==================================\n\n");
 
-        printf("THEY ARE EQUAL ? : %s\n", scheme_visitor->scheme->equal_to(saved_scheme) ? "true" : "false");
+        bool they_are_equal = scheme and saved_scheme and scheme_visitor->scheme->equal_to(saved_scheme);
+        if (not they_are_equal) {
+            FILE* f = fopen("config.scheme.son", "w");
+
+            auto* scheme_printer = new SON::VisitorPrint();
+            scheme_printer->output = f;
+            scheme_printer->visit(scheme);
+
+            delete scheme_printer;
+
+            fclose(f);
+        }
+
+        FILE* fconfig = fopen("config.cpp", "w");
 
         auto* cpp_visitor = new SON::VisitorIntoCpp();
+        cpp_visitor->output = fconfig;
+        cpp_visitor->visit(scheme);
+        delete cpp_visitor;
+        fclose(fconfig);
     }
     
 
