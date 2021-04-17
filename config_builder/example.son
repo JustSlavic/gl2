@@ -4,39 +4,27 @@
     //   2. Key is have to be valid identifier i.e. satisfy this regex: ([\w_][\w\d_]*)
     //   3. Key and value are separated by equal sign '='
     //   4. Value can be:
-    //      - double quoted string
-    //      - integer number
-    //      - floating number
-    //      - boolean (true or false)
-    //      - null value (null)
-    //      - objects
-    //      - lists
-    name = "Slavic";
-    age = 28;
-    height = 1.85;
-    human = true;
-    dependencies = null;
-    window = {
+    name = "Slavic";     // double quoted string
+    age = 28;            // integer number
+    height = 1.85;       // floating number
+    human = true;        // boolean (true or false)
+    dependencies = null; // null value (can be only null)
+    window = {           // objects (another set of key-value pairs)
         title  = "GL2";
         width  = 1980;
         height = 1080;
-        mode = "window"
-    }
-    characters = [
+        mode = "window";
+    };
+    characters = [       // lists of some other values (all listed above and nested lists too)
         {
-            name = "Asuka"
-            species = "Cat"
-            height = 300
-            fury = true
+            name = "Asuka";
+            species = "Cat";
+            height = 300;
+            fury = true;
         }
-        { 
-            name = "Cherepaksa"
-            species = "Ma'am"
-            height = 228
-            fury = false
-        }
-    ]
-    // Note that lists are geterogenerous and can be nested
-    // Also note that trailing semicolons are optional as well as commas in lists.
-    GeteroList = [ null true false "foo" 1 2 3.4 { a = 1 b = 2 c = 3  d = 4 } {} { a = 1 } [[null] [1 3 "" "" "" true] [1 2] [1 2] [1 2]] ]
+    ];
+    // Lists are geterogenerous and can be nested
+    Getero_List = [ null true false "foo" 1 2 3.4 { a = 1 b = 2 c = 3  d = 4 } {} { a = 1 } [[null] [1 3 "" "" "" true] [1 2] [1 2] [1 2]] ]
+    // Also note that semicolons and commas are optional. Also you can put trailing commas if you want.
+    Trailing_Comma = [ 1, 2, 3, ]
 }

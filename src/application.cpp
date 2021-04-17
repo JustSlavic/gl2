@@ -183,7 +183,7 @@ namespace gl2 {
         while (running) {
             auto t_ = std::chrono::steady_clock::now();
             auto dt = std::chrono::duration_cast<std::chrono::microseconds>(t_ - t).count();
-            printf("dt = %ld μs; fps = %lf\n", dt, 1000000.0 / dt);
+            // printf("dt = %ld μs; fps = %lf\n", dt, 1000000.0 / dt);
             t = t_;
 
             auto view = camera.get_view_matrix();

@@ -2,6 +2,8 @@
 
 #include <defines.h>
 #include <cstring>
+#include <string>
+#include <vector>
 #include "object.hpp"
 
 
@@ -413,6 +415,10 @@ struct VisitorIntoCpp : public IVisitor {
     bool top_level = true;
     bool new_lined = false;
 
+    int object_n = 0;
+    std::vector<std::string> config_member;
+    std::string up_one_level_object_name;
+
 methods:
 #define print_(...) \
     { indent(); fprintf(hpp, __VA_ARGS__); new_line(); } void(0)
@@ -436,7 +442,7 @@ methods:
         if (not members) return;
 
         if (top_level) {
-            print_("struct Config {");
+            print_("struct config {");
         } else {
             print_("struct {");
         }
@@ -450,12 +456,12 @@ methods:
         if (top) {
             fprintf(hpp,
                 "\n"
-                "    static const Config& get_instance ();\n"
+                "    static const config& get_instance ();\n"
                 "    static bool initialize (const char* filename);\n"
                 "private:\n"
-                "    Config() = default;\n"
-                "    Config(const Config&) = delete;\n"
-                "    Config(Config&&) = delete;\n"
+                "    config() = default;\n"
+                "    config(const config&) = delete;\n"
+                "    config(config&&) = delete;\n"
                 );
         }
 
@@ -470,14 +476,61 @@ methods:
             return;
         }
 
+        std::string var_name;
+
         String* key = value->get("key")->as_string();
+
+        if (key) {
+            var_name = type->value + "_" + std::to_string(object_n++);
+            config_member.push_back(key->value);
+        } else {
+            var_name = "config_value";
+        }
+
+        if (not top_level) {
+            fprintf(cpp,
+                "    SON::IValue* %s = %s->get(\"%s\");\n"
+                "    if (not %s) return 1;\n"
+                "\n",
+                var_name.c_str(),
+                up_one_level_object_name.c_str(),
+                key ? key->value.c_str() : " ??? ",
+                var_name.c_str()
+            );
+        }
+        
+        fprintf(cpp,
+            "    SON::%s* %s_value = %s->as_%s();\n"
+            "    if (not %s_value) return 1;\n"
+            "\n",
+            capitalize_type(type->value.c_str()),
+            var_name.c_str(),
+            var_name.c_str(),
+            type->value.c_str(),
+            var_name.c_str()
+        );
+
+        if (type->value != "object") {
+            fprintf(cpp, "    cfg");
+            for (auto name : config_member) {
+                fprintf(cpp, ".%s", name.c_str());
+            }
+            fprintf(cpp, " = %s_value->value;\n\n", var_name.c_str());
+        }
+
         if (type->value == "object") {
-            print_struct(value->get("values")->as_list());
+            std::string upper_object_name = up_one_level_object_name;
+            up_one_level_object_name = var_name + "_value";
+            print_struct(value->get("values")->as_list());  // ============= RECURSION =============
+            up_one_level_object_name = upper_object_name;
         } else {
             indent();
             fprintf(hpp, "%s", son_to_cpp_type(type->value.c_str()));
         }
-        if (key) {            
+
+
+        if (key) {
+            config_member.pop_back();
             fprintf(hpp, " %s;", key->value.c_str());
         } else {
             fprintf(hpp, ";");
@@ -490,6 +543,16 @@ methods:
         if (strcmp(s, "integer") == 0)  return "int";
         if (strcmp(s, "floating") == 0) return "float";
         if (strcmp(s, "string") == 0)   return "std::string";
+
+        return "unknown";
+    }
+
+    const char* capitalize_type(const char* s) {
+        if (strcmp(s, "boolean") == 0)  return "Boolean";
+        if (strcmp(s, "integer") == 0)  return "Integer";
+        if (strcmp(s, "floating") == 0) return "Floating";
+        if (strcmp(s, "string") == 0)   return "String";
+        if (strcmp(s, "object") == 0)   return "Object";
 
         return "unknown";
     }
@@ -521,29 +584,68 @@ methods:
 
             fprintf(cpp,
                 "#include \"config.hpp\"\n"
+                "#include <son.hpp>\n"
                 "\n"
-                "static Config* instance = nullptr;\n"
-                "const Config& Config::get_instance() {\n"
-                "    if (not instance) instance = new Config();\n"
+                "\n"
+                "size_t read_file (const char* filename, char* buffer, size_t size) {\n"
+                "    FILE* f = fopen(filename, \"r\");\n"
+                "    if (f == nullptr) {\n"
+                "        printf(\"Could not find file \\\"%%s\\\"\\n\", filename);\n"
+                "        return 0;\n"
+                "    }\n"
+                "    \n"
+                "    size_t count = fread(buffer, sizeof(char), size, f);\n"
+                "    \n"
+                "    fclose(f);\n"
+                "    return count;\n"
+                "}\n"
+                "\n"
+                "\n"
+                "static config* instance = nullptr;\n"
+                "\n"
+                "const config& config::get_instance() {\n"
+                "    if (not instance) instance = new config();\n"
                 "\n"
                 "    return *instance;\n"
                 "}\n"
                 "\n"
-                "bool Config::initialize(const char* filename) {\n"
-                "    get_instance(); // Create instance if it is not already\n"
-                "    int ec = instance->parse(filename);\n"
+                "static int parse_config (config& cfg, const char* filename);\n"
+                "bool config::initialize(const char* filename) {\n"
+                "    get_instance(); // Create instance if it is not created already.\n"
+                "    int ec = parse_config(*instance, filename);\n"
                 "    return ec == 0;\n"
                 "}\n"
+                "\n"
+                "static int parse_config (config& cfg, const char* filename) {\n"
+                "    SON::IValue* config_value = nullptr;\n"
+                "    {\n"
+                "        const size_t capacity = 10000;\n"
+                "        char* buffer = (char*)calloc(capacity, sizeof(char));\n"
+                "\n"
+                "        size_t size = read_file(filename, buffer, capacity);\n"
+                "\n"
+                "        SON::Parser parser;\n"
+                "        parser.initialize(buffer, size, filename);\n"
+                "\n"
+                "        config_value = parser.parse();\n"
+                "\n"
+                "        parser.terminate();\n"
+                "        free(buffer);\n"
+                "    }\n"
+                "\n"
+                "    if (config_value == nullptr) return 1;\n"
+                "\n"
                 );
         }
 
         print_struct_member(value);
 
-        if (top) {
-        }
-
         // CPP
         if (top) {
+            fprintf(cpp,
+                "    return 0;\n"
+                "}\n"
+                );
         }
     }
 

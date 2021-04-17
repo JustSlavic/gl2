@@ -1,0 +1,8 @@
+name = "GL2"
+window = {
+    width = 1920
+    height = 1080
+    default_color = "0xFF000000"
+}
+age = 100
+of_what = "years"

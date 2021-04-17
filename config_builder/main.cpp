@@ -4,6 +4,11 @@
 #include <stdarg.h>
 
 
+const char* scheme_output_filename = ".generated/config.scheme.son";
+const char* config_hpp_output_filename = ".generated/config.hpp";
+const char* config_cpp_output_filename = ".generated/config.cpp";
+
+
 size_t read_file (const char* filename, char* buffer, size_t size) {
     FILE* f = fopen(filename, "r");
     if (f == nullptr) {
@@ -128,8 +133,8 @@ int main (int argc, char** argv) {
 
         memset(buffer, 0, capacity);
 
-        size = read_file("config.scheme.son", buffer, capacity);
-        parser.initialize(buffer, size, "config.scheme.son");
+        size = read_file(scheme_output_filename, buffer, capacity);
+        parser.initialize(buffer, size, scheme_output_filename);
 
         saved_scheme = parser.parse();
 
@@ -169,7 +174,7 @@ int main (int argc, char** argv) {
 
         bool they_are_equal = scheme and saved_scheme and scheme_visitor->scheme->equal_to(saved_scheme);
         if (not they_are_equal) {
-            FILE* f = fopen("config.scheme.son", "w");
+            FILE* f = fopen(scheme_output_filename, "w");
 
             auto* scheme_printer = new SON::VisitorPrint();
             scheme_printer->output = f;
@@ -180,8 +185,8 @@ int main (int argc, char** argv) {
             fclose(f);
         }
 
-        FILE* fconfig_hpp = fopen("config.hpp", "w");
-        FILE* fconfig_cpp = fopen("config.cpp", "w");
+        FILE* fconfig_hpp = fopen(config_hpp_output_filename, "w");
+        FILE* fconfig_cpp = fopen(config_cpp_output_filename, "w");
 
         auto* cpp_visitor = new SON::VisitorIntoCpp();
         cpp_visitor->hpp = fconfig_hpp;

@@ -4,6 +4,8 @@ CXX_STANDARD = c++17
 
 INC_DIR = \
 	/usr/include \
+	.generated \
+	common \
 	src \
 	libs \
 
@@ -62,6 +64,7 @@ endif
 
 SOURCES = \
 	application \
+	config \
 	keymap \
 	utils \
 	graphics/graphics_api \
@@ -86,6 +89,10 @@ SOURCES = \
 	modeling_2d/model \
 	modeling_2d/creatures \
 	service/shader_library \
+	parse/reader \
+	son/object \
+	son/parser \
+	son/visitor \
 
 
 OBJECTS      := $(addprefix build/$(SUB_DIR)/, $(addsuffix .o,   $(SOURCES)))
@@ -102,7 +109,7 @@ PROJECT_EXE := bin/$(SUB_DIR)/$(PROJECT)
 # ================= RULES ================= #
 
 # Unconditional rules
-.PHONY: prebuild postbuild clean version test
+.PHONY: prebuild postbuild clean version test config
 
 # Silent rules
 # .SILENT:
@@ -154,6 +161,20 @@ clean:
 # 	$(MAKE) -C $(addprefix libs/, $@) clean
 
 
+# ================= CONFIG ================== #
+
+config: .generated/config.hpp .generated/config.cpp
+
+build/$(SUB_DIR)/config.o: .generated/config.cpp ./Makefile
+	g++ $< -c -o $@ $(CXXFLAGS)
+
+.generated/config.hpp .generated/config.cpp .generated/config.scheme.son: config_builder/builder config.son
+	./config_builder/builder config.son -p
+
+config_builder/builder: config.son
+	$(MAKE) -C config_builder debug
+
+
 # ================= PROJECT ================= #
 
 $(PROJECT_EXE): main.cpp build/$(SUB_DIR)/version.o $(PROJECT_LIB) $(STATIC_LIBS)
@@ -165,6 +186,11 @@ $(PROJECT_LIB): $(OBJECTS)
 -include $(OBJECTS:.o=.d)
 
 build/$(SUB_DIR)/%.o: src/%.cpp ./Makefile
+	@mkdir -p $(dir $@)
+	@g++ -MM -MT "$@" $(CXXFLAGS) $< > build/$(SUB_DIR)/$*.d
+	g++ $< -c -o $@ $(CXXFLAGS)
+
+build/$(SUB_DIR)/%.o: common/%.cpp ./Makefile
 	@mkdir -p $(dir $@)
 	@g++ -MM -MT "$@" $(CXXFLAGS) $< > build/$(SUB_DIR)/$*.d
 	g++ $< -c -o $@ $(CXXFLAGS)
