@@ -161,11 +161,15 @@ clean:
 # 	$(MAKE) -C $(addprefix libs/, $@) clean
 
 
+-include $(OBJECTS:.o=.d)
+
 # ================= CONFIG ================== #
 
 config: .generated/config.hpp .generated/config.cpp
 
 build/$(SUB_DIR)/config.o: .generated/config.cpp ./Makefile
+	@mkdir -p $(dir $@)
+	@g++ -MM -MT "$@" $(CXXFLAGS) $< > $*.d
 	g++ $< -c -o $@ $(CXXFLAGS)
 
 .generated/config.hpp .generated/config.cpp .generated/config.scheme.son: config_builder/builder config.son
@@ -182,8 +186,6 @@ $(PROJECT_EXE): main.cpp build/$(SUB_DIR)/version.o $(PROJECT_LIB) $(STATIC_LIBS
 
 $(PROJECT_LIB): $(OBJECTS)
 	ar rcvs $(PROJECT_LIB) $(OBJECTS)
-
--include $(OBJECTS:.o=.d)
 
 build/$(SUB_DIR)/%.o: src/%.cpp ./Makefile
 	@mkdir -p $(dir $@)
