@@ -15,7 +15,11 @@ int main(int argc, char** argv, char** env) {
 
     LOG_INFO << "Welcome to Gir2 v." << version;
 
-    config::initialize("config.son");
+    bool config_initialized = config::initialize("config.son");
+    if (not config_initialized) {
+        printf("Could not initialize config!\n");
+        return 1;
+    }
 
     auto& cfg = config::get_instance();
     LOG_WARNING << "WINDOW: " << cfg.window.width << "x" << cfg.window.height;

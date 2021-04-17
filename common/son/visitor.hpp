@@ -472,7 +472,7 @@ methods:
     void print_struct_member (Object* value) {
         String* type = value->get("type")->as_string();
         if (not type) {
-            fprintf(hpp, "Object value have no \"type\" member!\n");
+            printf("Object value have no \"type\" member!\n");
             return;
         }
 
@@ -587,7 +587,7 @@ methods:
                 "#include <son.hpp>\n"
                 "\n"
                 "\n"
-                "size_t read_file (const char* filename, char* buffer, size_t size) {\n"
+                "static size_t read_file (const char* filename, char* buffer, size_t size) {\n"
                 "    FILE* f = fopen(filename, \"r\");\n"
                 "    if (f == nullptr) {\n"
                 "        printf(\"Could not find file \\\"%%s\\\"\\n\", filename);\n"
@@ -610,6 +610,7 @@ methods:
                 "}\n"
                 "\n"
                 "static int parse_config (config& cfg, const char* filename);\n"
+                "\n"
                 "bool config::initialize(const char* filename) {\n"
                 "    get_instance(); // Create instance if it is not created already.\n"
                 "    int ec = parse_config(*instance, filename);\n"
