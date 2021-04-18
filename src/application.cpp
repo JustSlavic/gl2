@@ -87,10 +87,10 @@ namespace gl2 {
         Dispatcher<Mouse::ButtonPressEvent>::subscribe([&] (Mouse::ButtonPressEvent e) {
             if (e.button == Mouse::LEFT) {
                 auto& m = Mouse::instance();
-                printf("==========================\n");
+                // printf("==========================\n");
                 
                 math::vec3 position = math::vec3(camera.position.x, camera.position.y, camera.position.z);
-                printf("position = (%5.2f, %5.2f, %5.2f)\n", position.x, position.y, position.z);
+                // printf("position = (%5.2f, %5.2f, %5.2f)\n", position.x, position.y, position.z);
                 
                 
                 math::vec3 forward = camera.get_forward_vector_math();
@@ -104,22 +104,22 @@ namespace gl2 {
                 f32 clip_width = NEAR_CLIP_DISTANCE * window_ratio;
                 f32 clip_height = NEAR_CLIP_DISTANCE;
 
-                printf("NEAR_CLIP{ WIDTH = %5.2f; HEIGHT = %5.2f; }\n", clip_width, clip_height);
+                // printf("NEAR_CLIP{ WIDTH = %5.2f; HEIGHT = %5.2f; }\n", clip_width, clip_height);
 
                 math::vec2 mouse = math::vec2(
                     ( f32(m.x) / f32(w) - .5f),
                     (-f32(m.y) / f32(h) + .5f)
                 );
-                printf("mouse = (%5.2f, %5.2f)\n", mouse.x, mouse.y);
+                // printf("mouse = (%5.2f, %5.2f)\n", mouse.x, mouse.y);
 
                 math::vec3 center = position + forward * NEAR_CLIP_DISTANCE;
                 math::vec3 point = center + right*mouse.x * clip_width + up*mouse.y * clip_height;
-                printf("point = (%5.2f, %5.2f, %5.2f)\n", point.x, point.y, point.z);
+                // printf("point = (%5.2f, %5.2f, %5.2f)\n", point.x, point.y, point.z);
 
                 math::vec3 direction = point - position;
 
                 math::vec3 intersection = intersect_z0_plane(position, direction);
-                printf("intersection = (%5.2f, %5.2f, %5.2f)\n", intersection.x, intersection.y, intersection.z);
+                // printf("intersection = (%5.2f, %5.2f, %5.2f)\n", intersection.x, intersection.y, intersection.z);
 
 #ifdef GRAVITY
                 model.add_body(intersection.x, intersection.y);
