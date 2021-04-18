@@ -38,7 +38,6 @@ methods:
 };
 
 
-
 struct VisitorPrint : public IVisitor {
     using Super = IVisitor;
 
@@ -48,51 +47,60 @@ struct VisitorPrint : public IVisitor {
         STATUS_IN_LIST,
     };
 
-    FILE* output = stdout;
+    struct Settings {
+        int  indent_size = 2;
+        bool multiline_auto = true;
+        bool multiline = true;
+        bool use_separator = true;
+    };
+
+    struct State {
+        Status status = STATUS_NONE;
+        int depth = 0;
+        int n = 0; // number of already printed pairs or list elements
+        bool new_lined = true;
+        bool in_kv_pair = false;
+    };
+
+    FILE*    output = stdout;
+    Settings settings;
+    State    state;
+
     const char* spaces = "                                                  "; // 50 spaces
     const int max_spaces = 50;
-    
-    Status status = STATUS_NONE;
 
-    int indent_size = 2;
-    int depth = 0;
-    int n = 0; // number of already printed pairs or list elements
-
-    bool multiline_auto = true;
-    bool multiline = true;
-    bool use_separator = true;
-    bool new_lined = true;
-    bool in_kv_pair = false;
-
-methods:
+public:
 #define print_(...) \
-    { fprintf(output, __VA_ARGS__); new_lined = false; } void(0)
+    { fprintf(output, __VA_ARGS__); state.new_lined = false; } void(0)
 
     inline void new_line () {
-        if (multiline) {
+        if (settings.multiline) {
             fprintf(output, "\n");
-            new_lined = true;
+            state.new_lined = true;
         }
     }
 
     inline void indent () {
-        if (multiline and new_lined) {
-            print_("%.*s", depth * indent_size > max_spaces ? max_spaces : depth * indent_size, spaces);
+        if (settings.multiline and state.new_lined) {
+            print_("%.*s", 
+                state.depth * settings.indent_size > max_spaces 
+                ? max_spaces 
+                : state.depth * settings.indent_size, spaces);
         }
     }
 
     inline const char* get_separator () {
-        switch (status) {
-            case STATUS_IN_LIST:   return n > 0 ? multiline ? "," : ", " : ""; // if there's no elements before (n == 0), nothing to separate
-            case STATUS_IN_OBJECT: return n > 0 ? multiline ? ";" : "; " : " ";
+        switch (state.status) {
+            case STATUS_IN_LIST:   return state.n > 0 ? settings.multiline ? "," : ", " : ""; // if there's no elements before (n == 0), nothing to separate
+            case STATUS_IN_OBJECT: return state.n > 0 ? settings.multiline ? ";" : "; " : " ";
             default: return "";
         }
     }
 
     inline void separator () {
-        if (use_separator) {
+        if (settings.use_separator) {
             print_("%s", get_separator());
-        } else if (n > 0 or status == STATUS_IN_OBJECT) {
+        } else if (state.n > 0 or state.status == STATUS_IN_OBJECT) {
             print_(" ");
         }
     }
@@ -106,71 +114,71 @@ methods:
     void visit (Null* value) override {
         if (not value) return;
         
-        if (not in_kv_pair) {
+        if (not state.in_kv_pair) {
             separator();
             new_line();
             indent();
         }
 
-        in_kv_pair = false;
+        state.in_kv_pair = false;
         print_("%s", to_string(value->get_kind()));
-        n += 1;
+        state.n += 1;
     }
 
     void visit (Boolean* value) override {
         if (not value) return;
         
-        if (not in_kv_pair) {
+        if (not state.in_kv_pair) {
             separator();
             new_line();
             indent();
         }
 
-        in_kv_pair = false;
+        state.in_kv_pair = false;
         print_("%s", value->value ? "true" : "false");
-        n += 1;
+        state.n += 1;
     }
 
     void visit (Integer* value) override {
         if (not value) return;
         
-        if (not in_kv_pair) {
+        if (not state.in_kv_pair) {
             separator();
             new_line();
             indent();
         }
 
-        in_kv_pair = false;
+        state.in_kv_pair = false;
         print_("%ld", value->value);
-        n += 1;
+        state.n += 1;
     }
 
     void visit (Floating* value) override {
         if (not value) return;
 
-        if (not in_kv_pair) {
+        if (not state.in_kv_pair) {
             separator();
             new_line();
             indent();
         }
 
-        in_kv_pair = false;
+        state.in_kv_pair = false;
         print_("%lf", value->value);
-        n += 1;
+        state.n += 1;
     }
 
     void visit (String* value) override {
         if (not value) return;
 
-        if (not in_kv_pair) {
+        if (not state.in_kv_pair) {
             separator();
             new_line();
             indent();
         }
 
-        in_kv_pair = false;
+        state.in_kv_pair = false;
         print_("\"%s\"", value->value.c_str());
-        n += 1;
+        state.n += 1;
     }
 
     void visit (const std::string& key, IValue* value) override {
@@ -181,112 +189,112 @@ methods:
         indent();
 
         print_("%s = ", key.c_str());
-        in_kv_pair = true;
+        state.in_kv_pair = true;
         this->visit(value);
-        n += 1;
+        state.n += 1;
     }
 
     void visit (Object* value) override {
         if (not value) return;
 
-        if (not in_kv_pair) {
+        if (not state.in_kv_pair) {
             separator();
-            if (depth > 0) new_line();
+            if (state.depth > 0) new_line();
             indent();
         }
 
-        Status previous_status = status;
-        bool previous_multiline_setting = multiline;
-        int m = n;
+        Status previous_status = state.status;
+        bool previous_multiline_setting = settings.multiline;
+        int m = state.n;
 
         { // Count elements in the list to decide print it in one line or multiline
             VisitorCounter counter;
             counter.visit(value);
 
-            if (multiline_auto) {
+            if (settings.multiline_auto) {
                 if (counter.n > 6) {
-                    multiline = true;
+                    settings.multiline = true;
                 } else {
-                    multiline = false;
+                    settings.multiline = false;
                 }
             }
         }
 
         { // Entering the object
             print_("{");
-            n = 0;
-            status = STATUS_IN_OBJECT;
-            in_kv_pair = false;
-            depth += 1;
+            state.n = 0;
+            state.status = STATUS_IN_OBJECT;
+            state.in_kv_pair = false;
+            state.depth += 1;
         }
 
         value->visit(this);
 
         { // Leaving the object
-            depth -= 1; // The reason for depth being decreased BEFORE printing ']' is that I want it to be on same indent as '['
-            if (n > 0) {
+            state.depth -= 1; // The reason for depth being decreased BEFORE printing ']' is that I want it to be on same indent as '['
+            if (state.n > 0) {
                 separator();
                 new_line();
                 indent();
             }
             print_("}");
-            n = m + 1;
-            status = previous_status;
-            multiline = previous_multiline_setting;
+            state.n = m + 1;
+            state.status = previous_status;
+            settings.multiline = previous_multiline_setting;
         }
 
-        if (depth == 0) new_line();
+        if (state.depth == 0) new_line();
     }
 
     void visit (List* value) override {
         if (not value) return;
 
-        if (not in_kv_pair) {
+        if (not state.in_kv_pair) {
             separator();
-            if (depth > 0) new_line();
+            if (state.depth > 0) new_line();
             indent();
         }
 
-        Status previous_status = status;
-        bool previous_multiline_setting = multiline;
-        int m = n;
+        Status previous_status = state.status;
+        bool previous_multiline_setting = settings.multiline;
+        int m = state.n;
 
         { // Count elements in the list to decide print it in one line or multiline
             VisitorCounter counter;
             counter.visit(value);
 
-            if (multiline_auto) {
+            if (settings.multiline_auto) {
                 if (counter.n > 5) {
-                    multiline = true;
+                    settings.multiline = true;
                 } else {
-                    multiline = false;
+                    settings.multiline = false;
                 }
             }
         }
 
         { // Entering the list
             print_("[");
-            n = 0;
-            status = STATUS_IN_LIST;
-            in_kv_pair = false;
-            depth += 1;
+            state.n = 0;
+            state.status = STATUS_IN_LIST;
+            state.in_kv_pair = false;
+            state.depth += 1;
         }
 
         value->visit(this);
 
         { // Leaving the list
-            depth -= 1; // The reason for depth being decreased BEFORE printing ']' is that I want it to be on same indent as '['
-            if (n > 0) {
+            state.depth -= 1; // The reason for depth being decreased BEFORE printing ']' is that I want it to be on same indent as '['
+            if (state.n > 0) {
                 new_line();
                 indent();
             }
             print_("]");
-            n = m + 1;
-            status = previous_status;
-            multiline = previous_multiline_setting;
+            state.n = m + 1;
+            state.status = previous_status;
+            settings.multiline = previous_multiline_setting;
         }
 
-        if (depth == 0) new_line();
+        if (state.depth == 0) new_line();
     }
 #undef print_
 };
