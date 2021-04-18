@@ -7,15 +7,6 @@
 
 namespace SON {
 
-
-namespace ugly {
-    using string = std::string;
-
-    template <typename T>
-    using dynamic_array = std::vector<T>;
-}
-
-
 struct IValue;
 struct Null;
 struct Boolean;
@@ -146,9 +137,9 @@ struct Floating : public IValue {
 
 
 struct String : public IValue {
-    ugly::string value;
+    std::string value;
 
-    String (ugly::string v) : value(std::move(v)) {}
+    String (std::string v) : value(std::move(v)) {}
 
     virtual Kind get_kind () const override { return VALUE_STRING; }
     virtual void visit (IVisitor* visitor) override { visitor->visit(this); }
@@ -163,8 +154,8 @@ struct String : public IValue {
 
 
 struct Object : public IValue {
-    ugly::dynamic_array<ugly::string> keys;
-    ugly::dynamic_array<IValue*> values;
+    std::vector<std::string> keys;
+    std::vector<IValue*> values;
 
 
     virtual Object* as_object() override { return this; }
@@ -186,14 +177,14 @@ struct Object : public IValue {
 
     void visit (IVisitor* visitor) override {
         for (size_t i = 0; i < keys.size(); i++) {
-            ugly::string& k = keys[i];
+            std::string& k = keys[i];
             IValue* v = values[i];
 
             visitor->visit(k, v);
         }
     }
 
-    void emplace (const ugly::string& key, IValue* value) {
+    void emplace (const std::string& key, IValue* value) {
         keys.push_back(key);
         values.push_back(value);
     }
@@ -211,7 +202,7 @@ struct Object : public IValue {
 
 
 struct List : public IValue {
-    ugly::dynamic_array<IValue*> values;
+    std::vector<IValue*> values;
 
     virtual List* as_list() override { return this; }
     virtual Kind get_kind () const override { return VALUE_LIST; }

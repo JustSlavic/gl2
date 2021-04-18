@@ -481,7 +481,7 @@ methods:
         String* key = value->get("key")->as_string();
 
         if (key) {
-            var_name = type->value + "_" + std::to_string(object_n++);
+            var_name = type->value + std::to_string(object_n++);
             config_member.push_back(key->value);
         } else {
             var_name = "config_value";
@@ -500,8 +500,8 @@ methods:
         }
         
         fprintf(cpp,
-            "    SON::%s* %s_value = %s->as_%s();\n"
-            "    if (not %s_value) return 1;\n"
+            "    SON::%s* %s_v = %s->as_%s();\n"
+            "    if (not %s_v) return 1;\n"
             "\n",
             capitalize_type(type->value.c_str()),
             var_name.c_str(),
@@ -515,12 +515,12 @@ methods:
             for (auto name : config_member) {
                 fprintf(cpp, ".%s", name.c_str());
             }
-            fprintf(cpp, " = %s_value->value;\n\n", var_name.c_str());
+            fprintf(cpp, " = %s_v->value;\n\n", var_name.c_str());
         }
 
         if (type->value == "object") {
             std::string upper_object_name = up_one_level_object_name;
-            up_one_level_object_name = var_name + "_value";
+            up_one_level_object_name = var_name + "_v";
             print_struct(value->get("values")->as_list());  // ============= RECURSION =============
             up_one_level_object_name = upper_object_name;
         } else {
@@ -604,7 +604,7 @@ methods:
                 "static config* instance = nullptr;\n"
                 "\n"
                 "const config& config::get_instance() {\n"
-                "    if (not instance) instance = new config();\n"
+                "    if (not instance) { instance = new config(); }\n"
                 "\n"
                 "    return *instance;\n"
                 "}\n"

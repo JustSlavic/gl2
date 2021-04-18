@@ -1,12 +1,10 @@
 #include <stdio.h>
-#include <string.h>
 #include <son.hpp>
-#include <stdarg.h>
 
 
-const char* scheme_output_filename = ".generated/config.scheme.son";
-const char* config_hpp_output_filename = ".generated/config.hpp";
-const char* config_cpp_output_filename = ".generated/config.cpp";
+const char* scheme_filename     = ".generated/config.scheme.son";
+const char* config_hpp_filename = ".generated/config.hpp";
+const char* config_cpp_filename = ".generated/config.cpp";
 
 
 size_t read_file (const char* filename, char* buffer, size_t size) {
@@ -23,180 +21,125 @@ size_t read_file (const char* filename, char* buffer, size_t size) {
 }
 
 
-void print_help () {
-    printf(
-        "Usage: config_builder [options] file...\n"
-        "Options:\n"
-        "    --output, -o                   Specify name of the output file.\n"
-        "    --print, -p                    Print formatted SON object.\n"
-        "    --indent [INTEGER]             Specify indent size.\n"
-        "    --multiline=[auto|true|false]  Multiline mode[1].\n"
-        "    --verbose, -v                  Print log messages.\n"
-        "    --help, -h                     Print this message.\n"
-        "\n"
-        "[1]: Multiline mode defines how SON object will be printed:\n"
-        "     - auto:  objects of size <= 3 and lists of size <= 5 will be printed in one line,\n"
-        "other objects and lists will be printed with every entry on the new line;\n"
-        "     - true:  every object entry and list element will start on the new line;\n"
-        "     - false: everything will be printed in one line.\n"
-        );
-}
-
-
-struct command_line_arguments {
-    char* input_filename = nullptr;
-    bool print_content = false;
-    bool multiline = false;
-    bool multiline_auto = true;
-    int indent_size = 2;
-    bool use_separator = true;
-    bool verbose = false;
-};
-
-
 int main (int argc, char** argv) {
-    command_line_arguments args;
-
-    for (int i = 1; i < argc; i++) {
-        if (strcmp(argv[i], "--help") == 0 || strcmp(argv[i], "-h") == 0) {
-            print_help();
-            return 0;
-        }
-
-        if (strcmp(argv[i], "--print") == 0 || strcmp(argv[i], "-p") == 0) {
-            args.print_content = true;
-            continue;
-        }
-
-        if (strcmp(argv[i], "--indent") == 0) {
-            args.indent_size = atoi(argv[++i]);
-            continue;
-        }
-
-        if (strcmp(argv[i], "--multiline=true") == 0) {
-            args.multiline_auto = false;
-            args.multiline = true;
-            continue;
-        }
-
-        if (strcmp(argv[i], "--multiline=false") == 0) {
-            args.multiline_auto = false;
-            args.multiline = false;
-            continue;
-        }
-
-        if (strcmp(argv[i], "--multiline=auto") == 0) {
-            args.multiline_auto = true;
-            args.multiline = true;
-            continue;
-        }
-
-        if (strcmp(argv[i], "--no-separators") == 0) {
-            args.use_separator = false;
-            continue;
-        }
-
-        if (strcmp(argv[i], "--verbose") == 0 || strcmp(argv[i], "-v") == 0) {
-            args.verbose = true;
-            continue;
-        }
-
-        args.input_filename = argv[i];
-    }
-
-    if (args.input_filename == nullptr) {
-        printf("Please, specify input filename.\n");
+    if (argc < 1) {
+        printf("Please, specify input file.\n");
         return 1;
     }
 
-    if (args.verbose) printf("Parsing %s\n", args.input_filename);
+    const char* input_filename = argv[1];
 
-    const size_t capacity = 10000;
+    const size_t capacity = 10000; // @Probably a bad idea to restrain config to 10k characters!
     char* buffer = (char*)calloc(capacity, sizeof(char));
 
     SON::IValue* config = nullptr;
     SON::IValue* scheme = nullptr;
     SON::IValue* saved_scheme = nullptr;
+
+    // Parse config file.
     {
-        size_t size = read_file(args.input_filename, buffer, capacity);
+        memset(buffer, 0, capacity);
+        size_t size = read_file(input_filename, buffer, capacity);
+        if (size == capacity) {
+            printf("WARNING! Config file size exceeds buffer size = 10k characters!\n");
+            return 1;
+        }
+
+        if (size == 0) {
+            printf("Could not read config file! File does not exists? Check this out.\n");
+            return 1;
+        }
 
         SON::Parser parser;
-        parser.verbose = args.verbose;
-        parser.initialize(buffer, size, args.input_filename);
+        parser.initialize(buffer, size, input_filename);
 
         config = parser.parse();
+
         if (config == nullptr) {
+            printf("Could not parse config! Try to fix it!\n");
+
             parser.terminate();
             free(buffer);
             return 1;
         }
-
-        memset(buffer, 0, capacity);
-
-        size = read_file(scheme_output_filename, buffer, capacity);
-        parser.initialize(buffer, size, scheme_output_filename);
-
-        saved_scheme = parser.parse();
-
-        parser.terminate();
     }
- 
-    free(buffer);
 
-    if (args.print_content) {
-        auto* printer = new SON::VisitorPrint();
-        printer->indent_size = args.indent_size;
-        printer->multiline = args.multiline;
-        printer->multiline_auto = args.multiline_auto;
-        printer->use_separator = args.use_separator;
-        
+    // Try to parse already saved scheme.
+    {
+        memset(buffer, 0, capacity);
+        size_t size = read_file(scheme_filename, buffer, capacity);
+        if (size == capacity) {
+            printf("WARNING! Config file size exceeds buffer size = 10k characters!\n");
+            return 1;
+        }
 
-        // printf("============= CONFIG =============\n");
-        printer->visit(config);
-        printf("\n\n");
+        if (size == 0) {
+            printf("Could not read saved config scheme, but this is fine, we'll use our own generated scheme.\n");
+        } else {
+            SON::Parser parser;
+            parser.initialize(buffer, size, scheme_filename);
 
-        // printf("\n==================================\n\n"
-        //        "============= SCHEME =============\n");
+            saved_scheme = parser.parse();
 
+            if (saved_scheme == nullptr) {
+                printf("Could not parse saved config scheme.\n"
+                    "  Although this is probably fine, if this error repeats consistently,\n"
+                    "  you should check scheme generator, it's probably broken.\n");
+            }
 
-        auto* scheme_visitor = new SON::VisitorIntoScheme();
-        scheme_visitor->visit(config);
-        scheme = scheme_visitor->scheme;
+            parser.terminate();
+        }
+    }
 
-        // printer->visit(scheme);
+    // Generate new scheme from existing config.
+    {
+        SON::VisitorIntoScheme scheme_visitor;
+        scheme_visitor.visit(config);
+        scheme = scheme_visitor.scheme;
+    }
 
-        // printf("\n==================================\n\n"
-        //        "========== SAVED SCHEME ==========\n");
+    bool they_are_equal = scheme and saved_scheme and scheme->equal_to(saved_scheme);
 
-        // printer->visit(saved_scheme);
+    if (not they_are_equal) {
+        // Rewrite scheme with new one AND regenerate cpp and hpp files!
 
-        // printf("\n==================================\n\n");
+        {
+            FILE* f = fopen(scheme_filename, "w");
+            if (f == nullptr) {
+                printf("Could not open file %s. Probably folder does not exist.\n", scheme_filename);
+                return 1;
+            }
 
-        bool they_are_equal = scheme and saved_scheme and scheme_visitor->scheme->equal_to(saved_scheme);
-        if (not they_are_equal) {
-            FILE* f = fopen(scheme_output_filename, "w");
-
-            auto* scheme_printer = new SON::VisitorPrint();
-            scheme_printer->output = f;
-            scheme_printer->visit(scheme);
-
-            delete scheme_printer;
+            SON::VisitorPrint printer;
+            printer.output = f;
+            printer.visit(scheme);
 
             fclose(f);
         }
 
-        FILE* fconfig_hpp = fopen(config_hpp_output_filename, "w");
-        FILE* fconfig_cpp = fopen(config_cpp_output_filename, "w");
+        {
+            FILE* fconfig_hpp = fopen(config_hpp_filename, "w");
+            FILE* fconfig_cpp = fopen(config_cpp_filename, "w");
 
-        auto* cpp_visitor = new SON::VisitorIntoCpp();
-        cpp_visitor->hpp = fconfig_hpp;
-        cpp_visitor->cpp = fconfig_cpp;
-        cpp_visitor->visit(scheme);
-        delete cpp_visitor;
-        fclose(fconfig_hpp);
-        fclose(fconfig_cpp);
+            if (fconfig_hpp == nullptr) {
+                printf("Could not open file %s. Probably folder does not exist.\n", config_hpp_filename);
+                return 1;
+            }
+
+            if (fconfig_cpp == nullptr) {
+                printf("Could not open file %s. Probably folder does not exist.\n", config_cpp_filename);
+                return 1;
+            }
+
+            SON::VisitorIntoCpp cpp_visitor;
+            cpp_visitor.hpp = fconfig_hpp;
+            cpp_visitor.cpp = fconfig_cpp;
+            cpp_visitor.visit(scheme);
+            
+            fclose(fconfig_hpp);
+            fclose(fconfig_cpp);
+        }
     }
-    
 
     delete config;
     delete scheme;

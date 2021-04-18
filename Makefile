@@ -167,13 +167,13 @@ clean:
 
 config: .generated/config.hpp .generated/config.cpp
 
-build/$(SUB_DIR)/config.o: .generated/config.cpp ./Makefile
+build/$(SUB_DIR)/config.o: .generated/config.cpp
 	@mkdir -p $(dir $@)
 	@g++ -MM -MT "$@" $(CXXFLAGS) $< > $*.d
 	g++ $< -c -o $@ $(CXXFLAGS)
 
-.generated/config.hpp .generated/config.cpp .generated/config.scheme.son: config_builder/builder config.son
-	./config_builder/builder config.son -p
+.generated/config.hpp .generated/config.cpp .generated/config.scheme.son: config_builder/builder
+	./config_builder/builder config.son
 
 config_builder/builder: config.son
 	$(MAKE) -C config_builder debug
