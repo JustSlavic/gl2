@@ -57,6 +57,18 @@ inline f64 sqrt(f64 x) {
     return ::std::sqrt(x);
 }
 
+inline f32 lerp (f32 a, f32 b, f32 t) {
+    ASSERT(0.f <= t && t <= 1.f);
+
+    return (1.f - t) * a + t * b;
+}
+
+inline f64 lerp (f64 a, f64 b, f64 t) {
+    ASSERT(0.0 <= t && t <= 1.0);
+
+    return (1.0 - t) * a + t * b;
+}
+
 // =======================
 
 // @Warning! This works only on LITTLE ENDIAN setups

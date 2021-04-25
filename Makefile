@@ -81,9 +81,9 @@ SOURCES = \
 	logging/logging \
 	logging/handler \
 	math/color \
-	math/vec2 \
-	math/vec3 \
-	math/vec4 \
+	math/vector2 \
+	math/vector3 \
+	math/vector4 \
 	math/mat4 \
 	modeling_2d/camera \
 	modeling_2d/model \
@@ -109,7 +109,7 @@ PROJECT_EXE := bin/$(SUB_DIR)/$(PROJECT)
 # ================= RULES ================= #
 
 # Unconditional rules
-.PHONY: prebuild postbuild clean version test config
+.PHONY: prebuild postbuild clean test config
 
 # Silent rules
 # .SILENT:
@@ -125,21 +125,19 @@ test:
 
 # ================= UTILITY ================= #
 
-prebuild: version
+prebuild: src/version.cpp
 	@mkdir -p bin/$(SUB_DIR)
 	@mkdir -p build/$(SUB_DIR)
 
 postbuild:
 	ln -sfn bin/$(SUB_DIR)/$(PROJECT) run
 
-version: src/version.cpp
-	@chmod a+x version.sh
-
 GIT_REF := $(addprefix .git/, $(subst ref: ,, $(shell cat .git/HEAD)))
 
 src/version.cpp: .git/HEAD $(GIT_REF)
 #                          ^^^^^^^^^^ if commit/reset current branch (commit's hash changed)
 #                ^^^^^^^^^ if checked out to another branch
+	@chmod a+x version.sh
 	@./version.sh
 
 clean:

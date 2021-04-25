@@ -130,7 +130,7 @@ color32 color32::make() {
 }
 
 
-color32 color32::make(f32 r, f32 g, f32 b, f32 a) {
+color32 color32::make(f32 r, f32 g, f32 b, f32 a /* = 1.f */) {
     ASSERT(0.f <= r && r <= 1.f);
     ASSERT(0.f <= g && g <= 1.f);
     ASSERT(0.f <= b && b <= 1.f);
@@ -146,7 +146,7 @@ color32 color32::make(f32 r, f32 g, f32 b, f32 a) {
 }
 
 
-color32 color32::make(i32 r, i32 g, i32 b, i32 a) {
+color32 color32::make(i32 r, i32 g, i32 b, i32 a /* = 255 */) {
     ASSERT(0 <= r && r <= 255);
     ASSERT(0 <= g && g <= 255);
     ASSERT(0 <= b && b <= 255);
@@ -162,7 +162,7 @@ color32 color32::make(i32 r, i32 g, i32 b, i32 a) {
 }
 
 
-color32 color32::make(u32 r, u32 g, u32 b, u32 a) {
+color32 color32::make(u32 r, u32 g, u32 b, u32 a /* = 255 */) {
     ASSERT(r <= 255);
     ASSERT(g <= 255);
     ASSERT(b <= 255);

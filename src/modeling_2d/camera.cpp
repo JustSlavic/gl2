@@ -22,7 +22,7 @@ void update(Camera2D *camera, f32 dt) {
 }
 
 Camera2D::Camera2D() 
-    : position(glm::vec3(0.f, 0.f, -1.f))
+    : position{0.f, 0.f, -1.f}
 {
     Dispatcher<EventFrameFinished>::subscribe([this](EventFrameFinished e){ 
         update(this, e.dt);
@@ -36,22 +36,25 @@ Camera2D::Camera2D()
 
 glm::mat4 Camera2D::get_view_matrix() const {
     glm::vec3 up = glm::vec3(0.f, 1.f, 0.f);
-    glm::vec3 direction = get_forward_vector();
-    return glm::lookAt(position, position + direction, up);
+    
+    glm::vec3 direction;
+    math::vector3 forward = get_forward_vector();
+    direction.x = forward.x;
+    direction.y = forward.y;
+    direction.z = forward.z;
+
+    glm::vec3 glm_position;
+    glm_position.x = position.x;
+    glm_position.y = position.y;
+    glm_position.z = position.z;
+
+    return glm::lookAt(glm_position, glm_position + direction, up);
 }
 
-glm::vec3 Camera2D::get_forward_vector() const {
-    return glm::vec3(0.f, 0.f, 1.f);
+math::vector3 Camera2D::get_forward_vector () const {
+    return { 0.f, 0.f, 1.f };
 }
 
-glm::vec3 Camera2D::get_up_vector() const {
-    return glm::vec3(0.f, 1.f, 0.f);
-}
-
-math::vec3 Camera2D::get_forward_vector_math () const {
-    return math::vec3(0.f, 0.f, 1.f);
-}
-
-math::vec3 Camera2D::get_up_vector_math () const {
-    return math::vec3(0.f, 1.f, 0.f);
+math::vector3 Camera2D::get_up_vector () const {
+    return { 0.f, 1.f, 0.f };
 }

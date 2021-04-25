@@ -1,6 +1,7 @@
 #pragma once
 
 #include <defines.h>
+#include "float.hpp"
 
 namespace math {
 
@@ -65,6 +66,16 @@ inline bool operator == (const color32& lhs, const color32& rhs) {
 
 inline bool operator != (const color32& lhs, const color32& rhs) {
     return !(lhs == rhs);
+}
+
+
+inline color24 lerp (const color24& a, const color24& b, f32 t) {
+    return { lerp(a.r, b.r, t), lerp(a.g, b.g, t), lerp(a.b, b.b, t) };
+}
+
+
+inline color32 lerp (const color32& a, const color32& b, f32 t) {
+    return { lerp(a.r, b.r, t), lerp(a.g, b.g, t), lerp(a.b, b.b, t), lerp(a.a, b.a, t) };
 }
 
 

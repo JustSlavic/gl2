@@ -99,3 +99,8 @@ TEST(Float, NaN) {
 
 }
 
+TEST(Float, Lerp) {
+    EXPECT_EQ(math::lerp(5.f, 9.f, 0.f), 5.f);
+    EXPECT_EQ(math::lerp(5.f, 9.f, 1.f), 9.f);
+    EXPECT_EQ(math::lerp(5.f, 9.f, .5f), 7.f);
+}

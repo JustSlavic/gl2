@@ -9,7 +9,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include <math/vec3.hpp>
+#include <math/vector3.hpp>
 #include <fs/watcher.h>
 #include <graphics/graphics_api.h>
 #include <graphics/shader.h>
@@ -29,8 +29,8 @@ constexpr f32 NEAR_CLIP_DISTANCE = 0.1f;
 constexpr f32 FAR_CLIP_DISTANCE = 1000.f;
 
 namespace gl2 {
-    math::vec3 intersect_z0_plane (math::vec3 ray_start, math::vec3 vector) {
-        return intersect_plane(ray_start, vector, math::vec3(0.f), math::vec3(0.f, 0.f, 1.f));
+    math::vector3 intersect_z0_plane (math::vector3 ray_start, math::vector3 vector) {
+        return intersect_plane(ray_start, vector, math::vector3::make(0.f), math::vector3::make(0.f, 0.f, 1.f));
     }
 
     // Instantiating template BEFORE first usage
@@ -74,6 +74,18 @@ namespace gl2 {
         // glm::mat4 projection = glm::ortho(-(f32)w*.5f/h, (f32)w*.5f/h, -.5f, .5f);
         auto projection = math::projection(window_ratio * NEAR_CLIP_DISTANCE, NEAR_CLIP_DISTANCE, NEAR_CLIP_DISTANCE, FAR_CLIP_DISTANCE);
 
+
+        printf("projection matrix :\n"
+               "|%5.2f, %5.2f, %5.2f, %5.2f|\n"
+               "|%5.2f, %5.2f, %5.2f, %5.2f|\n"
+               "|%5.2f, %5.2f, %5.2f, %5.2f|\n"
+               "|%5.2f, %5.2f, %5.2f, %5.2f|\n",
+        projection._11, projection._12, projection._13, projection._14,
+        projection._21, projection._22, projection._23, projection._24,
+        projection._31, projection._32, projection._33, projection._34,
+        projection._41, projection._42, projection._43, projection._44
+        );
+
 #ifdef GRAVITY
         Model model;
 #endif
@@ -89,13 +101,13 @@ namespace gl2 {
                 auto& m = Mouse::instance();
                 // printf("==========================\n");
                 
-                math::vec3 position = math::vec3(camera.position.x, camera.position.y, camera.position.z);
+                math::vector3 position = camera.position;
                 // printf("position = (%5.2f, %5.2f, %5.2f)\n", position.x, position.y, position.z);
                 
                 
-                math::vec3 forward = camera.get_forward_vector_math();
-                math::vec3 up = camera.get_up_vector_math();
-                math::vec3 right = math::cross(forward, up);
+                math::vector3 forward = camera.get_forward_vector();
+                math::vector3 up = camera.get_up_vector();
+                math::vector3 right = math::cross(forward, up);
 
                 // f32 t = 2 * NEAR_CLIP_DISTANCE * ::std::tan(.5f * math::radians(45.f));
                 // f32 clip_width = t * window_ratio;
@@ -106,19 +118,19 @@ namespace gl2 {
 
                 // printf("NEAR_CLIP{ WIDTH = %5.2f; HEIGHT = %5.2f; }\n", clip_width, clip_height);
 
-                math::vec2 mouse = math::vec2(
+                math::vector2 mouse = {
                     ( f32(m.x) / f32(w) - .5f),
                     (-f32(m.y) / f32(h) + .5f)
-                );
+                };
                 // printf("mouse = (%5.2f, %5.2f)\n", mouse.x, mouse.y);
 
-                math::vec3 center = position + forward * NEAR_CLIP_DISTANCE;
-                math::vec3 point = center + right*mouse.x * clip_width + up*mouse.y * clip_height;
+                math::vector3 center = position + forward * NEAR_CLIP_DISTANCE;
+                math::vector3 point = center + right*mouse.x * clip_width + up*mouse.y * clip_height;
                 // printf("point = (%5.2f, %5.2f, %5.2f)\n", point.x, point.y, point.z);
 
-                math::vec3 direction = point - position;
+                math::vector3 direction = point - position;
 
-                math::vec3 intersection = intersect_z0_plane(position, direction);
+                math::vector3 intersection = intersect_z0_plane(position, direction);
                 // printf("intersection = (%5.2f, %5.2f, %5.2f)\n", intersection.x, intersection.y, intersection.z);
 
 #ifdef GRAVITY

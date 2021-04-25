@@ -92,5 +92,9 @@ inline f32 dot (const vector2& a, const vector2& b) {
     return a.x * b.x + a.y * b.y;
 }
 
+inline vector2 lerp (vector2 a, vector2 b, f32 t) {
+    return { lerp(a.x, b.x, t), lerp(a.y, b.y, t) };
+}
+
 
 } // math

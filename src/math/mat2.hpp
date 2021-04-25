@@ -57,13 +57,13 @@ inline mat2 operator * (const mat2& a, const mat2& b) {
 }
 
 inline vector2 operator * (const mat2& m, const vector2& v) {
-    return vector2(m._11 * v._1 + m._12 * v._2,
-                m._21 * v._1 + m._22 * v._2);
+    return { m._11 * v._1 + m._12 * v._2,
+             m._21 * v._1 + m._22 * v._2 };
 }
 
 inline vector2 operator * (const vector2& v, const mat2& m) {
-    return vector2(v._1 * m._11 + v._2 * m._21,
-                v._1 * m._12 + v._2 * m._22);
+    return { v._1 * m._11 + v._2 * m._21,
+             v._1 * m._12 + v._2 * m._22 };
 }
 
 inline mat2 operator * (const mat2& m, f32 a) {

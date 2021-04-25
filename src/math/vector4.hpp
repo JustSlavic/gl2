@@ -98,4 +98,8 @@ inline bool operator != (const vector4& a, const vector4& b) {
     return !(a == b);
 }
 
+inline vector4 lerp (const vector4& a, const vector4& b, f32 t) {
+    return { lerp(a.x, b.x, t), lerp(a.y, b.y, t), lerp(a.z, b.z, t), lerp(a.w, b.w, t) };
+}
+
 } // math

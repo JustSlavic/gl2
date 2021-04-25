@@ -6,18 +6,18 @@
 #include <graphics/vertex_array.h>
 #include <graphics/index_buffer.h>
 
-#include <math/vec2.hpp>
+#include <math/vector2.hpp>
 
 
 struct body {
-    math::vec2 position;
+    math::vector2 position;
     f32 vx, vy;
     f32 m;
 
     body(f32 x, f32 y);
-    body(const math::vec2& p);
+    body(const math::vector2& p);
     body(f32 x, f32 y, f32 vx, f32 vy, f32 m);
-    body(const math::vec2& p, f32 vx, f32 vy, f32 m);
+    body(const math::vector2& p, f32 vx, f32 vy, f32 m);
 };
 
 struct Model {

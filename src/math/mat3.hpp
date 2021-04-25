@@ -62,15 +62,15 @@ inline mat3 operator * (const mat3& a, const mat3& b) {
 }
 
 inline vector3 operator * (const mat3& m, const vector3& v) {
-    return vector3(m._11 * v._1 + m._12 * v._2 + m._13 * v._3,
-                m._21 * v._1 + m._22 * v._2 + m._23 * v._3,
-                m._31 * v._1 + m._32 * v._2 + m._33 * v._3);
+    return { m._11 * v._1 + m._12 * v._2 + m._13 * v._3,
+             m._21 * v._1 + m._22 * v._2 + m._23 * v._3,
+             m._31 * v._1 + m._32 * v._2 + m._33 * v._3 };
 }
 
 inline vector3 operator * (const vector3& v, const mat3& m) {
-    return vector3(v._1 * m._11 + v._2 * m._21 + v._3 * m._31,
-                v._1 * m._12 + v._2 * m._22 + v._3 * m._32,
-                v._1 * m._13 + v._2 * m._23 + v._3 * m._33);
+    return { v._1 * m._11 + v._2 * m._21 + v._3 * m._31,
+             v._1 * m._12 + v._2 * m._22 + v._3 * m._32,
+             v._1 * m._13 + v._2 * m._23 + v._3 * m._33 };
 }
 
 inline mat3 operator * (const mat3& m, f32 a) {

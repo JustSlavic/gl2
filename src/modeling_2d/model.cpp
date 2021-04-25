@@ -14,28 +14,28 @@ inline f32 mass_to_radius(f32 m) {
 
 
 body::body(f32 x, f32 y)
-    : position(x, y)
+    : position{x, y}
     , vx(0.f)
     , vy(0.f)
     , m(1.f)
 {}
 
-body::body(const math::vec2& p)
-    : position(p)
+body::body(const math::vector2& p)
+    : position{p}
     , vx(0.f)
     , vy(0.f)
     , m(1.f)
 {}
 
 body::body(f32 x, f32 y, f32 vx, f32 vy, f32 m)
-    : position(x, y)
+    : position{x, y}
     , vx(vx)
     , vy(vy)
     , m(m)
 {}
 
-body::body(const math::vec2& p, f32 vx, f32 vy, f32 m)
-    : position(p)
+body::body(const math::vector2& p, f32 vx, f32 vy, f32 m)
+    : position{p}
     , vx(vx)
     , vy(vy)
     , m(m)
@@ -190,10 +190,10 @@ void interact_elastic(std::vector<body>& bodies, std::vector<body>& buffer) {
                 interacted[i] = true;
                 interacted[j] = true;
 
-                auto a_v = math::vec2(a.vx, a.vy);
-                auto b_v = math::vec2(b.vx, b.vy);
+                auto a_v = math::vector2::make(a.vx, a.vy);
+                auto b_v = math::vector2::make(b.vx, b.vy);
 
-                math::vec2 a_direction = -math::normalize(a_v);
+                math::vector2 a_direction = -math::normalize(a_v);
                 // auto b_direction = -glm::normalize(b_v);
 
                 f32 av = math::length(a_v);
@@ -231,7 +231,7 @@ void Model::move_bodies(f32 dt) {
     for (size_t i = 0; i < bodies.size(); i++) {
         auto& b = bodies[i];
 
-        math::vec2 new_position = b.position + math::vec2(b.vx, b.vy) * dt;
+        math::vector2 new_position = b.position + math::vector2::make(b.vx, b.vy) * dt;
 
         f32 new_vx = b.vx;
         f32 new_vy = b.vy;
@@ -239,7 +239,7 @@ void Model::move_bodies(f32 dt) {
         constexpr f32 G = .00001;
 
         for (auto& other : bodies) {
-            math::vec2 dr = other.position - b.position;
+            math::vector2 dr = other.position - b.position;
             f32 dr_2 = dr.length_2();
             f32 dr_1 = math::sqrt(dr_2);
 
