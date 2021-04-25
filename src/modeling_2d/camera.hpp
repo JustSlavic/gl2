@@ -9,6 +9,7 @@ struct Camera2D {
     Camera2D();
 
     glm::mat4 get_view_matrix() const;
+    math::mat4 get_view_matrix_math () const;
 
     math::vector3 get_forward_vector () const;
     math::vector3 get_up_vector      () const;

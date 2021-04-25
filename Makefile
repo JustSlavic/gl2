@@ -89,10 +89,10 @@ SOURCES = \
 	modeling_2d/model \
 	modeling_2d/creatures \
 	service/shader_library \
-	parse/reader \
-	son/object \
-	son/parser \
-	son/visitor \
+	common/parse/reader \
+	common/son/object \
+	common/son/parser \
+	common/son/visitor \
 
 
 OBJECTS      := $(addprefix build/$(SUB_DIR)/, $(addsuffix .o,   $(SOURCES)))
@@ -145,6 +145,7 @@ clean:
 	@find build -type f -name '*.d' -delete
 	@rm -fv build/*/lib$(PROJECT).a
 	@rm -fv bin/*/$(PROJECT)
+	@rm -fv .generated/*
 	@rm -fv run
 	@rm -fv test
 	@rm -fv perf.data
@@ -190,7 +191,7 @@ build/$(SUB_DIR)/%.o: src/%.cpp ./Makefile
 	@g++ -MM -MT "$@" $(CXXFLAGS) $< > build/$(SUB_DIR)/$*.d
 	g++ $< -c -o $@ $(CXXFLAGS)
 
-build/$(SUB_DIR)/%.o: common/%.cpp ./Makefile
+build/$(SUB_DIR)/common/%.o: common/%.cpp ./Makefile
 	@mkdir -p $(dir $@)
 	@g++ -MM -MT "$@" $(CXXFLAGS) $< > build/$(SUB_DIR)/$*.d
 	g++ $< -c -o $@ $(CXXFLAGS)

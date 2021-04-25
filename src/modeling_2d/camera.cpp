@@ -51,6 +51,18 @@ glm::mat4 Camera2D::get_view_matrix() const {
     return glm::lookAt(glm_position, glm_position + direction, up);
 }
 
+math::mat4 Camera2D::get_view_matrix_math() const {
+    glm::mat4 result = get_view_matrix();
+
+    return {
+        result[0][0], result[0][1], result[0][2], result[0][3],
+        result[1][0], result[1][1], result[1][2], result[1][3],
+        result[2][0], result[2][1], result[2][2], result[2][3],
+        result[3][0], result[3][1], result[3][2], result[3][3]
+    };
+}
+
+
 math::vector3 Camera2D::get_forward_vector () const {
     return { 0.f, 0.f, 1.f };
 }

@@ -29,6 +29,18 @@ constexpr f32 NEAR_CLIP_DISTANCE = 0.1f;
 constexpr f32 FAR_CLIP_DISTANCE = 1000.f;
 
 namespace gl2 {
+    void print_matrix4(math::matrix4 m) {
+        printf("|%5.2f, %5.2f, %5.2f, %5.2f|\n"
+               "|%5.2f, %5.2f, %5.2f, %5.2f|\n"
+               "|%5.2f, %5.2f, %5.2f, %5.2f|\n"
+               "|%5.2f, %5.2f, %5.2f, %5.2f|\n",
+            m._11, m._12, m._13, m._14,
+            m._21, m._22, m._23, m._24,
+            m._31, m._32, m._33, m._34,
+            m._41, m._42, m._43, m._44
+        );
+    }
+
     math::vector3 intersect_z0_plane (math::vector3 ray_start, math::vector3 vector) {
         return intersect_plane(ray_start, vector, math::vector3::make(0.f), math::vector3::make(0.f, 0.f, 1.f));
     }
@@ -75,16 +87,10 @@ namespace gl2 {
         auto projection = math::projection(window_ratio * NEAR_CLIP_DISTANCE, NEAR_CLIP_DISTANCE, NEAR_CLIP_DISTANCE, FAR_CLIP_DISTANCE);
 
 
-        printf("projection matrix :\n"
-               "|%5.2f, %5.2f, %5.2f, %5.2f|\n"
-               "|%5.2f, %5.2f, %5.2f, %5.2f|\n"
-               "|%5.2f, %5.2f, %5.2f, %5.2f|\n"
-               "|%5.2f, %5.2f, %5.2f, %5.2f|\n",
-        projection._11, projection._12, projection._13, projection._14,
-        projection._21, projection._22, projection._23, projection._24,
-        projection._31, projection._32, projection._33, projection._34,
-        projection._41, projection._42, projection._43, projection._44
-        );
+        printf("projection matrix:\n");
+        print_matrix4(projection);
+        printf("\n");
+
 
 #ifdef GRAVITY
         Model model;
@@ -95,6 +101,10 @@ namespace gl2 {
 #endif
 
         Camera2D camera;
+        printf("view matrix:\n");
+        print_matrix4(camera.get_view_matrix_math());
+        printf("\n");
+
 
         Dispatcher<Mouse::ButtonPressEvent>::subscribe([&] (Mouse::ButtonPressEvent e) {
             if (e.button == Mouse::LEFT) {
@@ -131,7 +141,23 @@ namespace gl2 {
                 math::vector3 direction = point - position;
 
                 math::vector3 intersection = intersect_z0_plane(position, direction);
-                // printf("intersection = (%5.2f, %5.2f, %5.2f)\n", intersection.x, intersection.y, intersection.z);
+
+                printf("p = (%5.2f, %5.2f, %5.2f)\n", intersection.x, intersection.y, intersection.z);
+
+                math::mat4 model_ = math::mat4::eye();
+                math::mat4 view_ = camera.get_view_matrix_math();
+
+                math::vector4 q = math::vector4::make(intersection, 0.f);
+
+                q = model_ * q;
+                printf("in space: q = (%5.2f, %5.2f, %5.2f, %5.2f)\n", q.x, q.y, q.z, q.w);
+                q = q * view_;
+                printf("in camera: q = (%5.2f, %5.2f, %5.2f, %5.2f)\n", q.x, q.y, q.z, q.w);
+                q = projection * q;
+                printf("in screen: q = (%5.2f, %5.2f, %5.2f, %5.2f)\n", q.x, q.y, q.z, q.w);
+
+                q = q / q.w;
+                printf("normalized: q = (%5.2f, %5.2f, %5.2f, %5.2f)\n", q.x, q.y, q.z, q.w);
 
 #ifdef GRAVITY
                 model.add_body(intersection.x, intersection.y);

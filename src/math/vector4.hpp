@@ -12,9 +12,10 @@ namespace math {
 
 struct vector4 {
     union {
-        struct { f32 x; f32 y; f32 z; f32 w; };
-        struct { f32 u; f32 v; f32 s; f32 t; };
-        struct { f32 r; f32 g; f32 b; f32 a; };
+        struct { f32  x,  y,  z,  w; };
+        struct { f32  u,  v,  s,  t; };
+        struct { f32  r,  g,  b,  a; };
+        struct { f32 _1, _2, _3, _4; };
 
         struct { vector2 xy, zw; };
         struct { vector2 uv, st; };
@@ -88,6 +89,10 @@ inline vector4 operator *  (const vector4& a, f32 c) {
 
 inline vector4 operator *  (f32 c, const vector4& a) {
     return { c * a.x, c * a.y, c * a.z, c * a.w };
+}
+
+inline vector4 operator /  (const vector4& v, f32 c) {
+    return { v.x / c, v.y / c, v.z / c, v.w / c };
 }
 
 inline bool operator == (const vector4& a, const vector4& b) {

@@ -1,9 +1,11 @@
 #pragma once
 
 #include <defines.h>
+#include "vector4.hpp"
 
 
 namespace math {
+
 
 struct mat4 {
     union {
@@ -58,6 +60,30 @@ inline mat4 operator * (const mat4& lhs, const mat4& rhs) {
 
     return result;
 }
+
+inline vector4 operator * (const mat4& m, const vector4& v) {
+    vector4 result;
+
+    result._1 = m._11 * v._1 + m._12 * v._2 + m._13 * v._3 + m._14 * v._4;
+    result._2 = m._21 * v._1 + m._22 * v._2 + m._23 * v._3 + m._24 * v._4;
+    result._3 = m._31 * v._1 + m._32 * v._2 + m._33 * v._3 + m._34 * v._4;
+    result._4 = m._41 * v._1 + m._42 * v._2 + m._43 * v._3 + m._44 * v._4;
+
+    return result;
+}
+
+
+inline vector4 operator * (const vector4& v, const matrix4& m) {
+    vector4 result;
+
+    result._1 = v._1 * m._11 + v._2 * m._21 + v._3 * m._31 + v._4 * m._41;
+    result._2 = v._1 * m._12 + v._2 * m._22 + v._3 * m._32 + v._4 * m._42;
+    result._3 = v._1 * m._13 + v._2 * m._23 + v._3 * m._33 + v._4 * m._43;
+    result._4 = v._1 * m._14 + v._2 * m._24 + v._3 * m._34 + v._4 * m._44;
+
+    return result;
+}
+
 
 } // math
 
