@@ -1,6 +1,6 @@
 #pragma once
 
-#include "vec2.hpp"
+#include "vector2.hpp"
 
 namespace math {
 
@@ -56,13 +56,13 @@ inline mat2 operator * (const mat2& a, const mat2& b) {
     return result;
 }
 
-inline vec2 operator * (const mat2& m, const vec2& v) {
-    return vec2(m._11 * v._1 + m._12 * v._2,
+inline vector2 operator * (const mat2& m, const vector2& v) {
+    return vector2(m._11 * v._1 + m._12 * v._2,
                 m._21 * v._1 + m._22 * v._2);
 }
 
-inline vec2 operator * (const vec2& v, const mat2& m) {
-    return vec2(v._1 * m._11 + v._2 * m._21,
+inline vector2 operator * (const vector2& v, const mat2& m) {
+    return vector2(v._1 * m._11 + v._2 * m._21,
                 v._1 * m._12 + v._2 * m._22);
 }
 

@@ -38,32 +38,20 @@ LDFLAGS = \
 
 
 SOURCES = \
-	math/vec2 \
-	math/vec3 \
-	math/vec4 \
-	math/mat4 \
+	math/vector2 \
+	math/vector3 \
+	math/vector4 \
 	math/color \
-	graphics/shader \
-	logging/logging \
-	logging/handler \
-	service/abstract_object \
-	service/parse/abstract_object_parser \
-	service/storage \
-	service/parse/reader \
 	service/str_id \
-	service/shader_manager \
 	utils \
 
 TESTCPP = \
-	abstract_object \
-	parser \
-	storage \
+	float \
+	vec2 \
+	vec3 \
+	vec4 \
 # 	str_id \
 # 	bit_masks \
-# 	float \
-# 	vec2 \
-# 	vec3 \
-# 	vec4 \
 # 	mat4 \
 # 	color \
 # 	shader_manager \
