@@ -1,4 +1,4 @@
-#include "str_id.hpp"
+#include "string_id.hpp"
 #include <defines.h>
 
 #include <vector>
@@ -10,7 +10,7 @@
 namespace service {
 
 constexpr size_t POOL_SIZE = (1 << 10); // 1024 bytes (1 Kb)
-struct str_id_pool {
+struct string_id_pool {
     char* data = nullptr;
     char* end = nullptr;
     bool initialized = false;
@@ -21,7 +21,7 @@ struct str_id_pool {
         size_t used_space = 0;     // in bytes
     } statistics;
 
-    ~str_id_pool() {
+    ~string_id_pool() {
         terminate();
     }
 
@@ -64,9 +64,9 @@ struct str_id_pool {
         statistics.used_space += id_len + 1;
 
         printf("statistics {\n"
-               "    saved_ids = %ld;\n"
-               "    consumed_space = %ld bytes;\n"
-               "    used_space = %ld bytes;\n"
+               "    saved ids = %ld;\n"
+               "    overall space = %ld bytes;\n"
+               "    used space = %ld bytes;\n"
                "}\n",
                statistics.saved_ids,
                statistics.consumed_space,
@@ -78,37 +78,37 @@ struct str_id_pool {
 };
 
 
-str_id_pool pool;
+static string_id_pool pool;
 
 
-str_id::str_id () {
+string_id::string_id () {
     if (!pool.initialized) {
         pool.initialize();
     }
 }
 
-str_id::str_id (const char* id_)
-    : str_id()
+string_id::string_id (const char* id_)
+    : string_id()
 {
     id = pool.create(id_);
 }
 
-str_id::str_id (const char* buffer, size_t len)
-    : str_id(std::string(buffer, len))
+string_id::string_id (const char* buffer, size_t len)
+    : string_id(std::string(buffer, len))
 {
 }
 
-str_id::str_id (const std::string& id_)
-    : str_id()
+string_id::string_id (const std::string& id_)
+    : string_id()
 {
     id = pool.create(id_.data());
 }
 
-bool operator == (const str_id& lhs, const str_id& rhs) {
+bool operator == (const string_id& lhs, const string_id& rhs) {
     return lhs.id == rhs.id;
 }
 
-bool operator != (const str_id& lhs, const str_id& rhs) {
+bool operator != (const string_id& lhs, const string_id& rhs) {
     return lhs.id != rhs.id;
 }
 

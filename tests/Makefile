@@ -42,7 +42,7 @@ SOURCES = \
 	math/vector3 \
 	math/vector4 \
 	math/color \
-	service/str_id \
+	service/string_id \
 	utils \
 
 TESTCPP = \
@@ -50,7 +50,7 @@ TESTCPP = \
 	vec2 \
 	vec3 \
 	vec4 \
-# 	str_id \
+	string_id \
 # 	bit_masks \
 # 	mat4 \
 # 	color \
