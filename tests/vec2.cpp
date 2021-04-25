@@ -16,7 +16,7 @@ TEST(Vector2, XY_Coords) {
 }
 
 TEST(Vector2, FromVec3) {
-    auto v = math::vector3(9.f, 2.f, 5.f);
+    auto v = math::vector3::make(9.f, 2.f, 5.f);
     auto w = v.xy;
 
     EXPECT_EQ(w, math::vector2::make(9.f, 2.f));

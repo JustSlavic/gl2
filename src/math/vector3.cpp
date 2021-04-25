@@ -4,43 +4,6 @@
 
 namespace math {
 
-
-vector3::vector3 ()                     
-    : x(0.f)
-    , y(0.f)
-    , z(0.f) 
-{}
-
-vector3::vector3 (f32 v)                
-    : x(v)
-    , y(v)
-    , z(v)   
-{}
-
-vector3::vector3 (f32 x, f32 y, f32 z)  
-    : x(x)
-    , y(y)
-    , z(z)   
-{}
-
-vector3::vector3 (const vector2& v)        
-    : x(v.x)
-    , y(v.y)
-    , z(0.f) 
-{}
-
-vector3::vector3 (const vector2& v, f32 z) 
-    : x(v.x)
-    , y(v.y)
-    , z(z)   
-{}
-
-vector3::vector3 (f32 x, const vector2& v) 
-    : x(x)
-    , y(v.x)
-    , z(v.y) 
-{}
-
 //
 // Let's say ray intersects plane in point p, thus vector(p0,p) = p - p0 lies on the plane.
 //   => dot(p - p0, n) == 0
@@ -64,7 +27,7 @@ math::vector3 intersect_plane(
     f32 denom = math::dot(r, n);
 
     if (math::equal(denom, 0.f)) {
-        return math::vector3(math::consts<f32>::nan());
+        return math::vector3::make(math::consts<f32>::nan());
     }
 
     f32 t = math::dot(p0 - r0, n)   / denom;

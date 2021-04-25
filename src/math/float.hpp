@@ -24,19 +24,19 @@ inline bool equal(f64 a, f64 b) {
 }
 
 inline f32 radians(f32 a) {
-    return a * ::math::consts<f32>::pi() / 180.f;
+    return a * consts<f32>::pi() / 180.f;
 }
 
 inline f64 radians(f64 a) {
-    return a * ::math::consts<f64>::pi() / 180.0;
+    return a * consts<f64>::pi() / 180.0;
 }
 
 inline f32 angles(f32 a) {
-    return a * 180.f / ::math::consts<f32>::pi();
+    return a * 180.f / consts<f32>::pi();
 }
 
 inline f64 angles(f64 a) {
-    return a * 180.0 / ::math::consts<f64>::pi();
+    return a * 180.0 / consts<f64>::pi();
 }
 
 // @todo make all operations below by myself

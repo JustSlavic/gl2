@@ -6,7 +6,7 @@
 
 namespace math {
 
-struct vector3;
+
 struct vector2 {
     union {
         struct { f32  x,  y; };
