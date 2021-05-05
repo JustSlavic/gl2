@@ -1,5 +1,8 @@
 #pragma once
 
+#include <defines.h>
+
+
 namespace os {
 
 

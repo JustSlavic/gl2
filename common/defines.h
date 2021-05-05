@@ -1,16 +1,12 @@
 #ifndef GIR1_DEFINES_H
 #define GIR1_DEFINES_H
 
-#include <cstdio>
-#include <cstdlib>
-#include <cstdint>
 
 #include "typedef.hpp"
 
 
 #define STRINGIFY2(X) #X
 #define STRINGIFY(X) STRINGIFY2(X)
-#define methods public
 
 
 #ifdef DEBUG

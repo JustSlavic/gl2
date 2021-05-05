@@ -72,6 +72,7 @@ inline f64 lerp (f64 a, f64 b, f64 t) {
 // =======================
 
 // @Warning! This works only on LITTLE ENDIAN setups
+#ifdef PLATFORM_LINUX
 using IEEE_754_f32_repr = union {
     struct {
         u32 mantissa : 23;
@@ -91,6 +92,7 @@ using IEEE_754_f64_repr = union {
 
     f32 value;
 };
+#endif // PLATFORM_LINUX
 
 } // math
 

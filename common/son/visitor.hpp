@@ -15,7 +15,7 @@ struct VisitorCounter : public IVisitor {
 
     int n = 0;
 
-methods:
+public:
     void visit (IValue* value) override {
         Super::visit(value);
     }
@@ -308,7 +308,7 @@ struct VisitorIntoScheme : public IVisitor {
 
     bool in_list = false;
 
-methods:
+public:
     virtual void visit (IValue* value) override {
         Super::visit(value);
     }
@@ -427,7 +427,7 @@ struct VisitorIntoCpp : public IVisitor {
     std::vector<std::string> config_member;
     std::string up_one_level_object_name;
 
-methods:
+public:
 #define print_(...) \
     { indent(); fprintf(hpp, __VA_ARGS__); new_line(); } void(0)
 

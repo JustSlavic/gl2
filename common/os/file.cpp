@@ -2,15 +2,15 @@
 
 namespace os {
 
-#ifdef __linux__
-#include "linux/path.cpp"
+#ifdef PLATFORM_LINUX
+#include "linux/file.cpp"
 #endif
 
-#ifdef _WIN32
-#include "windows/path.cpp"
+#ifdef PLATFORM_WINDOWS
+#include "windows/file.cpp"
 #endif
 
-#ifdef __APPLE__
+#ifdef PLATFORM_APPLE
 #error "Path for APPLE is not implemented!"
 // #include "apple/path.cpp"
 #endif
