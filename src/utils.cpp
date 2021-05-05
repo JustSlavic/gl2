@@ -5,10 +5,8 @@
 #include <sstream>
 #include <ctime>
 
-#ifdef __linux__
+#ifdef PLATFORM_LINUX
 #include <unistd.h>
-#else
-#error "This platform not supported"
 #endif
 
 #include <GL/glew.h>
@@ -39,7 +37,7 @@ std::string read_whole_file(const char *filename) {
 
 
 std::string get_current_path() {
-#ifdef __linux__
+#ifdef PLATFORM_LINUX
     // ssize_t readlink(const char *path, char *buf, size_t bufsiz);
     char* dir_name = get_current_dir_name();
     std::string result(dir_name);
