@@ -15,4 +15,13 @@ namespace os {
 // #include "apple/path.cpp"
 #endif
 
+
+template <>
+i32 file::writer::write (i32 value) {
+	ASSERT(descriptor);
+
+	return fprintf(descriptor, "%d", value);
+}
+
+
 } // os

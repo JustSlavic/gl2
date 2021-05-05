@@ -1,25 +1,28 @@
 #pragma once
 
 #include <defines.h>
-#include <os/path.hpp>
+#include <string>
 
 
 namespace os {
 
 
 struct file {
-    path filepath;
-
+public:
     struct reader {
         FILE* descriptor = nullptr;
 
-        reader(const char* filename) {
-            descriptor = fopen(filename, "r");
+        reader () = default;
+
+        explicit reader (const char* filename) {
+            if (filename) {
+                descriptor = fopen(filename, "r");
+            }
         }
 
-        reader(const reader&) = delete;
+        reader (const reader&) = delete;
 
-        reader(reader&& other)
+        reader (reader&& other) noexcept
             :descriptor(other.descriptor)
         {
             other.descriptor = nullptr;
@@ -28,39 +31,54 @@ struct file {
         ~reader () { if (descriptor) fclose(descriptor); }
 
         bool good () const { return descriptor != nullptr; }
-
-        u64 read_str (char* buffer, size_t n);
-
-        u64 read_i8  (i8*);
-        u64 read_i16 (i16*);
-        u64 read_i32 (i32*);
-        u64 read_i64 (i64*);
-
-        u64 read_u8  (u8*);
-        u64 read_u16 (u16*);
-        u64 read_u32 (u32*);
-        u64 read_u64 (u64*);
-
-        u64 read_f32 (f32*);
-        u64 read_f64 (f64*);
     };
 
     struct writer {
         FILE* descriptor = nullptr;
 
+        explicit writer (const char* filename) {
+            if (filename) {
+                descriptor = fopen(filename, "w");
+            }
+        }
+
+        writer (const writer&) = delete;
+
+        writer (writer&& other) noexcept
+            : descriptor(other.descriptor)
+        {
+            other.descriptor = nullptr;
+        }
+
         ~writer () { if (descriptor) fclose(descriptor); }
 
         bool good () const { return descriptor != nullptr; }
+
+        template <typename... T>
+        i32 write(T...) = delete;
     };
 
+public:
+    // path filepath;
+    std::string filepath;
+
+public:
     reader get_reader () {
+        // if (not filepath.exists()) {
+        //     return reader(nullptr);
+        // }
+
         return reader(filepath.c_str());
     }
 
     writer get_writer () {
+        // if (not filepath.exists()) {
+        //     return writer(nullptr);
+        // }
         return writer(filepath.c_str());
     }
 };
 
+template <> i32 file::writer::write (i32 value);
 
 } // os
