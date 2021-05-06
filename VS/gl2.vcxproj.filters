@@ -1,0 +1,315 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Source files\src">
+      <UniqueIdentifier>{df132682-19dc-420d-847e-c496e6286e6a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\src\math">
+      <UniqueIdentifier>{a2d7fa6c-b24e-4162-b943-9e3c799ad5fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\src\service">
+      <UniqueIdentifier>{13ca4f51-7e42-4377-a007-993e9784b59d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\src\api">
+      <UniqueIdentifier>{9cab37b5-1c82-4db9-8a2b-c331eaccc61a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\src\es">
+      <UniqueIdentifier>{968ba929-f2cb-400d-a00c-4d00d674d906}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\src\logging">
+      <UniqueIdentifier>{355a3885-2f9e-45ca-a49a-2171f7b44fc0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\src\modeling_2d">
+      <UniqueIdentifier>{260616ae-2f1d-4080-bbac-5cfaa29cceb7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\common">
+      <UniqueIdentifier>{c98ad22a-534c-4980-b33b-3d56a0d38f43}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\common\son">
+      <UniqueIdentifier>{d3c49851-93ca-476c-8551-8e8ee390f0b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\common\parse">
+      <UniqueIdentifier>{75246938-0378-4ced-b25d-ef3bdf1a3216}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\common\os">
+      <UniqueIdentifier>{196c2562-338b-4ab4-b029-8b9ad094f45b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\graphics">
+      <UniqueIdentifier>{2433c8b0-0f71-4fdc-a2be-b46f2eadea2a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\generated">
+      <UniqueIdentifier>{4e9c54f1-e3af-43f3-8a05-8e5b97774363}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\main.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\application.cpp">
+      <Filter>Source files\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\keymap.cpp">
+      <Filter>Source files\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\utils.cpp">
+      <Filter>Source files\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\math\color.cpp">
+      <Filter>Source files\src\math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\math\mat2.cpp">
+      <Filter>Source files\src\math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\math\mat3.cpp">
+      <Filter>Source files\src\math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\math\mat4.cpp">
+      <Filter>Source files\src\math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\math\vector2.cpp">
+      <Filter>Source files\src\math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\math\vector3.cpp">
+      <Filter>Source files\src\math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\math\vector4.cpp">
+      <Filter>Source files\src\math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\service\abstract_object.cpp">
+      <Filter>Source files\src\service</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\service\storage.cpp">
+      <Filter>Source files\src\service</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\service\string.cpp">
+      <Filter>Source files\src\service</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\service\string_id.cpp">
+      <Filter>Source files\src\service</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\api\keyboard.cpp">
+      <Filter>Source files\src\api</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\api\mouse.cpp">
+      <Filter>Source files\src\api</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\api\window.cpp">
+      <Filter>Source files\src\api</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\logging\handler.cpp">
+      <Filter>Source files\src\logging</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\logging\logging.cpp">
+      <Filter>Source files\src\logging</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\modeling_2d\camera.cpp">
+      <Filter>Source files\src\modeling_2d</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\modeling_2d\creatures.cpp">
+      <Filter>Source files\src\modeling_2d</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\modeling_2d\model.cpp">
+      <Filter>Source files\src\modeling_2d</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\son\object.cpp">
+      <Filter>Source files\common\son</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\son\parser.cpp">
+      <Filter>Source files\common\son</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\son\visitor.cpp">
+      <Filter>Source files\common\son</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\parse\reader.cpp">
+      <Filter>Source files\common\parse</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\os\file.cpp">
+      <Filter>Source files\common\os</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\os\path.cpp">
+      <Filter>Source files\common\os</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\graphics\graphics_api.cpp">
+      <Filter>Source files\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\graphics\index_buffer.cpp">
+      <Filter>Source files\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\graphics\renderer.cpp">
+      <Filter>Source files\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\graphics\shader.cpp">
+      <Filter>Source files\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\graphics\vertex_array.cpp">
+      <Filter>Source files\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\graphics\vertex_buffer.cpp">
+      <Filter>Source files\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\graphics\vertex_buffer_layout.cpp">
+      <Filter>Source files\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\.generated\config.cpp">
+      <Filter>Source files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\version.cpp">
+      <Filter>Source files\src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\application.h">
+      <Filter>Source files\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\keymap.h">
+      <Filter>Source files\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\math.hpp">
+      <Filter>Source files\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\utils.h">
+      <Filter>Source files\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\version.h">
+      <Filter>Source files\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\math\color.hpp">
+      <Filter>Source files\src\math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\math\consts.hpp">
+      <Filter>Source files\src\math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\math\float.hpp">
+      <Filter>Source files\src\math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\math\mat2.hpp">
+      <Filter>Source files\src\math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\math\mat3.hpp">
+      <Filter>Source files\src\math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\math\mat4.hpp">
+      <Filter>Source files\src\math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\math\vector2.hpp">
+      <Filter>Source files\src\math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\math\vector3.hpp">
+      <Filter>Source files\src\math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\math\vector4.hpp">
+      <Filter>Source files\src\math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\service\abstract_object.hpp">
+      <Filter>Source files\src\service</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\service\storage.hpp">
+      <Filter>Source files\src\service</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\service\string.hpp">
+      <Filter>Source files\src\service</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\service\string_id.hpp">
+      <Filter>Source files\src\service</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\es\dispatcher.h">
+      <Filter>Source files\src\es</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\es\emitter.h">
+      <Filter>Source files\src\es</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\es\event.h">
+      <Filter>Source files\src\es</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\es\event_system.h">
+      <Filter>Source files\src\es</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\api\keyboard.h">
+      <Filter>Source files\src\api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\api\mouse.h">
+      <Filter>Source files\src\api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\api\window.h">
+      <Filter>Source files\src\api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\logging\handler.h">
+      <Filter>Source files\src\logging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\logging\logging.h">
+      <Filter>Source files\src\logging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\modeling_2d\camera.hpp">
+      <Filter>Source files\src\modeling_2d</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\modeling_2d\creatures.hpp">
+      <Filter>Source files\src\modeling_2d</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\modeling_2d\model.hpp">
+      <Filter>Source files\src\modeling_2d</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\son\object.hpp">
+      <Filter>Source files\common\son</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\son\parser.hpp">
+      <Filter>Source files\common\son</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\son\visitor.hpp">
+      <Filter>Source files\common\son</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\defines.h">
+      <Filter>Source files\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\son.hpp">
+      <Filter>Source files\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\typedef.hpp">
+      <Filter>Source files\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\parse\reader.hpp">
+      <Filter>Source files\common\parse</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\os\file.hpp">
+      <Filter>Source files\common\os</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\os\path.hpp">
+      <Filter>Source files\common\os</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\graphics\graphics_api.h">
+      <Filter>Source files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\graphics\index_buffer.h">
+      <Filter>Source files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\graphics\renderer.h">
+      <Filter>Source files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\graphics\shader.h">
+      <Filter>Source files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\graphics\vertex_array.h">
+      <Filter>Source files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\graphics\vertex_buffer.h">
+      <Filter>Source files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\graphics\vertex_buffer_layout.h">
+      <Filter>Source files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\.generated\config.hpp">
+      <Filter>Source files\generated</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
