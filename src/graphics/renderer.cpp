@@ -12,7 +12,7 @@ void Renderer::clear(const math::color24& color) {
 }
 
 
-void Renderer::clear(const math::color& color) {
+void Renderer::clear(const math::color32& color) {
     Renderer::clear(color.rgb);
 }
 
