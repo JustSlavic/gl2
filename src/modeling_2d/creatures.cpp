@@ -42,12 +42,12 @@ void simulation::add_creature(creature it) {
 
 
 void simulation::draw_creatures() {
-    for (const creature& it : creatures) {
-        shader->set_uniform_mat4f("u_model", it.cached_model_matrix);
-        shader->set_uniform_3f("u_color", it.color);
-        shader->bind();
-        gl2::Renderer::draw(*va, *ib, *shader);
-    }
+    //for (const creature& it : creatures) {
+    //    shader->set_uniform_mat4f("u_model", it.cached_model_matrix);
+    //    shader->set_uniform_3f("u_color", it.color);
+    //    shader->bind();
+    //    gl2::Renderer::draw(*va, *ib, *shader);
+    //}
 }
 
 

@@ -9,7 +9,7 @@
 
 inline f32 mass_to_radius(f32 m) {
     constexpr f32 rho = 10000.f;
-    return std::sqrt(m / (M_PI * rho));
+    return std::sqrt(m / (math::consts<f32>::pi() * rho));
 }
 
 
@@ -70,19 +70,15 @@ void Model::draw_bodies() {
     for (auto& b : bodies) {
         // drawing the body
         auto r = mass_to_radius(b.m);
-        
+
         {
-            auto model_matrix = 
-                glm::scale(
-                    glm::translate(
-                        glm::mat4(1.f), 
-                        glm::vec3(b.position.x, b.position.y, 0.f)
-                    ),
-                    glm::vec3(r * 2.f)
-                );
+            auto model_matrix = glm::mat4(1.f);
+            model_matrix = glm::translate(model_matrix, glm::vec3(b.position.x, b.position.y, 0.f));
+            model_matrix = glm::scale(model_matrix, glm::vec3(r * 2.f));
 
             shader->set_uniform_mat4f("u_model", model_matrix);
             shader->bind();
+
             gl2::Renderer::draw(*va, *ib, *shader);
         }
 
@@ -91,21 +87,11 @@ void Model::draw_bodies() {
             f32 v = glm::length(velocity);
             f32 angle = std::atan2(velocity.y, velocity.x);
 
-            auto model_matrix =
-                glm::rotate(
-                    glm::translate(
-                        glm::scale(
-                            glm::translate(
-                                glm::mat4(1.f),
-                                glm::vec3(b.position.x, b.position.y, 0.f)
-                            ),
-                            glm::vec3(v)
-                        ), 
-                        glm::normalize(glm::vec3(velocity.x, velocity.y, 0.f)) * 0.5f
-                    ),
-                    angle,
-                    glm::vec3(0.f, 0.f, 1.f)
-                );
+            auto model_matrix = glm::mat4(1.f);
+            model_matrix = glm::translate(model_matrix, glm::vec3(b.position.x, b.position.y, 0.f));
+            model_matrix = glm::scale(model_matrix, glm::vec3(v));
+            model_matrix = glm::translate(model_matrix, glm::normalize(glm::vec3(velocity.x, velocity.y, 0.f)) * 0.5f);
+            model_matrix = glm::rotate(model_matrix, angle, glm::vec3(0.f, 0.f, 1.f));
 
             // drawing the arrows
             arrow_shader->set_uniform_mat4f("u_model", model_matrix);
@@ -129,7 +115,7 @@ std::vector<body> generate_bodies(f32 width, f32 height) {
         }
     }
 
-    for (f32 phi = 0; phi < 2.f * M_PI; phi += M_PI * .1f) {
+    for (f32 phi = 0; phi < 2.f * math::consts<f32>::pi(); phi += math::consts<f32>::pi() * .1f) {
         for (f32 r = .1f; r < radius; r += .1f) {
             f32 x = r*std::cos(phi);
             f32 y = r*std::sin(phi);

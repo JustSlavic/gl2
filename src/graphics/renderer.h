@@ -5,7 +5,7 @@
 #include "index_buffer.h"
 #include "shader.h"
 
-#include <glm/glm.hpp>
+//#include <glm/glm.hpp>
 
 
 namespace gl2 {

@@ -169,13 +169,13 @@ Shader &Shader::set_uniform_mat4f(const char* name, const math::mat4& matrix) {
     return *this;
 }
 
-Shader &Shader::set_uniform_1i(Shader::Uniform uniform, int x) {
+Shader &Shader::set_uniform_1i(Shader::Uniform uniform, i32 x) {
     this->bind();
     glUniform1i(uniform.location, x); GL_CHECK_ERRORS;
     return *this;
 }
 
-Shader &Shader::set_uniform_1i(const char *name, int x) {
+Shader &Shader::set_uniform_1i(const char *name, i32 x) {
     Uniform uniform = get_uniform(name);
     set_uniform_1i(uniform, x);
     return *this;
@@ -232,4 +232,4 @@ Shader &Shader::set_uniform_vec3f(const char *name, const glm::vec3 &vector) {
     return *this;
 }
 
-Shader::Uniform::Uniform(int location) :location(location) {}
+Shader::Uniform::Uniform(i32 location) : location(location) {}

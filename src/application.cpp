@@ -6,8 +6,8 @@
 #include <thread>
 #include <chrono>
 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
+//#include <glm/glm.hpp>
+//#include <glm/gtc/matrix_transform.hpp>
 
 #include <math/vector3.hpp>
 #include <fs/watcher.h>
@@ -23,6 +23,9 @@
 #include <modeling_2d/creatures.hpp>
 
 #include <service/shader_library.hpp>
+
+
+#define GRAVITY
 
 
 constexpr f32 NEAR_CLIP_DISTANCE = 0.1f;
@@ -64,13 +67,15 @@ namespace gl2 {
         if (window) return 1;
 
         window = new Window(1280, 720);
+
         i32 err = window->startup();
+        if (err) return err;
 
         Keymap::instance();
         GraphicsApi::startup();
         Renderer::init();
 
-        return err;
+        return 0;
     }
 
     int Application::run() {
@@ -224,31 +229,31 @@ namespace gl2 {
             // printf("dt = %ld μs; fps = %lf\n", dt, 1000000.0 / dt);
             t = t_;
 
-            auto view = camera.get_view_matrix();
+            auto view = camera.get_view_matrix_math();
         
             body_shader.set_uniform_mat4f("u_view", view);
-            body_shader.set_uniform_mat4f("u_model", glm::mat4(1.f));
+            body_shader.set_uniform_mat4f("u_model", math::mat4::eye());
 
             arrow_shader.set_uniform_mat4f("u_view", view);
-            arrow_shader.set_uniform_mat4f("u_model", glm::mat4(1.f));
+            arrow_shader.set_uniform_mat4f("u_model", math::mat4::eye());
 
             Renderer::clear(math::color24::make(.8f));
             // Renderer::draw(va, ib, shdr);
 
             // Draw Ox
             {
-                arrow_shader.set_uniform_mat4f("u_model", glm::translate(glm::scale(glm::mat4(1.f), glm::vec3(0.1f)), glm::vec3(.5f, 0.f, 0.f)));
+                /*arrow_shader.set_uniform_mat4f("u_model", glm::translate(glm::scale(glm::mat4(1.f), glm::vec3(0.1f)), glm::vec3(.5f, 0.f, 0.f)));
                 arrow_shader.set_uniform_3f("u_color", 0.f, 0.f, 1.f);
                 arrow_shader.bind();
-                Renderer::draw(va, ib, arrow_shader);
+                Renderer::draw(va, ib, arrow_shader);*/
             }
 
             // Draw Oy
             {
-                arrow_shader.set_uniform_mat4f("u_model", glm::translate(glm::rotate(glm::scale(glm::mat4(1.f), glm::vec3(0.1f)), glm::radians(90.f), glm::vec3(0.f, 0.f, 1.f)), glm::vec3(.5f, 0.f, 0.f)));
+                /*arrow_shader.set_uniform_mat4f("u_model", glm::translate(glm::rotate(glm::scale(glm::mat4(1.f), glm::vec3(0.1f)), glm::radians(90.f), glm::vec3(0.f, 0.f, 1.f)), glm::vec3(.5f, 0.f, 0.f)));
                 arrow_shader.set_uniform_3f("u_color", 1.f, 0.f, 0.f);
                 arrow_shader.bind();
-                Renderer::draw(va, ib, arrow_shader);
+                Renderer::draw(va, ib, arrow_shader);*/
             }
 
             arrow_shader.set_uniform_3f("u_color", 1.f, 1.f, 0.f);

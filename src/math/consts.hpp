@@ -18,12 +18,12 @@ struct consts<f32> {
     static constexpr self inf() noexcept { return HUGE_VALF; }
     static constexpr self nan() noexcept { return NAN; }
 
-    static constexpr self e       () noexcept { return 2.7182818284590452354; }  // e
-    static constexpr self pi      () noexcept { return 3.14159265358979323846; } // pi
-    static constexpr self pi_2    () noexcept { return 1.57079632679489661923; } // pi/2
-    static constexpr self pi1     () noexcept { return 0.31830988618379067154; } // 1/pi
-    static constexpr self sqrt_2  () noexcept { return 1.41421356237309504880; } // sqrt(2)
-    static constexpr self sqrt1_2 () noexcept { return 0.70710678118654752440; } // 1/sqrt(2)
+    static constexpr self e       () noexcept { return 2.7182818284590452354f; }  // e
+    static constexpr self pi      () noexcept { return 3.14159265358979323846f; } // pi
+    static constexpr self pi_2    () noexcept { return 1.57079632679489661923f; } // pi/2
+    static constexpr self pi1     () noexcept { return 0.31830988618379067154f; } // 1/pi
+    static constexpr self sqrt_2  () noexcept { return 1.41421356237309504880f; } // sqrt(2)
+    static constexpr self sqrt1_2 () noexcept { return 0.70710678118654752440f; } // 1/sqrt(2)
 };
 
 template <>

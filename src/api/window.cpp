@@ -1,7 +1,15 @@
+#include "window.h"
+
+#ifdef PLATFORM_WINDOWS
+#include <SDL.h>
+#endif
+
+#ifdef PLATFORM_LINUX
 #include <SDL2/SDL.h>
+#endif
+
 #include <logging/logging.h>
 #include <es/event_system.h>
-#include "window.h"
 #include "mouse.h"
 #include "keyboard.h"
 
@@ -43,11 +51,17 @@ namespace gl2 {
                 title,
                 SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
                 width, height,
-                SDL_WINDOW_SHOWN
+                SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL
             );
 
             surface = SDL_GetWindowSurface(window);
             opengl_context = SDL_GL_CreateContext(window);
+
+            if (opengl_context == nullptr) {
+                const char* error = SDL_GetError();
+                printf("Counld not create OpenGL context: %s\n", error);
+                return 2;
+            }
 
             SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
             SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);

@@ -1,5 +1,9 @@
 #pragma once
 
+#include <defines.h>
+#include "vector3.hpp"
+
+
 namespace math {
 
 struct mat3 {

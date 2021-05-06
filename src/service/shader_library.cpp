@@ -15,13 +15,13 @@ void ShaderLibrary::initialize (const char* filename) {
         char buffer[1024];
         
         input.getline(buffer, 1024);
-
+#if __cplusplus > 201402L
         std::filesystem::path filepath(buffer);
         filepath = std::filesystem::current_path() / filepath; 
 
         LOG_DEBUG << "File: " << filepath;
         LOG_DEBUG << std::boolalpha << "exists: " << std::filesystem::exists(filepath);
-
+#endif
 
     }
 }

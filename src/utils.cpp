@@ -42,9 +42,11 @@ std::string get_current_path() {
     char* dir_name = get_current_dir_name();
     std::string result(dir_name);
     free(dir_name);
-#endif
 
     return result;
+#else
+    return "";
+#endif
 }
 
 

@@ -3,6 +3,7 @@
 
 
 #include "typedef.hpp"
+#include <cstdlib>
 
 
 #define STRINGIFY2(X) #X
@@ -12,7 +13,6 @@
 #ifdef DEBUG
 #define ASSERT(x) \
     if (!(x)) { \
-        printf("Assertion failed at " __FILE__ ":" STRINGIFY(__LINE__)); \
         std::exit(1); \
     } void(0)
 
