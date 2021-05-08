@@ -1,10 +1,12 @@
 #include <application.h>
-#include <keymap.h> 
+#include <keymap.h>
 #include <api/mouse.h>
 #include <api/keyboard.h>
 #include <iostream>
 #include <thread>
 #include <chrono>
+
+#include <config.hpp>
 
 //#include <glm/glm.hpp>
 //#include <glm/gtc/matrix_transform.hpp>
@@ -66,7 +68,16 @@ namespace gl2 {
     int Application::initialize() {
         if (window) return 1;
 
-        window = new Window(1280, 720);
+        bool config_initialized = config::initialize("config.son");
+        if (not config_initialized) {
+            printf("Could not initialize config!\n");
+            return 1;
+        }
+
+        auto& cfg = config::get_instance();
+        LOG_INFO << "WINDOW: " << cfg.window.width << "x" << cfg.window.height;
+
+        window = new Window(cfg.window.width, cfg.window.height);
 
         i32 err = window->startup();
         if (err) return err;
@@ -115,11 +126,11 @@ namespace gl2 {
             if (e.button == Mouse::LEFT) {
                 auto& m = Mouse::instance();
                 // printf("==========================\n");
-                
+
                 math::vector3 position = camera.position;
                 // printf("position = (%5.2f, %5.2f, %5.2f)\n", position.x, position.y, position.z);
-                
-                
+
+
                 math::vector3 forward = camera.get_forward_vector();
                 math::vector3 up = camera.get_up_vector();
                 math::vector3 right = math::cross(forward, up);
@@ -165,7 +176,7 @@ namespace gl2 {
                 printf("normalized: q = (%5.2f, %5.2f, %5.2f, %5.2f)\n", q.x, q.y, q.z, q.w);
 
 #ifdef GRAVITY
-                model.add_body(intersection.x, intersection.y);
+                model.add_body(intersection.xy, math::vector2{0.f}, 3.f);
 #endif
 #ifdef CREATURES
                 model.add_creature(creature::make_random(math::vector2(intersection.x, intersection.y)));
@@ -177,7 +188,7 @@ namespace gl2 {
              0.5f,  0.5f, 0.0f,  // top right
              0.5f, -0.5f, 0.0f,  // bottom right
             -0.5f, -0.5f, 0.0f,  // bottom left
-            -0.5f,  0.5f, 0.0f   // top left 
+            -0.5f,  0.5f, 0.0f   // top left
         };
 
         u32 indices[] = {  // note that we start from 0!
@@ -196,7 +207,7 @@ namespace gl2 {
             .load_shader(Shader::Type::Fragment, "resources/shaders/arrow.fshader")
             .compile();
 
-
+        body_shader.set_uniform_3f("u_color", math::color24::make(1.f));
         body_shader.set_uniform_mat4f("u_projection", projection);
         arrow_shader.set_uniform_mat4f("u_projection", projection);
 
@@ -219,25 +230,28 @@ namespace gl2 {
 
         auto t = std::chrono::steady_clock::now();
         std::this_thread::sleep_for(std::chrono::milliseconds(16));
-        
 
+        auto& cfg = config::get_instance();
+        math::color24 background_color{ cfg.window.default_color.r, cfg.window.default_color.g, cfg.window.default_color.b };
         // uncomment this call to draw in wireframe polygons.
         // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        u64 frame_counter = 0;
+
         while (running) {
             auto t_ = std::chrono::steady_clock::now();
             auto dt = std::chrono::duration_cast<std::chrono::microseconds>(t_ - t).count();
-            // printf("dt = %ld μs; fps = %lf\n", dt, 1000000.0 / dt);
+            printf("%llu: dt = %ld microseconds; fps = %lf\n", frame_counter++, dt, 1000000.0 / dt);
             t = t_;
 
             auto view = camera.get_view_matrix_math();
-        
+
             body_shader.set_uniform_mat4f("u_view", view);
             body_shader.set_uniform_mat4f("u_model", math::mat4::eye());
 
             arrow_shader.set_uniform_mat4f("u_view", view);
             arrow_shader.set_uniform_mat4f("u_model", math::mat4::eye());
 
-            Renderer::clear(math::color24::make(.8f));
+            Renderer::clear(background_color);
             // Renderer::draw(va, ib, shdr);
 
             // Draw Ox
@@ -263,13 +277,12 @@ namespace gl2 {
 #endif
 #ifdef CREATURES
             model.iterate();
-#endif 
+#endif
 
             window->poll_events();
             window->swap_buffers();
 
             emit<EventFrameFinished>(dt / 1000000.0f);
-            
             // std::this_thread::sleep_for(std::chrono::milliseconds(16));
         }
 

@@ -3,7 +3,7 @@
 #include <api/keyboard.h>
 
 
-template<> 
+template<>
 void Keymap::update<Mouse::ButtonPressEvent>(Mouse::ButtonPressEvent event) {
     emit(EventMoveDown());
 
@@ -20,14 +20,14 @@ void Keymap::update<Mouse::ButtonPressEvent>(Mouse::ButtonPressEvent event) {
     }
 }
 
-template<> 
+template<>
 void Keymap::update<Mouse::ButtonReleaseEvent>(Mouse::ButtonReleaseEvent event) {
     emit(EventMoveUp());
 }
 
-template<> 
+template<>
 void Keymap::update<Mouse::ScrollEvent>(Mouse::ScrollEvent event) {
-    constexpr f32 ZOOM_SCALE = .01f;
+    constexpr f32 ZOOM_SCALE = .05f;
     emit(EventZoom(ZOOM_SCALE * event.scroll));
 }
 
@@ -38,6 +38,7 @@ void Keymap::update<Keyboard::KeyReleaseEvent>(Keyboard::KeyReleaseEvent event) 
         case Keyboard::R: emit(EventRestart()); break;
         case Keyboard::SPACE: emit(EventPause()); break;
         case Keyboard::F2: emit(EventToggleF2()); break;
+        case Keyboard::T: emit(EventToggleBodyTraces()); break;
         default: break;
     }
 }

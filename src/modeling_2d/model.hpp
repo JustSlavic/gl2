@@ -11,34 +11,43 @@
 
 struct body {
     math::vector2 position;
-    f32 vx, vy;
+    math::vector2 velocity;
     f32 m;
 
     body(f32 x, f32 y);
     body(const math::vector2& p);
     body(f32 x, f32 y, f32 vx, f32 vy, f32 m);
-    body(const math::vector2& p, f32 vx, f32 vy, f32 m);
+    body(math::vector2 p, math::vector2 v, f32 m);
 };
+
 
 struct Model {
     std::vector<body> bodies;
-    std::vector<body> buffer;
+    std::vector<body> bodies_buffer;
+
+    std::vector<f32> radii;
+    std::vector<f32> radii_buffer;
+
+    std::vector<std::vector<math::vector2>> traces;
+    std::vector<std::vector<math::vector2>> traces_buffer;
 
     // body cursor_highlight;
 
     Shader* shader = nullptr;
-    VertexArray* va;
-    IndexBuffer* ib;
+    VertexArray* va = nullptr;
+    IndexBuffer* ib = nullptr;
 
     Shader* arrow_shader = nullptr;
 
     bool pause = false;
     bool elastic = false;
+    bool draw_body_traces = false;
 
     Model();
 
-    void add_body(f32 x, f32 y);
+    void add_body(math::vector2 position, math::vector2 velocity, f32 mass);
     void draw_bodies();
     void move_bodies(f32 dt);
     void clean();
+    void toggle_body_traces();
 };

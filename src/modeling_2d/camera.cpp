@@ -21,10 +21,10 @@ void update(Camera2D *camera, f32 dt) {
     }
 }
 
-Camera2D::Camera2D() 
-    : position{0.f, 0.f, -1.f}
+Camera2D::Camera2D()
+    : position{0.f, 0.f, -10.f}
 {
-    Dispatcher<EventFrameFinished>::subscribe([this](EventFrameFinished e){ 
+    Dispatcher<EventFrameFinished>::subscribe([this](EventFrameFinished e){
         update(this, e.dt);
     });
     Dispatcher<EventZoom>::subscribe([this](EventZoom e) {
@@ -36,7 +36,7 @@ Camera2D::Camera2D()
 
 glm::mat4 Camera2D::get_view_matrix() const {
     glm::vec3 up = glm::vec3(0.f, 1.f, 0.f);
-    
+
     glm::vec3 direction;
     math::vector3 forward = get_forward_vector();
     direction.x = forward.x;

@@ -29,9 +29,10 @@
 #else
 
 #define ASSERT(x)
+#define ASSERT_MSG(x, msg)
 #define GL_CALL(call) call
 #define GL_CHECK_ERRORS
-      
+
 #endif
 
 #define DEFINE_BIT_MASK_T(NAME, T, ...) \

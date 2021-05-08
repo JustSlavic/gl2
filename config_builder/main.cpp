@@ -22,7 +22,7 @@ size_t read_file (const char* filename, char* buffer, size_t size) {
 
 
 int main (int argc, char** argv) {
-    if (argc < 1) {
+    if (argc < 2) {
         printf("Please, specify input file.\n");
         return 1;
     }
@@ -139,6 +139,10 @@ int main (int argc, char** argv) {
             fclose(fconfig_hpp);
             fclose(fconfig_cpp);
         }
+    }
+    else {
+        printf("Config schemes are equal. Exiting without generating any code.\n");
+        printf("Should check if config.hpp and config.cpp exist though.\n"); // @todo when os::path is finished, check if files exist.
     }
 
     delete config;
