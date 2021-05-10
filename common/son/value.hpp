@@ -2,21 +2,24 @@
 #define SON_VALUE_HPP
 
 #include <stdint.h>
+#include <initializer_list>
+#include <tuple>
+
 
 namespace SON {
 
 
-enum value_type_t : uint8_t {
-    VALUE_NULL,
-    VALUE_BOOLEAN,
-    VALUE_INTEGER,
-    VALUE_FLOATING,
-    VALUE_STRING,
-    VALUE_OBJECT,
-    VALUE_ARRAY,
+enum class type_t : uint8_t {
+    null,
+    boolean,
+    integer,
+    floating,
+    string,
+    object,
+    array,
     // @todo: consider making user-defined value types,
     //        along with providing means to accept functions to parse them.
-    // VALUE_CUSTOM,
+    // custom,
 };
 
 
@@ -29,29 +32,35 @@ private:
         void*    value_storage; // Pointer to the string, object or array.
     } value_;
 
-    value_type_t type_;
+    type_t type_;
 
 public:
     Value (); // Makes NULL value.
-    explicit Value (value_type_t); // Default value of that type.
-    explicit Value (bool);
-    explicit Value (int32_t);
-    explicit Value (uint64_t);
-    explicit Value (double);
+    Value (type_t); // Default value of that type.
+    Value (std::nullptr_t);
+    Value (bool);
+    Value (int32_t);
+    Value (uint64_t);
+    Value (double);
+    Value (const char*);
 
-    Value  (const Value&);
-    Value  (Value&&) noexcept;
+    Value (std::initializer_list<Value> init);
+    Value (std::initializer_list<std::pair<const char*, Value>> init);
+
+    Value (const Value&);
+    Value (Value&&) noexcept;
     ~Value ();
 
     Value& operator = (const Value&);
     Value& operator = (Value&&) noexcept;
 
-    value_type_t get_type () const;
+    type_t get_type () const;
 
     bool is_null () const;
     bool is_boolean () const;
     bool is_integer () const;
     bool is_floating () const;
+    bool is_number () const;
     bool is_string () const;
     bool is_object () const;
     bool is_array () const;
@@ -65,17 +74,14 @@ public:
     bool operator == (const Value&) const;
     bool operator != (const Value&) const;
 
-    Value operator [] (const char* key);
-    Value operator [] (int32_t index);
+    Value& operator [] (const char* key);
+    Value& operator [] (int32_t index);
 
     Value get (const char* key, const Value& default_);
     Value get (int32_t index, const Value& default_);
 
-    template <typename T>
-    void push (const char* key, T value) = delete;
-
-    template <typename T>
-    void push (T) = delete;
+    void push (const char* key, const Value& value);
+    void push (const Value&);
 
     class iterator {
         friend class Value;
@@ -121,19 +127,6 @@ public:
 
     void* get_storage () const;
 };
-
-
-template <> void Value::push (const Value& value);
-template <> void Value::push (Value value);
-template <> void Value::push (int32_t value);
-template <> void Value::push (uint64_t value);
-
-template <> void Value::push (const char* key, const Value& value);
-template <> void Value::push (const char* key, Value value);
-template <> void Value::push (const char* key, bool value);
-template <> void Value::push (const char* key, int32_t value);
-template <> void Value::push (const char* key, uint64_t value);
-template <> void Value::push (const char* key, double value);
 
 
 Value make_object ();

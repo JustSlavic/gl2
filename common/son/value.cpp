@@ -8,27 +8,27 @@
 namespace SON {
 
 
-struct string_holder_t {
+struct string_storage_t {
     std::string value;
 };
 
 
-struct object_holder_t {
+struct object_storage_t {
     std::vector<std::string> keys;
     std::vector<Value> values;
 };
 
 
-struct array_holder_t {
+struct array_storage_t {
     std::vector<Value> values;
 };
 
 
-string_holder_t* dublicate_string_storage(const Value& val) {
-    if (val.get_type() != VALUE_STRING || val.get_storage() == nullptr) return nullptr;
+string_storage_t* dublicate_string_storage(const Value& val) {
+    if (!val.is_string() || val.get_storage() == nullptr) return nullptr;
 
-    string_holder_t* holder = (string_holder_t*) val.get_storage();
-    string_holder_t* result = new string_holder_t();
+    string_storage_t* holder = (string_storage_t*) val.get_storage();
+    string_storage_t* result = new string_storage_t();
 
     result->value = holder->value;
 
@@ -37,21 +37,21 @@ string_holder_t* dublicate_string_storage(const Value& val) {
 
 
 bool compare_string_storage(const Value& lhs, const Value& rhs) {
-    if (lhs.get_type() != VALUE_STRING || lhs.get_storage() == nullptr) return false;
-    if (rhs.get_type() != VALUE_STRING || rhs.get_storage() == nullptr) return false;
+    if (!lhs.is_string() || lhs.get_storage() == nullptr) return false;
+    if (!rhs.is_string() || rhs.get_storage() == nullptr) return false;
 
-    string_holder_t* lhs_holder = (string_holder_t*) lhs.get_storage();
-    string_holder_t* rhs_holder = (string_holder_t*) rhs.get_storage();
+    string_storage_t* lhs_holder = (string_storage_t*) lhs.get_storage();
+    string_storage_t* rhs_holder = (string_storage_t*) rhs.get_storage();
 
     return lhs_holder->value == rhs_holder->value;
 }
 
 
-object_holder_t* dublicate_object_storage(const Value& val) {
-    if (val.get_type() != VALUE_OBJECT || val.get_storage() == nullptr) return nullptr;
+object_storage_t* dublicate_object_storage(const Value& val) {
+    if (!val.is_object() || val.get_storage() == nullptr) return nullptr;
 
-    object_holder_t* holder = (object_holder_t*) val.get_storage();
-    object_holder_t* result = new object_holder_t();
+    object_storage_t* holder = (object_storage_t*) val.get_storage();
+    object_storage_t* result = new object_storage_t();
 
     result->keys = holder->keys;
     result->values = holder->values;
@@ -61,21 +61,21 @@ object_holder_t* dublicate_object_storage(const Value& val) {
 
 
 bool compare_object_storage(const Value& lhs, const Value& rhs) {
-    if (lhs.get_type() != VALUE_OBJECT || lhs.get_storage() == nullptr) return false;
-    if (rhs.get_type() != VALUE_OBJECT || rhs.get_storage() == nullptr) return false;
+    if (!lhs.is_object() || lhs.get_storage() == nullptr) return false;
+    if (!rhs.is_object() || rhs.get_storage() == nullptr) return false;
 
-    object_holder_t* lhs_holder = (object_holder_t*) lhs.get_storage();
-    object_holder_t* rhs_holder = (object_holder_t*) rhs.get_storage();
+    object_storage_t* lhs_holder = (object_storage_t*) lhs.get_storage();
+    object_storage_t* rhs_holder = (object_storage_t*) rhs.get_storage();
 
     return (lhs_holder->keys == rhs_holder->keys) && (lhs_holder->values == rhs_holder->values);
 }
 
 
-array_holder_t* dublicate_array_storage(const Value& val) {
-    if (val.get_type() != VALUE_ARRAY || val.get_storage() == nullptr) return nullptr;
+array_storage_t* dublicate_array_storage(const Value& val) {
+    if (!val.is_array() || val.get_storage() == nullptr) return nullptr;
 
-    array_holder_t* holder = (array_holder_t*) val.get_storage();
-    array_holder_t* result = new array_holder_t();
+    array_storage_t* holder = (array_storage_t*) val.get_storage();
+    array_storage_t* result = new array_storage_t();
 
     result->values = holder->values;
 
@@ -84,77 +84,121 @@ array_holder_t* dublicate_array_storage(const Value& val) {
 
 
 bool compare_array_storage(const Value& lhs, const Value& rhs) {
-    if (lhs.get_type() != VALUE_OBJECT || lhs.get_storage() == nullptr) return false;
-    if (rhs.get_type() != VALUE_OBJECT || rhs.get_storage() == nullptr) return false;
+    if (!lhs.is_object() || lhs.get_storage() == nullptr) return false;
+    if (!rhs.is_object() || rhs.get_storage() == nullptr) return false;
 
-    array_holder_t* lhs_holder = (array_holder_t*) lhs.get_storage();
-    array_holder_t* rhs_holder = (array_holder_t*) rhs.get_storage();
+    array_storage_t* lhs_holder = (array_storage_t*) lhs.get_storage();
+    array_storage_t* rhs_holder = (array_storage_t*) rhs.get_storage();
 
     return lhs_holder->values == rhs_holder->values;
 }
 
 
 Value::Value ()
-    : type_(VALUE_NULL)
+    : type_(type_t::null)
 {
     value_.value_storage = nullptr;
 }
 
 
-Value::Value (value_type_t t)
+Value::Value (type_t t)
     : type_(t)
 {
     switch (t) {
-    case VALUE_NULL:
+    case type_t::null:
         value_.value_storage = nullptr;
         break;
-    case VALUE_BOOLEAN:
+    case type_t::boolean:
         value_.boolean = false;
         break;
-    case VALUE_INTEGER:
+    case type_t::integer:
         value_.integer = 0;
         break;
-    case VALUE_FLOATING:
+    case type_t::floating:
         value_.floating = 0.0;
         break;
-    case VALUE_STRING:
-        value_.value_storage = new string_holder_t();
+    case type_t::string:
+        value_.value_storage = new string_storage_t();
         break;
-    case VALUE_OBJECT:
-        value_.value_storage = new object_holder_t();
+    case type_t::object:
+        value_.value_storage = new object_storage_t();
         break;
-    case VALUE_ARRAY:
-        value_.value_storage = new array_holder_t();
+    case type_t::array:
+        value_.value_storage = new array_storage_t();
         break;
     }
 }
 
 
+Value::Value (std::nullptr_t)
+    : type_(type_t::null)
+{
+    value_.value_storage = nullptr;
+}
+
+
 Value::Value (bool val)
-    : type_(VALUE_BOOLEAN)
+    : type_(type_t::boolean)
 {
     value_.boolean = val;
 }
 
 
 Value::Value (int32_t val)
-    : type_(VALUE_INTEGER)
+    : type_(type_t::integer)
 {
     value_.integer = val;
 }
 
 
 Value::Value (uint64_t val)
-    : type_(VALUE_INTEGER)
+    : type_(type_t::integer)
 {
     value_.integer = val;
 }
 
 
 Value::Value (double val)
-    : type_(VALUE_FLOATING)
+    : type_(type_t::floating)
 {
     value_.floating = val;
+}
+
+
+Value::Value(const char* c_str)
+    : type_(type_t::string)
+{
+    string_storage_t* holder = new string_storage_t();
+    holder->value = std::string(c_str);
+
+    value_.value_storage = holder;
+}
+
+
+Value::Value(std::initializer_list<Value> init)
+    : type_(type_t::array)
+{
+    array_storage_t* holder = new array_storage_t();
+
+    for (auto& val : init) {
+        holder->values.push_back(val);
+    }
+
+    value_.value_storage = holder;
+}
+
+
+Value::Value (std::initializer_list<std::pair<const char*, Value>> init)
+    : type_(type_t::object)
+{
+    object_storage_t* holder = new object_storage_t();
+
+    for (auto& p : init) {
+        holder->keys.push_back(std::string(p.first));
+        holder->values.push_back(p.second);
+    }
+
+    value_.value_storage = holder;
 }
 
 
@@ -162,19 +206,19 @@ Value::Value (const Value& other)
     : type_(other.type_)
 {
     switch (other.type_) {
-    case VALUE_NULL:
-    case VALUE_BOOLEAN:
-    case VALUE_INTEGER:
-    case VALUE_FLOATING:
+    case type_t::null:
+    case type_t::boolean:
+    case type_t::integer:
+    case type_t::floating:
         value_ = other.value_;
         break;
-    case VALUE_STRING:
+    case type_t::string:
         value_.value_storage = dublicate_string_storage(other);
         break;
-    case VALUE_OBJECT:
+    case type_t::object:
         value_.value_storage = dublicate_object_storage(other);
         break;
-    case VALUE_ARRAY:
+    case type_t::array:
         value_.value_storage = dublicate_array_storage(other);
         break;
     }
@@ -190,14 +234,14 @@ Value::Value (Value&& other) noexcept
 
 Value::~Value () {
     switch (type_) {
-    case VALUE_NULL:
-    case VALUE_BOOLEAN:
-    case VALUE_INTEGER:
-    case VALUE_FLOATING:
+    case type_t::null:
+    case type_t::boolean:
+    case type_t::integer:
+    case type_t::floating:
         break;
-    case VALUE_STRING:
-    case VALUE_OBJECT:
-    case VALUE_ARRAY:
+    case type_t::string:
+    case type_t::object:
+    case type_t::array:
         delete value_.value_storage;
     }
 }
@@ -215,60 +259,65 @@ Value& Value::operator = (Value&& other) noexcept {
 }
 
 
-value_type_t Value::get_type () const {
+type_t Value::get_type () const {
     return type_;
 }
 
 
 bool Value::is_null () const {
-    return type_ == VALUE_NULL;
+    return type_ == type_t::null;
 }
 
 
 bool Value::is_boolean () const {
-    return type_ == VALUE_BOOLEAN;
+    return type_ == type_t::boolean;
 }
 
 
 bool Value::is_integer () const {
-    return type_ == VALUE_INTEGER;
+    return type_ == type_t::integer;
 }
 
 
 bool Value::is_floating () const {
-    return type_ == VALUE_FLOATING;
+    return type_ == type_t::floating;
+}
+
+
+bool Value::is_number() const {
+    return is_integer() || is_floating();
 }
 
 
 bool Value::is_string () const {
-    return type_ == VALUE_STRING;
+    return type_ == type_t::string;
 }
 
 
 bool Value::is_object () const {
-    return type_ == VALUE_OBJECT;
+    return type_ == type_t::object;
 }
 
 
 bool Value::is_array () const {
-    return type_ == VALUE_ARRAY;
+    return type_ == type_t::array;
 }
 
 
 uint64_t Value::get_integer () const {
-    if (get_type() != VALUE_INTEGER) return 0;
+    if (!is_integer()) return 0;
     return value_.integer;
 }
 
 
 bool Value::get_boolean () const {
-    if (get_type() != VALUE_BOOLEAN) return false;
+    if (!is_boolean()) return false;
     return value_.boolean;
 }
 
 
 double Value::get_floating() const {
-    if (get_type() != VALUE_FLOATING) return 0.0;
+    if (!is_floating()) return 0.0;
     return value_.floating;
 }
 
@@ -280,21 +329,21 @@ void Value::swap (Value& other) noexcept {
 
 
 bool Value::operator == (const Value& other) const {
-    if (type_ != other.type_) return false;
+    if (get_type() != other.get_type()) return false;
 
     switch (type_) {
-    case VALUE_NULL: return true;
-    case VALUE_BOOLEAN:
+    case type_t::null: return true;
+    case type_t::boolean:
         return value_.boolean == other.value_.boolean;
-    case VALUE_INTEGER:
+    case type_t::integer:
         return value_.integer == other.value_.integer;
-    case VALUE_FLOATING:
+    case type_t::floating:
         return value_.floating == other.value_.floating;
-    case VALUE_STRING:
+    case type_t::string:
         return compare_string_storage(*this, other);
-    case VALUE_OBJECT:
+    case type_t::object:
         return compare_object_storage(*this, other);
-    case VALUE_ARRAY:
+    case type_t::array:
         return compare_array_storage(*this, other);
     }
 }
@@ -305,30 +354,32 @@ bool Value::operator != (const Value& other) const {
 }
 
 
-Value Value::operator [] (const char* key) {
-    if (type_ != VALUE_OBJECT || value_.value_storage == nullptr) return Value();
+Value& Value::operator [] (const char* key) {
+    if (is_null()) {
+        make_object().swap(*this); // @improve: make function "create<array>();"
+    }
 
-    object_holder_t* holder = (object_holder_t*) value_.value_storage;
+    assert(get_type() == type_t::object);
+
+    object_storage_t* holder = (object_storage_t*) value_.value_storage;
     std::string k{ key };
 
     for (size_t i = 0; i < holder->keys.size(); i++) {
         if (holder->keys[i] == k) return holder->values[i];
     }
 
-    return Value();
+    holder->keys.push_back(k);
+    holder->values.push_back(Value());
+
+    return holder->values[holder->values.size() - 1];
 }
 
 
-Value Value::operator [] (int32_t index) {
-    if (type_ != VALUE_ARRAY || value_.value_storage == nullptr) return Value();
+Value& Value::operator [] (int32_t index) {
+    assert(is_array());
 
-    array_holder_t* holder = (array_holder_t*) value_.value_storage;
-
-    if (index < holder->values.size()) {
-        return holder->values[index];
-    }
-
-    return Value();
+    array_storage_t* holder = (array_storage_t*) value_.value_storage;
+    return holder->values[index];
 }
 
 
@@ -346,81 +397,30 @@ Value Value::get (int32_t index, const Value& default_) {
 }
 
 
-template <>
 void Value::push (const char* key, const Value& value) {
-    if (type_ != VALUE_OBJECT || value_.value_storage == nullptr) return;
+    if (is_null()) {
+        type_ = type_t::object;
+        value_.value_storage = new object_storage_t();
+    }
 
-    object_holder_t* holder = (object_holder_t*) value_.value_storage;
+    if (type_ != type_t::object || value_.value_storage == nullptr) return;
+
+    object_storage_t* holder = (object_storage_t*) value_.value_storage;
     holder->keys.push_back(std::string(key));
     holder->values.push_back(value);
 }
 
 
-template <>
-void Value::push (const char* key, Value value) {
-    if (type_ != VALUE_OBJECT || value_.value_storage == nullptr) return;
-
-    object_holder_t* holder = (object_holder_t*) value_.value_storage;
-    holder->keys.push_back(std::string(key));
-    holder->values.push_back(std::move(value));
-}
-
-
-template <>
-void Value::push(const char* key, bool value) {
-    push(key, Value(value));
-}
-
-
-template <>
-void Value::push (const char* key, int32_t value) {
-    push(key, Value(value));
-}
-
-
-template <>
-void Value::push (const char* key, uint64_t value) {
-    push(key, Value(value));
-}
-
-
-template <>
-void Value::push (const char* key, double value) {
-    push(key, Value(value));
-}
-
-
-template <>
 void Value::push (const Value& value) {
-    if (type_ != VALUE_ARRAY || value_.value_storage == nullptr) return;
+    if (!is_array() || value_.value_storage == nullptr) return;
 
-    array_holder_t* holder = (array_holder_t*) value_.value_storage;
+    array_storage_t* holder = (array_storage_t*) value_.value_storage;
     holder->values.push_back(value);
-}
-
-
-template <>
-void Value::push (Value value) {
-    if (type_ != VALUE_ARRAY || value_.value_storage == nullptr) return;
-
-    array_holder_t* holder = (array_holder_t*)value_.value_storage;
-    holder->values.push_back(std::move(value));
-}
-
-
-template <>
-void Value::push (uint64_t val) {
-    push(Value(val));
-}
-
-
-template <> void Value::push (int32_t val) {
-    push(Value(val));
 }
 
 
 void* Value::get_storage () const {
-    if (type_ != VALUE_STRING && type_ != VALUE_OBJECT && type_ != VALUE_ARRAY) return nullptr;
+    if (!is_string() && !is_object() && !is_array()) return nullptr;
     return value_.value_storage;
 }
 
@@ -460,18 +460,18 @@ Value& Value::iterator::operator * () const {
     assert(index < size);
 
     switch (p_value->get_type()) {
-    case VALUE_NULL:
-    case VALUE_BOOLEAN:
-    case VALUE_INTEGER:
-    case VALUE_FLOATING:
-    case VALUE_STRING:
+    case type_t::null:
+    case type_t::boolean:
+    case type_t::integer:
+    case type_t::floating:
+    case type_t::string:
         return *p_value;
-    case VALUE_OBJECT: {
-        auto holder = (object_holder_t*) p_value->get_storage();
+    case type_t::object: {
+        auto holder = (object_storage_t*) p_value->get_storage();
         return holder->values[index];
     }
-    case VALUE_ARRAY: {
-        auto holder = (array_holder_t*) p_value->get_storage();
+    case type_t::array: {
+        auto holder = (array_storage_t*) p_value->get_storage();
         return holder->values[index];
     }
     }
@@ -513,18 +513,18 @@ const Value& Value::const_iterator::operator * () const {
     assert(index < size);
 
     switch (p_value->get_type()) {
-    case VALUE_NULL:
-    case VALUE_BOOLEAN:
-    case VALUE_INTEGER:
-    case VALUE_FLOATING:
-    case VALUE_STRING:
+    case type_t::null:
+    case type_t::boolean:
+    case type_t::integer:
+    case type_t::floating:
+    case type_t::string:
         return *p_value;
-    case VALUE_OBJECT: {
-        auto holder = (object_holder_t*) p_value->get_storage();
+    case type_t::object: {
+        auto holder = (object_storage_t*) p_value->get_storage();
         return holder->values[index];
     }
-    case VALUE_ARRAY: {
-        auto holder = (array_holder_t*) p_value->get_storage();
+    case type_t::array: {
+        auto holder = (array_storage_t*) p_value->get_storage();
         return holder->values[index];
     }
     }
@@ -533,20 +533,20 @@ const Value& Value::const_iterator::operator * () const {
 
 Value::iterator Value::begin () {
     switch (get_type()) {
-    case VALUE_NULL: return iterator(this, 0, 0);
-    case VALUE_BOOLEAN:
-    case VALUE_INTEGER:
-    case VALUE_FLOATING:
-    case VALUE_STRING:
+    case type_t::null: return iterator(this, 0, 0);
+    case type_t::boolean:
+    case type_t::integer:
+    case type_t::floating:
+    case type_t::string:
         return iterator(this, 0, 1);
-    case VALUE_OBJECT: {
+    case type_t::object: {
         if (get_storage() == nullptr) return iterator(nullptr, 0, 0);
-        auto holder = (object_holder_t*) value_.value_storage;
+        auto holder = (object_storage_t*) value_.value_storage;
         return iterator(this, 0, holder->values.size());
     }
-    case VALUE_ARRAY: {
+    case type_t::array: {
         if (get_storage() == nullptr) return iterator(nullptr, 0, 0);
-        auto holder = (array_holder_t*) value_.value_storage;
+        auto holder = (array_storage_t*) value_.value_storage;
         return iterator(this, 0, holder->values.size());
     }
     }
@@ -555,20 +555,20 @@ Value::iterator Value::begin () {
 
 Value::iterator Value::end () {
     switch (get_type()) {
-    case VALUE_NULL: return iterator(this, 0, 0);
-    case VALUE_BOOLEAN:
-    case VALUE_INTEGER:
-    case VALUE_FLOATING:
-    case VALUE_STRING:
+    case type_t::null: return iterator(this, 0, 0);
+    case type_t::boolean:
+    case type_t::integer:
+    case type_t::floating:
+    case type_t::string:
         return iterator(this, 1, 1);
-    case VALUE_OBJECT: {
+    case type_t::object: {
         if (get_storage() == nullptr) return iterator(nullptr, 0, 0);
-        auto holder = (object_holder_t*) value_.value_storage;
+        auto holder = (object_storage_t*) value_.value_storage;
         return iterator(this, holder->values.size(), holder->values.size());
     }
-    case VALUE_ARRAY: {
+    case type_t::array: {
         if (get_storage() == nullptr) return iterator(nullptr, 0, 0);
-        auto holder = (array_holder_t*) value_.value_storage;
+        auto holder = (array_storage_t*) value_.value_storage;
         return iterator(this, holder->values.size(), holder->values.size());
     }
     }
@@ -577,20 +577,20 @@ Value::iterator Value::end () {
 
 Value::const_iterator Value::begin () const {
     switch (get_type()) {
-    case VALUE_NULL: return const_iterator(this, 0, 0);
-    case VALUE_BOOLEAN:
-    case VALUE_INTEGER:
-    case VALUE_FLOATING:
-    case VALUE_STRING:
+    case type_t::null: return const_iterator(this, 0, 0);
+    case type_t::boolean:
+    case type_t::integer:
+    case type_t::floating:
+    case type_t::string:
         return const_iterator(this, 0, 1);
-    case VALUE_OBJECT: {
+    case type_t::object: {
         if (get_storage() == nullptr) return const_iterator(nullptr, 0, 0);
-        auto holder = (object_holder_t*) value_.value_storage;
+        auto holder = (object_storage_t*) value_.value_storage;
         return const_iterator(this, 0, holder->values.size());
     }
-    case VALUE_ARRAY: {
+    case type_t::array: {
         if (get_storage() == nullptr) return const_iterator(nullptr, 0, 0);
-        auto holder = (array_holder_t*) value_.value_storage;
+        auto holder = (array_storage_t*) value_.value_storage;
         return const_iterator(this, 0, holder->values.size());
     }
     }
@@ -599,20 +599,20 @@ Value::const_iterator Value::begin () const {
 
 Value::const_iterator Value::end () const {
     switch (get_type()) {
-    case VALUE_NULL: return const_iterator(this, 0, 0);
-    case VALUE_BOOLEAN:
-    case VALUE_INTEGER:
-    case VALUE_FLOATING:
-    case VALUE_STRING:
+    case type_t::null: return const_iterator(this, 0, 0);
+    case type_t::boolean:
+    case type_t::integer:
+    case type_t::floating:
+    case type_t::string:
         return const_iterator(this, 1, 1);
-    case VALUE_OBJECT: {
+    case type_t::object: {
         if (get_storage() == nullptr) return const_iterator(nullptr, 0, 0);
-        auto holder = (object_holder_t*) value_.value_storage;
+        auto holder = (object_storage_t*) value_.value_storage;
         return const_iterator(this, holder->values.size(), holder->values.size());
     }
-    case VALUE_ARRAY: {
+    case type_t::array: {
         if (get_storage() == nullptr) return const_iterator(nullptr, 0, 0);
-        auto holder = (array_holder_t*) value_.value_storage;
+        auto holder = (array_storage_t*) value_.value_storage;
         return const_iterator(this, holder->values.size(), holder->values.size());
     }
     }
@@ -620,12 +620,12 @@ Value::const_iterator Value::end () const {
 
 
 Value make_object () {
-    return Value(VALUE_OBJECT);
+    return Value(type_t::object);
 }
 
 
 Value make_array () {
-    return Value(VALUE_ARRAY);
+    return Value(type_t::array);
 }
 
 
