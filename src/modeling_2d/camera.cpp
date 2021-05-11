@@ -5,7 +5,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 
-constexpr f32 CAMERA_SPEED = .5f;
+constexpr f32 CAMERA_SPEED = 3.f;
 
 void update(Camera2D *camera, f32 dt) {
     FOR_ALL_KEYS(k) {

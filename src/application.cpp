@@ -121,6 +121,28 @@ namespace gl2 {
         print_matrix4(camera.get_view_matrix_math());
         printf("\n");
 
+        Dispatcher<Mouse::MoveEvent>::subscribe([&](auto event) {
+            math::vector2 mouse{ (f32(event.x) / f32(w) - .5f), (-f32(event.y) / f32(h) + .5f) };
+
+            math::vector3 position = camera.position;
+
+            math::vector3 forward = camera.get_forward_vector();
+            math::vector3 up = camera.get_up_vector();
+            math::vector3 right = math::cross(forward, up);
+
+            f32 clip_width = NEAR_CLIP_DISTANCE * window_ratio;
+            f32 clip_height = NEAR_CLIP_DISTANCE;
+
+            math::vector3 center = position + forward * NEAR_CLIP_DISTANCE;
+            math::vector3 point = center + right * mouse.x * clip_width + up * mouse.y * clip_height;
+            math::vector3 direction = point - position;
+
+            math::vector3 intersection = intersect_z0_plane(position, direction);
+
+            printf("mouse position: (%5.2f, %5.2f, %5.2f)\n", intersection.x, intersection.y, intersection.z);
+
+            model.on_mouse_move(intersection.xy);
+        });
 
         Dispatcher<Mouse::ButtonPressEvent>::subscribe([&] (Mouse::ButtonPressEvent e) {
             if (e.button == Mouse::LEFT) {
@@ -158,7 +180,7 @@ namespace gl2 {
 
                 math::vector3 intersection = intersect_z0_plane(position, direction);
 
-                printf("p = (%5.2f, %5.2f, %5.2f)\n", intersection.x, intersection.y, intersection.z);
+                printf("click position: (%5.2f, %5.2f, %5.2f)\n", intersection.x, intersection.y, intersection.z);
 
                 math::mat4 model_ = math::mat4::eye();
                 math::mat4 view_ = camera.get_view_matrix_math();
@@ -166,22 +188,26 @@ namespace gl2 {
                 math::vector4 q = math::vector4::make(intersection, 0.f);
 
                 q = model_ * q;
-                printf("in space: q = (%5.2f, %5.2f, %5.2f, %5.2f)\n", q.x, q.y, q.z, q.w);
+                //printf("in space: q = (%5.2f, %5.2f, %5.2f, %5.2f)\n", q.x, q.y, q.z, q.w);
                 q = q * view_;
-                printf("in camera: q = (%5.2f, %5.2f, %5.2f, %5.2f)\n", q.x, q.y, q.z, q.w);
+                //printf("in camera: q = (%5.2f, %5.2f, %5.2f, %5.2f)\n", q.x, q.y, q.z, q.w);
                 q = projection * q;
-                printf("in screen: q = (%5.2f, %5.2f, %5.2f, %5.2f)\n", q.x, q.y, q.z, q.w);
+                //printf("in screen: q = (%5.2f, %5.2f, %5.2f, %5.2f)\n", q.x, q.y, q.z, q.w);
 
                 q = q / q.w;
-                printf("normalized: q = (%5.2f, %5.2f, %5.2f, %5.2f)\n", q.x, q.y, q.z, q.w);
+                //printf("normalized: q = (%5.2f, %5.2f, %5.2f, %5.2f)\n", q.x, q.y, q.z, q.w);
 
 #ifdef GRAVITY
-                model.add_body(intersection.xy, math::vector2{0.f}, 3.f);
+                model.on_mouse_click(intersection.xy);
 #endif
 #ifdef CREATURES
                 model.add_creature(creature::make_random(math::vector2(intersection.x, intersection.y)));
 #endif
             }
+        });
+
+        Dispatcher<EventSelectedBodyMoved>::subscribe([&](EventSelectedBodyMoved e) {
+            camera.position.xy = e.body_position;
         });
 
         f32 vertices[] = {
@@ -240,7 +266,7 @@ namespace gl2 {
         while (running) {
             auto t_ = std::chrono::steady_clock::now();
             auto dt = std::chrono::duration_cast<std::chrono::microseconds>(t_ - t).count();
-            printf("%llu: dt = %ld microseconds; fps = %lf\n", frame_counter++, dt, 1000000.0 / dt);
+            //printf("%llu: dt = %ld microseconds; fps = %lf\n", frame_counter++, dt, 1000000.0 / dt);
             t = t_;
 
             auto view = camera.get_view_matrix_math();

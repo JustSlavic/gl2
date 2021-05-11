@@ -54,7 +54,7 @@ public:
     Value& operator = (const Value&);
     Value& operator = (Value&&) noexcept;
 
-    type_t get_type () const;
+    type_t type () const;
 
     bool is_null () const;
     bool is_boolean () const;

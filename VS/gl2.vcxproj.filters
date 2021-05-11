@@ -168,6 +168,9 @@
     <ClCompile Include="..\src\version.cpp">
       <Filter>Source files\src</Filter>
     </ClCompile>
+    <ClCompile Include="..\common\son\value.cpp">
+      <Filter>Source files\common\son</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\application.h">
@@ -310,6 +313,9 @@
     </ClInclude>
     <ClInclude Include="..\.generated\config.hpp">
       <Filter>Source files\generated</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\son\value.hpp">
+      <Filter>Source files\common\son</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

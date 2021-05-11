@@ -259,7 +259,7 @@ Value& Value::operator = (Value&& other) noexcept {
 }
 
 
-type_t Value::get_type () const {
+type_t Value::type () const {
     return type_;
 }
 
@@ -329,7 +329,7 @@ void Value::swap (Value& other) noexcept {
 
 
 bool Value::operator == (const Value& other) const {
-    if (get_type() != other.get_type()) return false;
+    if (type() != other.type()) return false;
 
     switch (type_) {
     case type_t::null: return true;
@@ -359,7 +359,7 @@ Value& Value::operator [] (const char* key) {
         make_object().swap(*this); // @improve: make function "create<array>();"
     }
 
-    assert(get_type() == type_t::object);
+    assert(type() == type_t::object);
 
     object_storage_t* holder = (object_storage_t*) value_.value_storage;
     std::string k{ key };
@@ -459,7 +459,7 @@ Value& Value::iterator::operator * () const {
     assert(p_value);
     assert(index < size);
 
-    switch (p_value->get_type()) {
+    switch (p_value->type()) {
     case type_t::null:
     case type_t::boolean:
     case type_t::integer:
@@ -512,7 +512,7 @@ const Value& Value::const_iterator::operator * () const {
     assert(p_value);
     assert(index < size);
 
-    switch (p_value->get_type()) {
+    switch (p_value->type()) {
     case type_t::null:
     case type_t::boolean:
     case type_t::integer:
@@ -532,7 +532,7 @@ const Value& Value::const_iterator::operator * () const {
 
 
 Value::iterator Value::begin () {
-    switch (get_type()) {
+    switch (type()) {
     case type_t::null: return iterator(this, 0, 0);
     case type_t::boolean:
     case type_t::integer:
@@ -554,7 +554,7 @@ Value::iterator Value::begin () {
 
 
 Value::iterator Value::end () {
-    switch (get_type()) {
+    switch (type()) {
     case type_t::null: return iterator(this, 0, 0);
     case type_t::boolean:
     case type_t::integer:
@@ -576,7 +576,7 @@ Value::iterator Value::end () {
 
 
 Value::const_iterator Value::begin () const {
-    switch (get_type()) {
+    switch (type()) {
     case type_t::null: return const_iterator(this, 0, 0);
     case type_t::boolean:
     case type_t::integer:
@@ -598,7 +598,7 @@ Value::const_iterator Value::begin () const {
 
 
 Value::const_iterator Value::end () const {
-    switch (get_type()) {
+    switch (type()) {
     case type_t::null: return const_iterator(this, 0, 0);
     case type_t::boolean:
     case type_t::integer:

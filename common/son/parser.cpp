@@ -128,7 +128,7 @@ struct token {
 
 
 void print (token t) {
-    printf("%lu:%lu token { kind = %20s; value = ", t.line_number, t.char_number, to_debug_string(t.kind));
+    printf("%llu:%llu token { kind = %20s; value = ", t.line_number, t.char_number, to_debug_string(t.kind));
 
     switch (t.kind) {
         case TOKEN_UNDEFINED: printf("ERROR! }\n"); break;
@@ -136,7 +136,7 @@ void print (token t) {
         case TOKEN_KW_NULL:   printf("null; }\n"); break;
         case TOKEN_KW_TRUE:   printf("true; }\n"); break;
         case TOKEN_KW_FALSE:  printf("false; }\n"); break;
-        case TOKEN_INTEGER:   printf("%ld; }\n", t.value.integer); break;
+        case TOKEN_INTEGER:   printf("%lld; }\n", t.value.integer); break;
         case TOKEN_FLOATING:  printf("%lf; }\n", t.value.floating); break;
 
         case TOKEN_IDENTIFIER:

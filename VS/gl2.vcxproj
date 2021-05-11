@@ -25,6 +25,7 @@
     <ClCompile Include="..\common\parse\reader.cpp" />
     <ClCompile Include="..\common\son\object.cpp" />
     <ClCompile Include="..\common\son\parser.cpp" />
+    <ClCompile Include="..\common\son\value.cpp" />
     <ClCompile Include="..\common\son\visitor.cpp" />
     <ClCompile Include="..\main.cpp" />
     <ClCompile Include="..\src\api\keyboard.cpp" />
@@ -67,6 +68,7 @@
     <ClInclude Include="..\common\son.hpp" />
     <ClInclude Include="..\common\son\object.hpp" />
     <ClInclude Include="..\common\son\parser.hpp" />
+    <ClInclude Include="..\common\son\value.hpp" />
     <ClInclude Include="..\common\son\visitor.hpp" />
     <ClInclude Include="..\common\typedef.hpp" />
     <ClInclude Include="..\src\api\keyboard.h" />

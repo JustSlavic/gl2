@@ -5,6 +5,7 @@
 #include <graphics/shader.h>
 #include <graphics/vertex_array.h>
 #include <graphics/index_buffer.h>
+#include <es/event_system.h>
 
 #include <math/vector2.hpp>
 
@@ -21,7 +22,14 @@ struct body {
 };
 
 
-struct Model {
+struct EventSelectedBodyMoved {
+    math::vector2 body_position;
+
+    EventSelectedBodyMoved(math::vector2 p) : body_position(p) {}
+};
+
+
+struct Model : public IEmitter {
     std::vector<body> bodies;
     std::vector<body> bodies_buffer;
 
@@ -30,6 +38,9 @@ struct Model {
 
     std::vector<std::vector<math::vector2>> traces;
     std::vector<std::vector<math::vector2>> traces_buffer;
+
+    math::vector2 mouse_position;
+    i32 selected_body_index = -1;
 
     // body cursor_highlight;
 
@@ -50,4 +61,6 @@ struct Model {
     void move_bodies(f32 dt);
     void clean();
     void toggle_body_traces();
+    void on_mouse_move(math::vector2 position) { mouse_position = position; }
+    void on_mouse_click(math::vector2 position);
 };

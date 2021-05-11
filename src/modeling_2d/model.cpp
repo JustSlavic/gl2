@@ -49,24 +49,29 @@ body::body(math::vector2 p, math::vector2 v, f32 m)
 void generate_bodies(Model* model) {
     std::random_device random_device;
     std::mt19937 gen(random_device());
-    std::uniform_real_distribution<f32> distribution(0.f, 1.f);
+    std::uniform_real_distribution<f32> uniform_distrib(0.f, 1.f);
+    std::normal_distribution<f32> normal_distrib{50.f, 30.f};
 
-    auto inner_r = 1.f;
-    auto outer_r = inner_r + 8.f;
+    auto inner_r = 20.f;
+    auto outer_r = inner_r + 10.f;
     f32 velocity_multiplier = 2.0f;
     //f32 M = 20000.f;
-    f32 M = 40000.f;
+    f32 M = 10000000.f;
+
+    f32 m_sun = 2e+10; // kg * 10^20
+
 
     model->add_body(math::vector2{ 0.f }, math::vector2{ 0.f }, M);
 
     for (f32 x = -outer_r * 2.f; x < outer_r * 2.f; x += .1f) {
         for (f32 y = -outer_r; y < outer_r * 2.f; y += .1f) {
-            if (distribution(gen) < 0.9f) continue; // Introduce a little bit of random
-
             f32 len = math::vector2{ x, y }.length();
+
+            if (uniform_distrib(gen) < 0.99) continue; // Introduce a little bit of random
+
             if (inner_r < len and len < outer_r) {
                 auto v = math::vector2{ -y, x }.normalized();
-                model->add_body(math::vector2{ x, y }, v * math::sqrt(G * M / len) * 0.98f, distribution(gen) * 5.f);
+                model->add_body(math::vector2{ x, y }, v * math::sqrt(G * M / len) * 0.98f, math::abs(normal_distrib(gen)));
             }
         }
     }
@@ -125,8 +130,37 @@ void Model::add_body(math::vector2 position, math::vector2 velocity, f32 mass) {
 
 void Model::draw_bodies() {
     //printf("size = %llu\n", bodies.size());
+    size_t draw_calls = 0;
     for (size_t i = 0; i < bodies.size(); i++) {
         const body& b = bodies[i];
+
+        // drawing pre-selection highlight
+        if (selected_body_index == i) {
+            auto model_matrix = glm::mat4(1.f);
+            model_matrix = glm::translate(model_matrix, glm::vec3(b.position.x, b.position.y, 0.f));
+            model_matrix = glm::scale(model_matrix, glm::vec3(radii[i] * 2.f + .3f));
+
+            shader->set_uniform_3f("u_color", math::color24{ 0.5f, 0.5f, 0.f });
+            shader->set_uniform_mat4f("u_model", model_matrix);
+            shader->bind();
+
+            gl2::Renderer::draw(*va, *ib, *shader);
+            draw_calls++;
+        } else if ((b.position - mouse_position).length_2() < radii[i] * radii[i]) {
+            auto model_matrix = glm::mat4(1.f);
+            model_matrix = glm::translate(model_matrix, glm::vec3(b.position.x, b.position.y, 0.f));
+            model_matrix = glm::scale(model_matrix, glm::vec3(radii[i] * 2.f + .1f));
+
+            shader->set_uniform_3f("u_color", math::color24{ 1.f, 0.f, 0.f });
+            shader->set_uniform_mat4f("u_model", model_matrix);
+            shader->bind();
+
+            gl2::Renderer::draw(*va, *ib, *shader);
+            draw_calls++;
+        }
+
+        shader->set_uniform_3f("u_color", math::color24{ 1.f, 1.f, 1.f });
+
         // drawing the body
         {
             auto model_matrix = glm::mat4(1.f);
@@ -137,6 +171,7 @@ void Model::draw_bodies() {
             shader->bind();
 
             gl2::Renderer::draw(*va, *ib, *shader);
+            draw_calls++;
         }
 
         //{
@@ -174,9 +209,12 @@ void Model::draw_bodies() {
                 arrow_shader->set_uniform_mat4f("u_model", model_matrix);
                 arrow_shader->bind();
                 gl2::Renderer::draw(*va, *ib, *arrow_shader);
+                draw_calls++;
             }
         }
     }
+
+    //printf("Draw calls: %llu\n", draw_calls);
 }
 
 
@@ -189,6 +227,7 @@ void interact_inelastic(Model* model) {
 
     std::vector<bool> merged(n, false);
 
+    size_t pushed = 0;
     for (size_t i = 0; i < n; i++) {
         if (merged[i]) continue;
         body a = model->bodies[i];
@@ -208,10 +247,15 @@ void interact_inelastic(Model* model) {
                 a.velocity = (a.velocity * a.m + b.velocity * b.m) / (a.m + b.m);
 
                 a.m += b.m;
+
+                if (model->selected_body_index == j) {
+                    model->selected_body_index = i;
+                }
             }
         }
 
         model->bodies_buffer.push_back(a);
+        pushed++;
         model->radii_buffer.push_back(mass_to_radius(a.m));
         if (model->draw_body_traces) model->traces_buffer.push_back(model->traces[i]);
     }
@@ -269,12 +313,6 @@ void interact_inelastic(Model* model) {
 void Model::move_bodies(f32 dt) {
     if (pause) return;
 
-    if (elastic) {
-        //interact_elastic(bodies, buffer);
-    } else {
-        interact_inelastic(this);
-    }
-
     //dt = 0.01f;
     bodies_buffer.clear();
     radii_buffer.clear();
@@ -300,8 +338,6 @@ void Model::move_bodies(f32 dt) {
                 new_velocity += dt * dr * f;
             }
 
-            if (new_position.length_2() > 100.f) continue;
-
             bodies_buffer.emplace_back(new_position, new_velocity, b.m);
             radii_buffer.push_back(mass_to_radius(b.m));
 
@@ -318,12 +354,23 @@ void Model::move_bodies(f32 dt) {
     //std::thread worker_2{ run_move_from_to, n / 3, 2 * n / 3 };
     //run_move_from_to(2 * n / 3, n);
     run_move_from_to(0, n);
+
+    if (selected_body_index > -1) {
+        emit<EventSelectedBodyMoved>(bodies[selected_body_index].position);
+    }
     //worker_1.join();
     //worker_2.join();
 
     std::swap(bodies, bodies_buffer);
     std::swap(radii, radii_buffer);
     std::swap(traces, traces_buffer);
+
+    if (elastic) {
+        //interact_elastic(bodies, buffer);
+    }
+    else {
+        interact_inelastic(this);
+    }
 }
 
 void Model::clean() {
@@ -341,4 +388,18 @@ void Model::toggle_body_traces() {
     }
 
     draw_body_traces = not draw_body_traces;
+}
+
+void Model::on_mouse_click(math::vector2 position) {
+    for (int i = 0; i < bodies.size(); i++) {
+        auto& b = bodies[i];
+
+        if ((b.position - position).length_2() < radii[i] * radii[i]) {
+            selected_body_index = i;
+            return;
+        }
+    }
+
+    selected_body_index = -1; // Nobody under mouse - drop selection.
+    add_body(position, { 0.f }, 10.f); // Place something here idk lol.
 }

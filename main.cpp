@@ -5,6 +5,7 @@
 #include <logging/logging.h>
 
 #include <stdarg.h>
+#include <son/value.hpp>
 
 
 template <typename... Args>
@@ -35,6 +36,31 @@ int print2(const char* fmt, ...) {
 
 
 int main(int argc, char** argv, char** env) {
+    SON::Value v_obj = {
+        std::pair<const char*, std::nullptr_t>{ "null", nullptr },
+        { "foo", 1 },
+        { "bar", 50.123 },
+        { "baz", true }
+    };
+    
+    //for (auto& val : v_obj) {
+    //    if (val.is_null()) printf("null\n");
+    //    if (val.is_integer()) printf("for OBJ: %llu\n", val.get_integer());
+    //    if (val.is_boolean()) printf("for OBJ: %s\n", val.get_boolean() ? "true" : "false");
+    //    if (val.is_floating()) printf("for OBJ: %lf\n", val.get_floating());
+    //}
+
+    SON::Value v_arr = { 1, 2, nullptr, 4, "foo" };
+
+    //for (auto& val : v_arr) {
+    //    if (val.is_integer()) printf("for ARR: %llu\n", val.get_integer());
+    //    if (val.is_boolean()) printf("for ARR: %s\n", val.get_boolean() ? "true" : "false");
+    //    if (val.is_floating()) printf("for ARR: %lf\n", val.get_floating());
+    //    if (val.is_string()) printf("some string???\n");
+    //}
+
+    //return 0;
+
     print2("Hello {} world {}\n", 1, 2);
 
     LogGlobalContext::instance()
@@ -45,9 +71,11 @@ int main(int argc, char** argv, char** env) {
     LOG_INFO << "Welcome to Gir2 v." << version;
 
     gl2::Application app;
+
     if (app.initialize()) {
         LOG_ERROR << "Failed to initialize some context!";
         std::exit(1);
     }
+
     return app.run();
 }
