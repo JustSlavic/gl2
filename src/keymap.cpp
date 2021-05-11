@@ -27,8 +27,7 @@ void Keymap::update<Mouse::ButtonReleaseEvent>(Mouse::ButtonReleaseEvent event) 
 
 template<>
 void Keymap::update<Mouse::ScrollEvent>(Mouse::ScrollEvent event) {
-    constexpr f32 ZOOM_SCALE = .05f;
-    emit(EventZoom(ZOOM_SCALE * event.scroll));
+    emit(EventZoom(event.scroll));
 }
 
 template<>
