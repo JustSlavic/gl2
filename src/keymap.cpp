@@ -38,6 +38,9 @@ void Keymap::update<Keyboard::KeyReleaseEvent>(Keyboard::KeyReleaseEvent event) 
         case Keyboard::SPACE: emit(EventPause()); break;
         case Keyboard::F2: emit(EventToggleF2()); break;
         case Keyboard::T: emit(EventToggleBodyTraces()); break;
+        case Keyboard::V: emit(EventToggleVelocities()); break;
+        case Keyboard::F: emit(EventToggleVectorField()); break;
+
         default: break;
     }
 }

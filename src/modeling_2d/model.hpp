@@ -61,6 +61,9 @@ struct Model : public IEmitter {
     void move_bodies(f32 dt);
     void clean();
     void toggle_body_traces();
+    void toggle_velocities();
+    void toggle_vector_field();
     void on_mouse_move(math::vector2 position) { mouse_position = position; }
-    void on_mouse_click(math::vector2 position);
+    void on_left_mouse_click(math::vector2 position);
+    void on_right_mouse_click(math::vector2 position);
 };

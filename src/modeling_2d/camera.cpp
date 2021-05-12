@@ -5,8 +5,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 
-constexpr f32 CAMERA_SPEED = .5f;
+constexpr f32 CAMERA_SPEED = 2.f;
 constexpr f32 ZOOM_SPEED = .1f;
+
 
 void update(Camera2D *camera, f32 dt) {
     FOR_ALL_KEYS(k) {
@@ -22,6 +23,7 @@ void update(Camera2D *camera, f32 dt) {
     }
 }
 
+
 Camera2D::Camera2D()
     : position{0.f, 0.f, -15.f}
 {
@@ -34,6 +36,7 @@ Camera2D::Camera2D()
         this->position.z = z;
     });
 }
+
 
 glm::mat4 Camera2D::get_view_matrix() const {
     glm::vec3 up = glm::vec3(0.f, 1.f, 0.f);
@@ -52,6 +55,7 @@ glm::mat4 Camera2D::get_view_matrix() const {
     return glm::lookAt(glm_position, glm_position + direction, up);
 }
 
+
 math::mat4 Camera2D::get_view_matrix_math() const {
     glm::mat4 result = get_view_matrix();
 
@@ -67,6 +71,7 @@ math::mat4 Camera2D::get_view_matrix_math() const {
 math::vector3 Camera2D::get_forward_vector () const {
     return { 0.f, 0.f, 1.f };
 }
+
 
 math::vector3 Camera2D::get_up_vector () const {
     return { 0.f, 1.f, 0.f };

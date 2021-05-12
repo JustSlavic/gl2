@@ -198,11 +198,13 @@ namespace gl2 {
                 //printf("normalized: q = (%5.2f, %5.2f, %5.2f, %5.2f)\n", q.x, q.y, q.z, q.w);
 
 #ifdef GRAVITY
-                model.on_mouse_click(intersection.xy);
+                model.on_left_mouse_click(intersection.xy);
 #endif
 #ifdef CREATURES
                 model.add_creature(creature::make_random(math::vector2(intersection.x, intersection.y)));
 #endif
+            } else if (e.button == Mouse::RIGHT) {
+                model.on_right_mouse_click({ 0.f });
             }
         });
 

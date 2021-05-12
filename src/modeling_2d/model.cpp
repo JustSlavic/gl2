@@ -101,10 +101,11 @@ Model::Model()
     Dispatcher<EventFrameFinished>::subscribe([this] (EventFrameFinished e) {
         this->move_bodies(e.dt);
     });
-    Dispatcher<EventRestart>::subscribe([this](EventRestart) { this->clean(); });
+    Dispatcher<EventRestart>::subscribe(EVENT_CALLBACK(clean));
     Dispatcher<EventPause>::subscribe([this](EventPause) { this->pause = not this->pause; });
     Dispatcher<EventToggleF2>::subscribe([this](EventToggleF2) { this->elastic = not this->elastic; });
     Dispatcher<EventToggleBodyTraces>::subscribe([this](EventToggleBodyTraces) { this->toggle_body_traces(); });
+    Dispatcher<EventToggleVelocities>::subscribe(EVENT_CALLBACK(toggle_velocities));
 
     bodies.reserve(5000);
     bodies_buffer.reserve(5000);
@@ -122,7 +123,7 @@ Model::Model()
 
 void Model::add_body(math::vector2 position, math::vector2 velocity, f32 mass) {
     // printf("Body added at (%5.2f, %5.2f)\n", x, y);
-    bodies.emplace_back(position, velocity, mass);
+    bodies.emplace_back(position, selected_body_index == -1 ? velocity : bodies[selected_body_index].velocity, mass);
     radii.emplace_back(mass_to_radius(mass));
     traces.push_back({});
 }
@@ -135,12 +136,14 @@ void Model::draw_bodies() {
         const body& b = bodies[i];
 
         // drawing pre-selection highlight
-        if (selected_body_index == i) {
+        if (i == selected_body_index) {
+            printf("draw %d selected object\n", selected_body_index);
+
             auto model_matrix = glm::mat4(1.f);
             model_matrix = glm::translate(model_matrix, glm::vec3(b.position.x, b.position.y, 0.f));
-            model_matrix = glm::scale(model_matrix, glm::vec3(radii[i] * 2.f + .3f));
+            model_matrix = glm::scale(model_matrix, glm::vec3(radii[i] * 2.f + .1f));
 
-            shader->set_uniform_3f("u_color", math::color24{ 0.5f, 0.5f, 0.f });
+            shader->set_uniform_3f("u_color", math::color24{ 0.5f, 0.f, 0.5f });
             shader->set_uniform_mat4f("u_model", model_matrix);
             shader->bind();
 
@@ -249,13 +252,18 @@ void interact_inelastic(Model* model) {
                 a.m += b.m;
 
                 if (model->selected_body_index == j) {
-                    model->selected_body_index = i;
+                    model->selected_body_index = -1;
                 }
             }
         }
 
         model->bodies_buffer.push_back(a);
+        if (model->selected_body_index == i) {
+            model->selected_body_index = pushed;
+        }
         pushed++;
+
+
         model->radii_buffer.push_back(mass_to_radius(a.m));
         if (model->draw_body_traces) model->traces_buffer.push_back(model->traces[i]);
     }
@@ -354,22 +362,17 @@ void Model::move_bodies(f32 dt) {
     //std::thread worker_2{ run_move_from_to, n / 3, 2 * n / 3 };
     //run_move_from_to(2 * n / 3, n);
     run_move_from_to(0, n);
-
-    if (selected_body_index > -1) {
-        emit<EventSelectedBodyMoved>(bodies[selected_body_index].position);
-    }
     //worker_1.join();
     //worker_2.join();
 
     std::swap(bodies, bodies_buffer);
     std::swap(radii, radii_buffer);
     std::swap(traces, traces_buffer);
-
-    if (elastic) {
-        //interact_elastic(bodies, buffer);
-    }
-    else {
-        interact_inelastic(this);
+    
+    interact_inelastic(this);
+    
+    if (selected_body_index > -1) {
+        emit<EventSelectedBodyMoved>(bodies[selected_body_index].position);
     }
 }
 
@@ -390,7 +393,7 @@ void Model::toggle_body_traces() {
     draw_body_traces = not draw_body_traces;
 }
 
-void Model::on_mouse_click(math::vector2 position) {
+void Model::on_left_mouse_click(math::vector2 position) {
     for (int i = 0; i < bodies.size(); i++) {
         auto& b = bodies[i];
 
@@ -400,6 +403,10 @@ void Model::on_mouse_click(math::vector2 position) {
         }
     }
 
-    selected_body_index = -1; // Nobody under mouse - drop selection.
     add_body(position, { 0.f }, 10.f); // Place something here idk lol.
+}
+
+
+void Model::on_right_mouse_click(math::vector2 position) {
+    selected_body_index = -1; // Nobody under mouse - drop selection.
 }
