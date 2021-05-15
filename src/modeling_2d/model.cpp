@@ -104,8 +104,9 @@ Model::Model()
     Dispatcher<EventRestart>::subscribe(EVENT_CALLBACK(clean));
     Dispatcher<EventPause>::subscribe([this](EventPause) { this->pause = not this->pause; });
     Dispatcher<EventToggleF2>::subscribe([this](EventToggleF2) { this->elastic = not this->elastic; });
-    Dispatcher<EventToggleBodyTraces>::subscribe([this](EventToggleBodyTraces) { this->toggle_body_traces(); });
+    Dispatcher<EventToggleBodyTraces>::subscribe(EVENT_CALLBACK(toggle_body_traces));
     Dispatcher<EventToggleVelocities>::subscribe(EVENT_CALLBACK(toggle_velocities));
+    Dispatcher<EventToggleVectorField>::subscribe(EVENT_CALLBACK(toggle_vector_field));
 
     bodies.reserve(5000);
     bodies_buffer.reserve(5000);
@@ -177,21 +178,22 @@ void Model::draw_bodies() {
             draw_calls++;
         }
 
-        //{
-        //   f32 v = b.velocity.length();
-        //   f32 angle = std::atan2(b.velocity.y, b.velocity.x);
+        if (draw_velocities) {
+           f32 v = b.velocity.length();
+           f32 angle = std::atan2(b.velocity.y, b.velocity.x);
 
-        //   auto model_matrix = glm::mat4(1.f);
-        //   model_matrix = glm::translate(model_matrix, glm::vec3(b.position.x, b.position.y, 0.f));
-        //   model_matrix = glm::rotate(model_matrix, angle, glm::vec3(0.f, 0.f, 1.f));
-        //   model_matrix = glm::translate(model_matrix, glm::vec3(v * 0.5f, 0.f, 0.f));
-        //   model_matrix = glm::scale(model_matrix, glm::vec3(v, 0.002f, 0.f));
+           auto model_matrix = glm::mat4(1.f);
+           model_matrix = glm::translate(model_matrix, glm::vec3(b.position.x, b.position.y, 0.f));
+           model_matrix = glm::rotate(model_matrix, angle, glm::vec3(0.f, 0.f, 1.f));
+           model_matrix = glm::translate(model_matrix, glm::vec3(v * 0.5f, 0.f, 0.f));
+           model_matrix = glm::scale(model_matrix, glm::vec3(v, 0.002f, 0.f));
 
-        //   // drawing the arrows
-        //   arrow_shader->set_uniform_mat4f("u_model", model_matrix);
-        //   arrow_shader->bind();
-        //   gl2::Renderer::draw(*va, *ib, *arrow_shader);
-        //}
+           // drawing the arrows
+           arrow_shader->set_uniform_mat4f("u_model", model_matrix);
+           arrow_shader->bind();
+           gl2::Renderer::draw(*va, *ib, *arrow_shader);
+           draw_calls++;
+        }
 
         if (draw_body_traces) {
             const std::vector<math::vector2>& trace = traces[i];
@@ -209,6 +211,43 @@ void Model::draw_bodies() {
                 model_matrix = glm::translate(model_matrix, glm::vec3(v * 0.5f, 0.f, 0.f));
                 model_matrix = glm::scale(model_matrix, glm::vec3(v, 0.006f, 0.f));
 
+                arrow_shader->set_uniform_mat4f("u_model", model_matrix);
+                arrow_shader->bind();
+                gl2::Renderer::draw(*va, *ib, *arrow_shader);
+                draw_calls++;
+            }
+        }
+    }
+
+    if (draw_vector_field) {
+        float width = 50;
+        float height = 50;
+        float step = 0.5f;
+        for (float x = -width / 2.f; x < width / 2.f + 0.01f; x += step) {
+            for (float y = -height / 2.f; y < height / 2.f + 0.01f; y += step) {
+                math::vector2 F{ 0.f };
+                math::vector2 position{ x, y };
+
+                for (size_t i = 0; i < bodies.size(); i++) {
+                    auto& b = bodies[i];
+
+                    math::vector2 dr = position - b.position;
+                    f32 dr_2 = dr.length_2();
+                    f32 dr_1 = math::sqrt(dr_2);
+
+                    F += dr * G * b.m / (dr_2 * dr_1);
+                }
+
+                f32 v = -F.length(); v = -0.2f;
+                f32 angle = std::atan2(F.y, F.x);
+
+                auto model_matrix = glm::mat4(1.f);
+                model_matrix = glm::translate(model_matrix, glm::vec3(position.x, position.y, 0.f));
+                model_matrix = glm::rotate(model_matrix, angle, glm::vec3(0.f, 0.f, 1.f));
+                model_matrix = glm::translate(model_matrix, glm::vec3(v * 0.5f, 0.f, 0.f));
+                model_matrix = glm::scale(model_matrix, glm::vec3(v, 0.02f, 0.f));
+
+                // drawing the arrows
                 arrow_shader->set_uniform_mat4f("u_model", model_matrix);
                 arrow_shader->bind();
                 gl2::Renderer::draw(*va, *ib, *arrow_shader);
@@ -252,7 +291,7 @@ void interact_inelastic(Model* model) {
                 a.m += b.m;
 
                 if (model->selected_body_index == j) {
-                    model->selected_body_index = -1;
+                    model->selected_body_index = i;
                 }
             }
         }
@@ -376,7 +415,7 @@ void Model::move_bodies(f32 dt) {
     }
 }
 
-void Model::clean() {
+void Model::clean(EventRestart) {
     bodies.clear();
     radii.clear();
     traces.clear();
@@ -384,7 +423,7 @@ void Model::clean() {
     //generate_random_bodies_in_square(this);
 }
 
-void Model::toggle_body_traces() {
+void Model::toggle_body_traces(EventToggleBodyTraces) {
     if (draw_body_traces) {
         traces.clear();
         traces_buffer.clear();
@@ -392,6 +431,17 @@ void Model::toggle_body_traces() {
 
     draw_body_traces = not draw_body_traces;
 }
+
+
+void Model::toggle_velocities(EventToggleVelocities) {
+    draw_velocities = not draw_velocities;
+}
+
+
+void Model::toggle_vector_field(EventToggleVectorField) {
+    draw_vector_field = not draw_vector_field;
+}
+
 
 void Model::on_left_mouse_click(math::vector2 position) {
     for (int i = 0; i < bodies.size(); i++) {
@@ -403,7 +453,7 @@ void Model::on_left_mouse_click(math::vector2 position) {
         }
     }
 
-    add_body(position, { 0.f }, 10.f); // Place something here idk lol.
+    add_body(position, { 0.f }, 500.f); // Place something here idk lol.
 }
 
 
