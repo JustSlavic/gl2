@@ -8,7 +8,6 @@ namespace os {
 
 
 struct file {
-public:
     struct reader {
         FILE* descriptor = nullptr;
 

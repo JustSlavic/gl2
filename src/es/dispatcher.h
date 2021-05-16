@@ -14,7 +14,7 @@ struct Dispatcher {
 
     static Dispatcher& instance() {
         static Dispatcher instance;
-        return instance;      
+        return instance;
     }
 
     static void subscribe(Callback f) {
@@ -24,7 +24,7 @@ struct Dispatcher {
     void emit(TEvent event) {
         for (auto f : subscriptions) {
             f(event);
-        }  
+        }
     }
 
 private:
@@ -33,6 +33,6 @@ private:
 
 #define SUBSCRIBE_TO_EVENT(T) \
         Dispatcher<T>::subscribe([this](T event) { this->update(event); });
-#define EVENT_CALLBACK(F) [this](auto&&... args) -> decltype(auto) { this->F(std::forward<decltype(args)>(args)...); }
+#define EVENT_CALLBACK(F) [this](auto&&... args) -> decltype(auto) { this->F(std::forward<decltype(args)>(args...)...); }
 
 #endif // GL2_ES_DISPATCHER_H

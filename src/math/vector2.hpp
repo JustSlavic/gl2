@@ -22,7 +22,7 @@ struct vector2 {
     inline f32  length_2   () const { return x*x + y*y; }
     inline f32  length     () const { return math::sqrt(length_2()); }
     inline f32  norm       () const { return length(); }
-    inline vector2 normalized () const { return { x / norm(), y / norm() }; }
+    inline vector2 normalized() const { auto n = norm(); return { x / n, y / n }; }
 
     inline vector2& operator += (const vector2& other) {
         x += other.x;

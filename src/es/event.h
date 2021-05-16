@@ -25,7 +25,12 @@ struct WindowMotionEvent {
     WindowMotionEvent(i32 x, i32 y) :x(x), y(y) {}
 };
 
-struct EventToggleF2{};
+struct EventToggleF2 {};
 
+struct EventToggleBodyTraces {};
+
+struct EventToggleVectorField {};
+
+struct EventToggleVelocities {};
 
 #endif // GL2_ES_EVENT_H
