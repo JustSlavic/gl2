@@ -23,6 +23,7 @@
 #include <modeling_2d/creatures.hpp>
 
 #include <service/shader_library.hpp>
+#include <config.hpp>
 
 
 constexpr f32 NEAR_CLIP_DISTANCE = 0.1f;
@@ -63,7 +64,15 @@ namespace gl2 {
     int Application::initialize() {
         if (window) return 1;
 
-        window = new Window(1280, 720);
+        bool success = config::initialize("config.son");
+        if (not success) {
+            printf("Could not initialize config!\n");
+            return 1;
+        }
+
+        // auto& cfg = config::get_instance();
+
+        // window = new Window(cfg.window.width, cfg.window.height);
         i32 err = window->startup();
 
         Keymap::instance();

@@ -164,7 +164,7 @@ clean:
 
 # ================= CONFIG ================== #
 
-config: .generated/config.cpp
+config: .generated/config.cpp .generated/config.hpp
 
 build/$(SUB_DIR)/config.o: .generated/config.cpp
 	@mkdir -p $(dir $@)

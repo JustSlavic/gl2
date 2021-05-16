@@ -69,6 +69,21 @@ inline f64 lerp (f64 a, f64 b, f64 t) {
     return (1.0 - t) * a + t * b;
 }
 
+
+inline f32 clamp (f32 x, f32 min, f32 max) {
+    if (x < min) return min;
+    if (x > max) return max;
+    return x;
+}
+
+
+inline f64 clamp (f64 x, f64 min, f64 max) {
+    if (x < min) return min;
+    if (x > max) return max;
+    return x;
+}
+
+
 // =======================
 
 // @Warning! This works only on LITTLE ENDIAN setups
