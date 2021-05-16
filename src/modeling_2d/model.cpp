@@ -54,11 +54,9 @@ void generate_bodies(Model* model) {
 
     auto inner_r = 20.f;
     auto outer_r = inner_r + 10.f;
-    f32 velocity_multiplier = 2.0f;
-    //f32 M = 20000.f;
     f32 M = 10000000.f;
 
-    f32 m_sun = 2e+10; // kg * 10^20
+    // f32 m_sun = 2e+10; // kg * 10^20
 
 
     model->add_body(math::vector2{ 0.f }, math::vector2{ 0.f }, M);
@@ -137,7 +135,7 @@ void Model::draw_bodies() {
         const body& b = bodies[i];
 
         // drawing pre-selection highlight
-        if (i == selected_body_index) {
+        if (selected_body_index >= 0 && i == (size_t)selected_body_index) {
             printf("draw %d selected object\n", selected_body_index);
 
             auto model_matrix = glm::mat4(1.f);
@@ -290,14 +288,14 @@ void interact_inelastic(Model* model) {
 
                 a.m += b.m;
 
-                if (model->selected_body_index == j) {
+                if (model->selected_body_index >= 0 && (size_t)model->selected_body_index == j) {
                     model->selected_body_index = i;
                 }
             }
         }
 
         model->bodies_buffer.push_back(a);
-        if (model->selected_body_index == i) {
+        if (model->selected_body_index >= 0 && (size_t)model->selected_body_index == i) {
             model->selected_body_index = pushed;
         }
         pushed++;
@@ -444,7 +442,7 @@ void Model::toggle_vector_field(EventToggleVectorField) {
 
 
 void Model::on_left_mouse_click(math::vector2 position) {
-    for (int i = 0; i < bodies.size(); i++) {
+    for (size_t i = 0; i < bodies.size(); i++) {
         auto& b = bodies[i];
 
         if ((b.position - position).length_2() < radii[i] * radii[i]) {

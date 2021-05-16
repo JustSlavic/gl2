@@ -263,7 +263,7 @@ namespace gl2 {
         math::color24 background_color{ cfg.window.default_color.r, cfg.window.default_color.g, cfg.window.default_color.b };
         // uncomment this call to draw in wireframe polygons.
         // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-        u64 frame_counter = 0;
+        // u64 frame_counter = 0;
 
         while (running) {
             auto t_ = std::chrono::steady_clock::now();

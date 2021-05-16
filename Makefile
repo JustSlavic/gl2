@@ -34,7 +34,6 @@ CXXFLAGS = \
 	-Werror \
 	-fno-rtti \
 	-std=$(CXX_STANDARD) \
-	-DGRAVITY \
 
 CXXFLAGS += $(addprefix -I, $(INC_DIR))
 
