@@ -46,8 +46,6 @@ struct color32 {
     u32 pack () const;
 };
 
-using color = color32;
-
 
 inline bool operator == (const color24& lhs, const color24& rhs) {
     return (lhs.r == rhs.r) && (lhs.g == rhs.g) && (lhs.b == rhs.b);

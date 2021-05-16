@@ -23,6 +23,7 @@
 #include <modeling_2d/creatures.hpp>
 
 #include <service/shader_library.hpp>
+#include <config.hpp>
 
 #include <config.hpp>
 
