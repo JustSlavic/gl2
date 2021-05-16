@@ -14,7 +14,7 @@ matrix4 mat4::zero() {
     return result;
 }
 
-matrix4 mat4::eye() {
+matrix4 mat4::identity() {
     matrix4 result;
 
     for (size_t i = 0; i < 16; i++) {

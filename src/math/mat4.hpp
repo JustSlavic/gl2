@@ -19,23 +19,26 @@ struct mat4 {
         f32 at[16];
     };
 
-    static mat4 zero();
-    static mat4 eye();
+    static mat4 zero ();
+    static mat4 identity ();
 
-    inline const f32* data() const { return &at[0]; }
-    inline       f32* data()       { return &at[0]; }
+    inline const f32* data () const { return &at[0]; }
+    inline       f32* data ()       { return &at[0]; }
 
-    f32 det() const;
+    f32 det () const;
 };
+
 
 using matrix4 = mat4;
 
-f32     determinant(const mat4& matrix);
 
-matrix4 projection(f32 width, f32 height, f32 near, f32 far);
-matrix4 projection_fov(f32 fov, f32 width, f32 height, f32 near, f32 far);
-matrix4 projection_fov(f32 fov, f32 ratio, f32 near, f32 far);
-matrix4 projection_far(f32 width, f32 height, f32 near, f32 far);
+f32 determinant (const mat4& matrix);
+
+matrix4 projection (f32 width, f32 height, f32 near, f32 far);
+matrix4 projection_fov (f32 fov, f32 width, f32 height, f32 near, f32 far);
+matrix4 projection_fov (f32 fov, f32 ratio, f32 near, f32 far);
+matrix4 projection_far (f32 width, f32 height, f32 near, f32 far);
+
 
 inline mat4 operator + (const mat4& lhs, const mat4& rhs) {
     mat4 result;
@@ -46,6 +49,7 @@ inline mat4 operator + (const mat4& lhs, const mat4& rhs) {
 
     return result;
 }
+
 
 inline mat4 operator * (const mat4& lhs, const mat4& rhs) {
     mat4 result;
@@ -60,6 +64,7 @@ inline mat4 operator * (const mat4& lhs, const mat4& rhs) {
 
     return result;
 }
+
 
 inline vector4 operator * (const mat4& m, const vector4& v) {
     vector4 result;

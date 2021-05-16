@@ -6,6 +6,7 @@
 
 namespace math {
 
+
 struct mat3 {
     union {
         struct {
@@ -18,14 +19,19 @@ struct mat3 {
     };
 
     static mat3 zero ();
-    static mat3 eye  ();
+    static inline mat3 identity () { return diagonal(1.f); }
+    static inline mat3 diagonal (f32 v) { return diagonal(v, v, v); }
+    static mat3 diagonal (f32 v11, f32 v22, f32 v33);
 
     f32 det () const;
 };
 
+
 using matrix3 = mat3;
 
+
 f32 determinant (const mat3& matrix);
+
 
 inline mat3 operator + (const mat3& a, const mat3& b) {
     mat3 result;
@@ -37,6 +43,7 @@ inline mat3 operator + (const mat3& a, const mat3& b) {
     return result;
 }
 
+
 inline mat3 operator - (const mat3& a, const mat3& b) {
     mat3 result;
 
@@ -46,6 +53,7 @@ inline mat3 operator - (const mat3& a, const mat3& b) {
 
     return result;
 }
+
 
 inline mat3 operator * (const mat3& a, const mat3& b) {
     mat3 result;
@@ -65,17 +73,20 @@ inline mat3 operator * (const mat3& a, const mat3& b) {
     return result;
 }
 
+
 inline vector3 operator * (const mat3& m, const vector3& v) {
     return { m._11 * v._1 + m._12 * v._2 + m._13 * v._3,
              m._21 * v._1 + m._22 * v._2 + m._23 * v._3,
              m._31 * v._1 + m._32 * v._2 + m._33 * v._3 };
 }
 
+
 inline vector3 operator * (const vector3& v, const mat3& m) {
     return { v._1 * m._11 + v._2 * m._21 + v._3 * m._31,
              v._1 * m._12 + v._2 * m._22 + v._3 * m._32,
              v._1 * m._13 + v._2 * m._23 + v._3 * m._33 };
 }
+
 
 inline mat3 operator * (const mat3& m, f32 a) {
     mat3 result;
@@ -87,8 +98,10 @@ inline mat3 operator * (const mat3& m, f32 a) {
     return result;
 }
 
+
 inline mat3 operator * (f32 a, const mat3& m) {
     return m * a;
 }
+
 
 } // math

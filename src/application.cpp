@@ -8,9 +8,6 @@
 
 #include <config.hpp>
 
-//#include <glm/glm.hpp>
-//#include <glm/gtc/matrix_transform.hpp>
-
 #include <math/vector3.hpp>
 #include <fs/watcher.h>
 #include <graphics/graphics_api.h>
@@ -25,9 +22,6 @@
 #include <modeling_2d/creatures.hpp>
 
 #include <service/shader_library.hpp>
-#include <config.hpp>
-
-#include <config.hpp>
 
 
 #define GRAVITY
@@ -185,7 +179,7 @@ namespace gl2 {
 
                 printf("click position: (%5.2f, %5.2f, %5.2f)\n", intersection.x, intersection.y, intersection.z);
 
-                math::mat4 model_ = math::mat4::eye();
+                math::mat4 model_ = math::mat4::identity();
                 math::mat4 view_ = camera.get_view_matrix_math();
 
                 math::vector4 q = math::vector4::make(intersection, 0.f);
@@ -277,10 +271,10 @@ namespace gl2 {
             auto view = camera.get_view_matrix_math();
 
             body_shader.set_uniform_mat4f("u_view", view);
-            body_shader.set_uniform_mat4f("u_model", math::mat4::eye());
+            body_shader.set_uniform_mat4f("u_model", math::mat4::identity());
 
             arrow_shader.set_uniform_mat4f("u_view", view);
-            arrow_shader.set_uniform_mat4f("u_model", math::mat4::eye());
+            arrow_shader.set_uniform_mat4f("u_model", math::mat4::identity());
 
             Renderer::clear(background_color);
             // Renderer::draw(va, ib, shdr);
