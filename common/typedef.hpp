@@ -1,6 +1,9 @@
 #ifndef GL2_TYPEDEF_H
 #define GL2_TYPEDEF_H
 
+#include <stdint.h>
+
+
 #ifdef _WIN32
 #define PLATFORM_WINDOWS
 #endif // _WIN32

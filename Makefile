@@ -19,7 +19,6 @@ LOCAL_LIBS = \
 # Libraries:
 # GL - OpenGL
 # GLU - OpenGL Utility
-# glfw - Managing window and input
 # GLEW - Extention Wrangler that dynamically loads supported OpenGL functions
 # SDL2 - Simple DirectMedia Layer (managing window, input, audio, etc.)
 LIBS = \
@@ -27,14 +26,12 @@ LIBS = \
 	GLU \
 	GLEW \
 	SDL2 \
-#     glfw \
 
 CXXFLAGS = \
 	-Wall \
 	-Werror \
 	-fno-rtti \
 	-std=$(CXX_STANDARD) \
-	-DGRAVITY \
 
 CXXFLAGS += $(addprefix -I, $(INC_DIR))
 
@@ -108,6 +105,7 @@ PROJECT_EXE := bin/$(SUB_DIR)/$(PROJECT)
 
 # ================= RULES ================= #
 
+
 # Unconditional rules
 .PHONY: prebuild postbuild clean test config
 
@@ -125,9 +123,11 @@ test:
 
 # ================= UTILITY ================= #
 
+
 prebuild: src/version.cpp
 	@mkdir -p bin/$(SUB_DIR)
 	@mkdir -p build/$(SUB_DIR)
+	$(MAKE) -C config_builder
 
 postbuild:
 	ln -sfn bin/$(SUB_DIR)/$(PROJECT) run
@@ -162,23 +162,23 @@ clean:
 
 -include $(OBJECTS:.o=.d)
 
+
 # ================= CONFIG ================== #
 
-config: .generated/config.cpp
+
+config: .generated/config.hpp .generated/config.cpp .generated/config.scheme.son
 
 build/$(SUB_DIR)/config.o: .generated/config.cpp
 	@mkdir -p $(dir $@)
 	@g++ -MM -MT "$@" $(CXXFLAGS) $< > $*.d
 	g++ $< -c -o $@ $(CXXFLAGS)
 
-.generated/config.hpp .generated/config.cpp .generated/config.scheme.son: config_builder/builder
+.generated/config.hpp .generated/config.cpp .generated/config.scheme.son: config_builder/builder config.son
 	./config_builder/builder config.son
-
-config_builder/builder: config.son
-	$(MAKE) -C config_builder debug
 
 
 # ================= PROJECT ================= #
+
 
 $(PROJECT_EXE): main.cpp build/$(SUB_DIR)/version.o $(PROJECT_LIB) $(STATIC_LIBS)
 	g++ main.cpp build/$(SUB_DIR)/version.o $(PROJECT_LIB) $(STATIC_LIBS) -o $(PROJECT_EXE) $(CXXFLAGS) $(LDFLAGS)
@@ -193,7 +193,7 @@ build/$(SUB_DIR)/%.o: src/%.cpp ./Makefile
 
 build/$(SUB_DIR)/common/%.o: common/%.cpp ./Makefile
 	@mkdir -p $(dir $@)
-	@g++ -MM -MT "$@" $(CXXFLAGS) $< > build/$(SUB_DIR)/$*.d
+	@g++ -MM -MT "$@" $(CXXFLAGS) $< > build/$(SUB_DIR)/common/$*.d
 	g++ $< -c -o $@ $(CXXFLAGS)
 
 ${STATIC_LIBS}:

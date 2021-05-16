@@ -24,6 +24,8 @@
 
 #include <service/shader_library.hpp>
 
+#include <config.hpp>
+
 
 #define GRAVITY
 
@@ -66,7 +68,17 @@ namespace gl2 {
     int Application::initialize() {
         if (window) return 1;
 
-        window = new Window(1280, 720);
+        bool config_initialized = config::initialize("config.son");
+        if (not config_initialized) {
+            printf("Could not initialize config!\n");
+            return 1;
+        }
+
+        auto& cfg = config::get_instance();
+        printf("Window %s: %dx%d\n",
+            cfg.name.c_str(), cfg.window.width, cfg.window.height);
+
+        window = new Window(cfg.window.width, cfg.window.height, cfg.name.c_str());
 
         i32 err = window->startup();
         if (err) return err;
@@ -90,7 +102,6 @@ namespace gl2 {
 
         // glm::mat4 projection = glm::ortho(-(f32)w*.5f/h, (f32)w*.5f/h, -.5f, .5f);
         auto projection = math::projection(window_ratio * NEAR_CLIP_DISTANCE, NEAR_CLIP_DISTANCE, NEAR_CLIP_DISTANCE, FAR_CLIP_DISTANCE);
-
 
         printf("projection matrix:\n");
         print_matrix4(projection);
