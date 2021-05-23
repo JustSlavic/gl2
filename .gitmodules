@@ -1,0 +1,3 @@
+[submodule "external/son"]
+	path = external/son
+	url = git@github.com:JustSlavic/son.git
