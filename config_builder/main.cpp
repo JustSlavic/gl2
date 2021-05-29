@@ -37,37 +37,81 @@ jslavic::son create_scheme_from_son(jslavic::son& value, std::string* key = null
 }
 
 
+static inline const char* son_type_to_cpp_type(const char* son_type) {
+    if (strcmp(son_type, "null") == 0) {
+        return "void*";
+    }
+    else if (strcmp(son_type, "boolean") == 0) {
+        return "bool";
+    }
+    else if (strcmp(son_type, "integer") == 0) {
+        return "int";
+    }
+    else if (strcmp(son_type, "floating") == 0) {
+        return "double";
+    }
+    else if (strcmp(son_type, "string") == 0) {
+        return "std::string";
+    }
+}
+
+
 static const char* spaces = "                                                  ";
-void print_cpp_config_impl(jslavic::son& value, FILE* hpp, FILE* cpp, int depth = 0) {
+void print_cpp_config_impl(jslavic::son& value, FILE* hpp, FILE* cpp, int depth = 0, const std::string& last_variable_name = "") {
     using namespace jslavic;
     if (!value.is_object()) { return; }
 
-    std::string key = value.get("key", "").get_string();
+    static std::vector<std::string> member_names;
 
-    if (value["type"] == "null") { /* Don't do that yet. */ }
-    else if (value["type"] == "boolean") {
-        fprintf(hpp, "%*.sbool %s;\n", depth*4, spaces, key.c_str());
+    std::string key = value.get("key", "").get_string();
+    std::string type = value.get("type", "").get_string();
+
+    std::string variable_name = key == "" ? "object" : key + "_" + std::to_string(depth);
+
+    if (key != "") member_names.push_back(key);
+
+    if (type == "null" ||
+        type == "boolean" ||
+        type == "integer" ||
+        type == "floating" ||
+        type == "string")
+    {
+        fprintf(hpp, "%*.s%s %s;\n",
+            depth * 4, spaces,
+            son_type_to_cpp_type(value["type"].get_string().c_str()),
+            key.c_str());
+
+        fprintf(cpp, "    jslavic::son %s = %s[\"%s\"];\n", variable_name.c_str(), last_variable_name.c_str(), key.c_str());
+        fprintf(cpp, "    if (!%s.is_%s()) return false;\n", variable_name.c_str(), value["type"].get_string().c_str());
+        fprintf(cpp, "    cfg");
+        for (auto& s : member_names) {
+            fprintf(cpp, ".%s", s.c_str());
+        }
+        fprintf(cpp, " = %s.get_%s();\n\n", variable_name.c_str(), value["type"].get_string().c_str());
     }
-    else if (value["type"] == "integer") {
-        fprintf(hpp, "%*.sint %s;\n", depth*4, spaces, key.c_str());
-    }
-    else if (value["type"] == "floating") {
-        fprintf(hpp, "%*.sdouble %s;\n", depth*4, spaces, key.c_str());
-    }
-    else if (value["type"] == "string") {
-        fprintf(hpp, "%*.sstd::string %s;\n", depth*4, spaces, key.c_str());
-    }
-    else if (value["type"] == "object") {
+    else if (value["type"] == "object")
+    {
+        if (key != "") {
+            fprintf(cpp, "    jslavic::son %s = %s[\"%s\"];\n", variable_name.c_str(), last_variable_name.c_str(), key.c_str());
+            fprintf(cpp, "    if (!%s.is_object()) return false;\n\n",
+                variable_name.c_str());
+        }
+
         if (key != "") fprintf(hpp, "%*.sstruct {\n", depth * 4, spaces);
+
         son& values = value["values"];
+
         if (values.is_array()) {
             for (auto& v : values) {
-                print_cpp_config_impl(v, hpp, cpp, depth + 1);
+                print_cpp_config_impl(v, hpp, cpp, depth + 1, variable_name);
             }
         }
+
         if (key != "") fprintf(hpp, "%*.s} %s;\n", depth * 4, spaces, key.c_str());
     }
     else if (value["type"] == "array") { /* Don't do that yet. */ }
+
+    if (key != "") member_names.pop_back();
 }
 
 
@@ -77,14 +121,47 @@ void print_cpp_config_from_scheme(jslavic::son& value, const char* hpp_filename,
 
     fprintf(hpp,
         "#pragma once\n"
+        "#include <string>\n"
         "\n"
-        "struct config_t {\n"
+        "struct config {\n"
+    );
+
+    fprintf(cpp,
+        "#include \"config.hpp\"\n"
+        "#include <son.hpp>\n"
+        "\n"
+        "\n"
+        "const config& config::get_instance() {\n"
+        "    static config instance_;\n"
+        "    return instance_;\n"
+        "}\n"
+        "\n"
+        "bool config::initialize(const char* filename) {\n"
+        "    jslavic::son object = jslavic::parse(filename);\n"
+        "    if (object.is_null()) return false;\n"
+        "    \n"
+        "    config& cfg = const_cast<config&>(get_instance());\n"
+        "    \n"
     );
 
     print_cpp_config_impl(value, hpp, cpp);
 
     fprintf(hpp,
+        "\n"
+        "    static bool initialize(const char*);\n"
+        "    static const config& get_instance();\n"
+        "\n"
+        "private:\n"
+        "    config() = default;\n"
+        "    config(const config&) = delete;\n"
+        "    config(config&&) = delete;\n"
         "};\n"
+    );
+
+    fprintf(cpp,
+        "\n"
+        "    return true;\n"
+        "}\n"
     );
 
     fclose(cpp);
@@ -126,7 +203,7 @@ int main(int argc, char** argv) {
 
         jslavic::print_options options;
         options.output = f;
-        // jslavic::pretty_print(scheme, options);
+        jslavic::pretty_print(scheme, options);
 
         fclose(f);
 

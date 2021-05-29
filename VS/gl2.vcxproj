@@ -101,6 +101,11 @@
     <ClInclude Include="..\src\utils.h" />
     <ClInclude Include="..\src\version.h" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="son\son\son.vcxproj">
+      <Project>{89288e47-0d88-4857-bbaa-cc43bc2a4d59}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
@@ -204,7 +209,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)/../src;$(SolutionDir)/../common;$(SolutionDir)/../.generated;C:\Projects\SDL2\include\;C:\Projects\glew\include\;C:\Projects\glm\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)/../src;$(SolutionDir)/../common;$(SolutionDir)/../.generated;C:\Projects\SDL2\include\;C:\Projects\glew\include\;C:\Projects\glm\;$(SolutionDir)/../external/son/include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -222,7 +227,8 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)/../src;$(SolutionDir)/../common;$(SolutionDir)/../.generated;C:\Projects\SDL2\include\;C:\Projects\glew\include\;C:\Projects\glm\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)/../src;$(SolutionDir)/../common;$(SolutionDir)/../.generated;C:\Projects\SDL2\include\;C:\Projects\glew\include\;C:\Projects\glm\;$(SolutionDir)/../external/son/include</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
