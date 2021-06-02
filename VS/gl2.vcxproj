@@ -22,7 +22,6 @@
     <ClCompile Include="..\.generated\config.cpp" />
     <ClCompile Include="..\common\os\file.cpp" />
     <ClCompile Include="..\common\os\path.cpp" />
-    <ClCompile Include="..\common\parse\reader.cpp" />
     <ClCompile Include="..\main.cpp" />
     <ClCompile Include="..\src\api\keyboard.cpp" />
     <ClCompile Include="..\src\api\mouse.cpp" />
@@ -48,7 +47,6 @@
     <ClCompile Include="..\src\modeling_2d\camera.cpp" />
     <ClCompile Include="..\src\modeling_2d\creatures.cpp" />
     <ClCompile Include="..\src\modeling_2d\model.cpp" />
-    <ClCompile Include="..\src\service\abstract_object.cpp" />
     <ClCompile Include="..\src\service\storage.cpp" />
     <ClCompile Include="..\src\service\string.cpp" />
     <ClCompile Include="..\src\service\string_id.cpp" />
@@ -60,7 +58,6 @@
     <ClInclude Include="..\common\defines.h" />
     <ClInclude Include="..\common\os\file.hpp" />
     <ClInclude Include="..\common\os\path.hpp" />
-    <ClInclude Include="..\common\parse\reader.hpp" />
     <ClInclude Include="..\common\typedef.hpp" />
     <ClInclude Include="..\src\api\keyboard.h" />
     <ClInclude Include="..\src\api\mouse.h" />
@@ -93,7 +90,6 @@
     <ClInclude Include="..\src\modeling_2d\camera.hpp" />
     <ClInclude Include="..\src\modeling_2d\creatures.hpp" />
     <ClInclude Include="..\src\modeling_2d\model.hpp" />
-    <ClInclude Include="..\src\service\abstract_object.hpp" />
     <ClInclude Include="..\src\service\storage.hpp" />
     <ClInclude Include="..\src\service\string.hpp" />
     <ClInclude Include="..\src\service\string_id.hpp" />

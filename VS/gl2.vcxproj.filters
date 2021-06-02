@@ -37,9 +37,6 @@
     <Filter Include="Source files\common">
       <UniqueIdentifier>{c98ad22a-534c-4980-b33b-3d56a0d38f43}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source files\common\parse">
-      <UniqueIdentifier>{75246938-0378-4ced-b25d-ef3bdf1a3216}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source files\common\os">
       <UniqueIdentifier>{196c2562-338b-4ab4-b029-8b9ad094f45b}</UniqueIdentifier>
     </Filter>
@@ -48,9 +45,6 @@
     </Filter>
     <Filter Include="Source files\generated">
       <UniqueIdentifier>{4e9c54f1-e3af-43f3-8a05-8e5b97774363}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source files\external">
-      <UniqueIdentifier>{aae3dc0f-2a39-43eb-a73f-f1f4748759b8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -87,9 +81,6 @@
     <ClCompile Include="..\src\math\vector4.cpp">
       <Filter>Source files\src\math</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\service\abstract_object.cpp">
-      <Filter>Source files\src\service</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\service\storage.cpp">
       <Filter>Source files\src\service</Filter>
     </ClCompile>
@@ -122,9 +113,6 @@
     </ClCompile>
     <ClCompile Include="..\src\modeling_2d\model.cpp">
       <Filter>Source files\src\modeling_2d</Filter>
-    </ClCompile>
-    <ClCompile Include="..\common\parse\reader.cpp">
-      <Filter>Source files\common\parse</Filter>
     </ClCompile>
     <ClCompile Include="..\common\os\file.cpp">
       <Filter>Source files\common\os</Filter>
@@ -203,9 +191,6 @@
     <ClInclude Include="..\src\math\vector4.hpp">
       <Filter>Source files\src\math</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\service\abstract_object.hpp">
-      <Filter>Source files\src\service</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\service\storage.hpp">
       <Filter>Source files\src\service</Filter>
     </ClInclude>
@@ -256,9 +241,6 @@
     </ClInclude>
     <ClInclude Include="..\common\typedef.hpp">
       <Filter>Source files\common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\common\parse\reader.hpp">
-      <Filter>Source files\common\parse</Filter>
     </ClInclude>
     <ClInclude Include="..\common\os\file.hpp">
       <Filter>Source files\common\os</Filter>
