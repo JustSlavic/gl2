@@ -290,8 +290,5 @@
     <ClInclude Include="..\.generated\config.hpp">
       <Filter>Source files\generated</Filter>
     </ClInclude>
-    <ClInclude Include="..\json.hpp">
-      <Filter>Source files</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>

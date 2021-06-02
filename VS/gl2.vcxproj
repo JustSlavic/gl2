@@ -62,7 +62,6 @@
     <ClInclude Include="..\common\os\path.hpp" />
     <ClInclude Include="..\common\parse\reader.hpp" />
     <ClInclude Include="..\common\typedef.hpp" />
-    <ClInclude Include="..\json.hpp" />
     <ClInclude Include="..\src\api\keyboard.h" />
     <ClInclude Include="..\src\api\mouse.h" />
     <ClInclude Include="..\src\api\window.h" />
