@@ -177,7 +177,7 @@ int main(int argc, char** argv, char** env) {
         }
     }
 
-    return 0;
+    // return 0;
 
 
     LogGlobalContext::instance()
@@ -187,7 +187,7 @@ int main(int argc, char** argv, char** env) {
 
     LOG_INFO << "Welcome to Gir2 v." << version;
 
-    gl2::Application app;
+    gl2::Application_2 app;
 
     if (app.initialize()) {
         LOG_ERROR << "Failed to initialize some context!";

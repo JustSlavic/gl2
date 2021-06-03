@@ -1,5 +1,7 @@
 #include "keyboard.h"
 
+#include <core/event_queue.hpp>
+
 
 Keyboard::Keyboard() :state{KeyState::RELEASED} {}
 
@@ -13,6 +15,7 @@ void Keyboard::press(Key k) {
     // ASSERT(keyboard.state[k] == KeyState::RELEASED);
     keyboard.state[k] = KeyState::PRESSED;
     keyboard.emit(KeyPressEvent(k));
+    core::EventQueue::push_event<KeyPressEvent>(k);
 }
 
 void Keyboard::release(Key k) {
@@ -20,6 +23,7 @@ void Keyboard::release(Key k) {
     ASSERT(keyboard.state[k] == KeyState::PRESSED);
     keyboard.state[k] = KeyState::RELEASED;
     keyboard.emit(KeyReleaseEvent(k));
+    core::EventQueue::push_event<KeyReleaseEvent>(k);
 }
 
 Keyboard::KeyState Keyboard::get_state(Key k) {

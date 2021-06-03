@@ -8,6 +8,8 @@
 
 #include <config.hpp>
 
+#include <core/event_queue.hpp>
+
 #include <math/vector3.hpp>
 #include <fs/watcher.h>
 #include <graphics/graphics_api.h>
@@ -318,5 +320,101 @@ namespace gl2 {
         LOG_INFO << "Received StopEvent";
         running = false;
     }
+
+
+Application_2::Application_2() {
+    bind<core::EventStop, Application_2, &Application_2::on_stop>(this);
 }
+
+
+Application_2::~Application_2() {
+    window->shutdown();
+    delete window;
+
+    GraphicsApi::shutdown();
+}
+
+
+int Application_2::initialize() {
+    if (window) return 1;
+
+    bool config_initialized = config::initialize("config.son");
+    if (not config_initialized) {
+        printf("Could not initialize config!\n");
+        return 1;
+    }
+
+    auto& cfg = config::get_instance();
+    printf("Window %s: %dx%d\n",
+        cfg.name.c_str(), cfg.window.width, cfg.window.height);
+
+    window = new Window(cfg.window.width, cfg.window.height, cfg.name.c_str());
+
+    i32 err = window->startup();
+    if (err) return err;
+
+    Keymap::instance();
+    GraphicsApi::startup();
+    Renderer::init();
+
+    return 0;
+}
+
+
+int Application_2::run() {
+    running = true;
+
+    auto& cfg = config::get_instance();
+    math::color24 background_color{ cfg.window.default_color.r, cfg.window.default_color.g, cfg.window.default_color.b };
+
+    auto t = std::chrono::steady_clock::now();
+    std::this_thread::sleep_for(std::chrono::milliseconds(16));
+
+    while (running) {
+        auto t_ = std::chrono::steady_clock::now();
+        auto dt = std::chrono::duration_cast<std::chrono::microseconds>(t_ - t).count();
+        //printf("%llu: dt = %ld microseconds; fps = %lf\n", frame_counter++, dt, 1000000.0 / dt);
+        t = t_;
+
+        // 1. clear the frame
+        Renderer::clear(background_color);
+
+        // 2. draw new frame
+        // ...
+
+        window->poll_events();
+        window->swap_buffers();
+
+        // 3. Handle events
+        while (!core::EventQueue::empty()) {
+            std::shared_ptr<core::IEvent> e = core::EventQueue::get_event();
+            if (!e) continue;
+
+            bool handled = handle(e.get());
+            if (!handled) {
+                for (auto& layer : layers) {
+                    handled = layer->handle(e.get());
+                    if (handled) break;
+                }
+            }
+
+            core::EventQueue::pop_event();
+        }
+
+        core::EventQueue::push_event<core::EventFrameFinished>(dt / 1'000'000.f);
+    }
+
+    return 0;
+}
+
+
+bool Application_2::on_stop(core::EventStop*) {
+    printf("Received EventStop\n");
+    running = false;
+
+    return true;
+}
+
+
+} // gl2
 

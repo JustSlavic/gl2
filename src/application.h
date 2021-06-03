@@ -3,8 +3,10 @@
 
 #include <defines.h>
 #include <api/window.h>
-#include <es/event_system.h>
+#include <events.hpp>
 #include <logging/logging.h>
+#include <core/dispatcher.hpp>
+#include <vector>
 
 
 namespace gl2 {
@@ -20,6 +22,21 @@ namespace gl2 {
 
     private:
         void on_stop(EventStop);
+    };
+
+    struct Application_2 : public core::EventReceiver {
+        Window* window = nullptr;
+        bool running = false;
+        std::vector<core::EventReceiver*> layers;
+
+        Application_2();
+        ~Application_2();
+
+        int initialize();
+        int run();
+
+    private:
+        bool on_stop(core::EventStop*);
     };
 }
 

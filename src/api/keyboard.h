@@ -1,6 +1,7 @@
 #pragma once
 
 #include <es/event_system.h>
+#include <core/events.hpp>
 
 
 struct Keyboard : public IEmitter {
@@ -22,16 +23,20 @@ struct Keyboard : public IEmitter {
         KEYBOARD_KEYS_N,
     };
 
-    struct KeyPressEvent {
+    struct KeyPressEvent : public core::IEvent {
         Keyboard::Key key;
 
         KeyPressEvent(Key k) :key(k) {}
+
+        DECLARE_EVENT_TYPE(core::EventType::KEYBOARD_PRESS);
     };
 
-    struct KeyReleaseEvent {
+    struct KeyReleaseEvent : public core::IEvent {
         Keyboard::Key key;
 
         KeyReleaseEvent(Key k) :key(k) {}
+
+        DECLARE_EVENT_TYPE(core::EventType::KEYBOARD_RELEASE);
     };
 
     KeyState state[KEYBOARD_KEYS_N];

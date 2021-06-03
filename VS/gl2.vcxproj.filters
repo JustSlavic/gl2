@@ -46,6 +46,9 @@
     <Filter Include="Source files\generated">
       <UniqueIdentifier>{4e9c54f1-e3af-43f3-8a05-8e5b97774363}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source files\src\core">
+      <UniqueIdentifier>{fb31f330-5a6c-47d0-98ac-f90d6048042a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\main.cpp">
@@ -271,6 +274,18 @@
     </ClInclude>
     <ClInclude Include="..\.generated\config.hpp">
       <Filter>Source files\generated</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\core\dispatcher.hpp">
+      <Filter>Source files\src\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\core\event_queue.hpp">
+      <Filter>Source files\src\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\core\events.hpp">
+      <Filter>Source files\src\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\core\layer.hpp">
+      <Filter>Source files\src\core</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
