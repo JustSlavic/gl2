@@ -1,44 +1,74 @@
-### EXAMPLE
+# Config Builder utility
 
-    {
-        // Note: this format supports comments.
-        //   1. Object is the set of key-value pairs
-        //   2. Key is have to be valid identifier i.e. satisfy this regex: ([\w_][\w\d_]*)
-        //   3. Key and value are separated by equal sign '='
-        //   4. Value can be:
-        //      - double quoted string
-        name = "Slavic";
-        //      - integer number
-        age = 28;
-        //      - floating number
-        height = 1.85;
-        //      - boolean (true or false)
-        human = true;
-        //      - null value (null)
-        dependencies = null;
-        //      - objects
-        window = {
-            title  = "GL2";
-            width  = 1980;
-            height = 1080;
-            mode = "window";
-        }
-        //      - lists
-        characters = [
-            {
-                name = "Asuka"
-                species = "Cat"
-                height = 300
-                fury = true
-            }
-            { 
-                name = "Cherepaksa"
-                species = "Ma'am"
-                height = 228
-                fury = false
-            }
-        ]
-        // Note that lists are geterogenerous and can be nested
-        // Also note that trailing semicolons are optional as well as commas in lists.
-        GeteroList = [ null true false "foo" 1 2 3.4 {} [] [[]] ]
+The main idea behind config builder is that I didn't want to access config via regular JSON interface, e.g.
+
+```c++
+auto& cfg = config::instance;
+
+son window_ = cfg["window"];
+if (!window_.is_object()) return;
+
+son width_ = window_["width"];
+if (!width_.is_integer()) return;
+
+int width = width_.get_integer();
+```
+
+What I wanted instead is accessing config directly, like that:
+
+```c++
+auto& cfg = config::instance;
+
+int width = cfg.window.width;
+```
+
+To do so, before compiling my project, one should compile and run this little program. It will generate two files:
+`config.hpp` and `config.cpp`, containing `config` class and methods for filling it up with values from *son* object.
+
+### Scheme
+
+Config builder uses scheme of config file to generate c++ files, but also it saves `config.scheme.son` file in `.generated` directory to compare schemes with old scheme later. In this manner config builder checks, if you changed config only in its values or in types and structure too. It saves compilation time considerably!
+
+### Usage
+
+Assuming you run config builder before every compilation, you should include two files into your project:
+`.generated/config.hpp` and `.generated/config.cpp`.
+Then you can include header and don't forget to initialize config providing son file to it:
+
+
+### Example
+
+Assuming config file be like that:
+
+```
+name = "Doge"
+window = {
+    width = 800
+    height = 600
+}
+```
+
+Here's how you access the data:
+
+```c++
+#include <stdio.h>
+#include <config.hpp>
+
+int main() {
+    bool initialized = config::initialize("config.son");
+    if (not initialized) {
+        printf("Could not initialize config file from \"config.son\"\n");
+        return 1;
     }
+
+    // use config by getting instance:
+    auto& cfg = config::get_instance();
+
+    int width = cfg.window.width;
+    int height = cfg.window.height;
+
+    printf("%s window size: (%dx%d)\n", cfg.name.c_str(), width, height);
+
+    return 0;
+}
+```
