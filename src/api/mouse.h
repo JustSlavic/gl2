@@ -2,6 +2,7 @@
 #define API_MOUSE_H
 
 #include <es/event_system.h>
+#include <core/events.hpp>
 
 
 struct Mouse : public IEmitter {
@@ -20,25 +21,37 @@ struct Mouse : public IEmitter {
     };
 
 
-    struct ButtonPressEvent {
+    struct ButtonPressEvent : public core::IEvent {
+        DECLARE_EVENT_CATEGORY(core::EventCategory::KEY_EVENT);
+        DECLARE_EVENT_TYPE(core::EventType::MOUSE_PRESS);
+
         Mouse::Button button;
 
         ButtonPressEvent(Mouse::Button button) :button(button) {}
     };
 
-    struct ButtonReleaseEvent {
+    struct ButtonReleaseEvent : public core::IEvent {
+        DECLARE_EVENT_CATEGORY(core::EventCategory::KEY_EVENT);
+        DECLARE_EVENT_TYPE(core::EventType::MOUSE_RELEASE);
+
         Mouse::Button button;
 
         ButtonReleaseEvent(Mouse::Button button) :button(button) {}
     };
 
-    struct ScrollEvent {
+    struct ScrollEvent : public core::IEvent {
+        DECLARE_EVENT_CATEGORY(core::EventCategory::KEY_EVENT);
+        DECLARE_EVENT_TYPE(core::EventType::MOUSE_SCROLL);
+
         i32 scroll;
 
         ScrollEvent(i32 scroll) :scroll(scroll) {}
     };
 
-    struct MoveEvent {
+    struct MoveEvent : public core::IEvent {
+        DECLARE_EVENT_CATEGORY(core::EventCategory::KEY_EVENT);
+        DECLARE_EVENT_TYPE(core::EventType::MOUSE_MOVE);
+
         i32 x;
         i32 y;
 

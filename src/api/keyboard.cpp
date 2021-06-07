@@ -5,10 +5,12 @@
 
 Keyboard::Keyboard() :state{KeyState::RELEASED} {}
 
+
 Keyboard &Keyboard::instance() {
     static Keyboard instance_;
     return instance_;
 }
+
 
 void Keyboard::press(Key k) {
     auto& keyboard = Keyboard::instance();
@@ -18,6 +20,7 @@ void Keyboard::press(Key k) {
     core::EventQueue::push_event<KeyPressEvent>(k);
 }
 
+
 void Keyboard::release(Key k) {
     auto& keyboard = Keyboard::instance();
     ASSERT(keyboard.state[k] == KeyState::PRESSED);
@@ -26,14 +29,17 @@ void Keyboard::release(Key k) {
     core::EventQueue::push_event<KeyReleaseEvent>(k);
 }
 
+
 Keyboard::KeyState Keyboard::get_state(Key k) {
     auto& keyboard = Keyboard::instance();
     return keyboard.state[k];
 } 
 
+
 bool Keyboard::is_pressed(Key k) {
     return Keyboard::instance().state[k] == Keyboard::KeyState::PRESSED;
 }
+
 
 const char *to_string(Keyboard::Key k) {
     switch (k) {

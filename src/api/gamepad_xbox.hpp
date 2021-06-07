@@ -40,22 +40,27 @@ struct Gamepad_XBox {
     };
 
     struct Event_ButtonPressed : public core::IEvent {
+        DECLARE_EVENT_CATEGORY(core::EventCategory::KEY_EVENT);
+        DECLARE_EVENT_TYPE(core::EventType::CONTROLLER_PRESS);
+
         Button button;
 
         Event_ButtonPressed(Button button) : button(button) {}
-
-        DECLARE_EVENT_TYPE(core::EventType::CONTROLLER_PRESS);
     };
 
     struct Event_ButtonReleased : public core::IEvent {
+        DECLARE_EVENT_CATEGORY(core::EventCategory::KEY_EVENT);
+        DECLARE_EVENT_TYPE(core::EventType::CONTROLLER_RELEASE);
+
         Button button;
 
         Event_ButtonReleased(Button button) : button(button) {}
-
-        DECLARE_EVENT_TYPE(core::EventType::CONTROLLER_RELEASE)
     };
 
     struct Event_AxisChanged : public core::IEvent {
+        DECLARE_EVENT_CATEGORY(core::EventCategory::KEY_EVENT);
+        DECLARE_EVENT_TYPE(core::EventType::CONTROLLER_AXIS_MOVE);
+        
         Axis axis;
         f32 old_value;
         f32 new_value;
@@ -65,8 +70,6 @@ struct Gamepad_XBox {
             , old_value(old_value)
             , new_value(new_value)
         {}
-
-        DECLARE_EVENT_TYPE(core::EventType::CONTROLLER_AXIS_MOVE);
     };
 
     ButtonState state[static_cast<u64>(Button::GAMEPAD_XBOX_N)];

@@ -28,6 +28,7 @@ struct Keyboard : public IEmitter {
 
         KeyPressEvent(Key k) :key(k) {}
 
+        DECLARE_EVENT_CATEGORY(core::EventCategory::KEY_EVENT);
         DECLARE_EVENT_TYPE(core::EventType::KEYBOARD_PRESS);
     };
 
@@ -36,6 +37,7 @@ struct Keyboard : public IEmitter {
 
         KeyReleaseEvent(Key k) :key(k) {}
 
+        DECLARE_EVENT_CATEGORY(core::EventCategory::KEY_EVENT);
         DECLARE_EVENT_TYPE(core::EventType::KEYBOARD_RELEASE);
     };
 

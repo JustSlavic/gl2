@@ -4,6 +4,7 @@
 #include "dispatcher.hpp"
 #include "keymap2.hpp"
 #include <modeling_2d/model.hpp>
+#include <modeling_2d/camera.hpp>
 #include <unordered_map>
 #include <api/gamepad_xbox.hpp>
 
@@ -21,18 +22,14 @@ struct LayerSkybox : public ILayer {};
 
 struct LayerWorld : public ILayer {
 	Model model;
+	Camera2D camera;
+
+	math::matrix4 projection;
 
 	std::shared_ptr<Keymap2> active_keymap;
 	std::vector<Keymap2> keymaps;
 
-	LayerWorld() {
-		Keymap2 km = load_keymap("resources/keymappings/gravity_keys.son");
-		keymaps.push_back(km);
-
-		bind<Gamepad_XBox::Event_ButtonPressed, LayerWorld, &LayerWorld::on_gamepad_button_pressed>(this);
-		bind<Gamepad_XBox::Event_AxisChanged, LayerWorld, &LayerWorld::on_gamepad_axis_changed>(this);
-	}
-
+	LayerWorld();
 	void draw() override;
 
 	inline bool on_gamepad_button_pressed(Gamepad_XBox::Event_ButtonPressed* pEvent) {
