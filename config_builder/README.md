@@ -3,7 +3,7 @@
 The main idea behind config builder is that I didn't want to access config via regular JSON interface, e.g.
 
 ```c++
-auto& cfg = config::instance;
+auto& cfg = config::get_instance();
 
 son window_ = cfg["window"];
 if (!window_.is_object()) return;
@@ -17,7 +17,7 @@ int width = width_.get_integer();
 What I wanted instead is accessing config directly, like that:
 
 ```c++
-auto& cfg = config::instance;
+auto& cfg = config::get_instance();
 
 int width = cfg.window.width;
 ```
