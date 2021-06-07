@@ -26,6 +26,14 @@ struct LayerWorld : public ILayer {
 
 	math::matrix4 projection;
 
+	Shader body_shader;
+	Shader arrow_shader;
+
+	VertexArray va;
+	VertexBuffer vb;
+	IndexBuffer ib;
+	VertexBufferLayout vbl;
+
 	std::shared_ptr<Keymap2> active_keymap;
 	std::vector<Keymap2> keymaps;
 
@@ -40,6 +48,14 @@ struct LayerWorld : public ILayer {
 	inline bool on_gamepad_axis_changed(Gamepad_XBox::Event_AxisChanged* pEvent) {
 		printf("XBOX axis changed: %d (%f -> %f)\n", (i32)pEvent->axis, pEvent->old_value, pEvent->new_value);
 		return true;
+	}
+
+	bool on_mouse_move(Mouse::MoveEvent* pEvent);
+	bool on_mouse_press(Mouse::ButtonPressEvent* pEvent);
+
+	inline bool on_frame_finished(EventFrameFinished* pEvent) {
+		model.move_bodies(pEvent->dt);
+		return false;
 	}
 };
 

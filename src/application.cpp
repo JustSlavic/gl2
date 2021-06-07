@@ -136,7 +136,7 @@ namespace gl2 {
             math::vector3 point = center + right * mouse.x * clip_width + up * mouse.y * clip_height;
             math::vector3 direction = point - position;
 
-            math::vector3 intersection = intersect_z0_plane(position, direction);
+            math::vector3 intersection = math::intersect_z0_plane(position, direction);
 
             printf("mouse position: (%5.2f, %5.2f, %5.2f)\n", intersection.x, intersection.y, intersection.z);
 
@@ -177,7 +177,7 @@ namespace gl2 {
 
                 math::vector3 direction = point - position;
 
-                math::vector3 intersection = intersect_z0_plane(position, direction);
+                math::vector3 intersection = math::intersect_z0_plane(position, direction);
 
                 printf("click position: (%5.2f, %5.2f, %5.2f)\n", intersection.x, intersection.y, intersection.z);
 
