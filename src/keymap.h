@@ -1,4 +1,5 @@
-#pragma once
+#ifndef GL2_SRC_KEYMAP_H
+#define GL2_SRC_KEYMAP_H
 
 #include <defines.h>
 #include <es/event_system.h>
@@ -24,3 +25,6 @@ struct Keymap : public IEmitter {
 private:
     Keymap();
 };
+
+
+#endif // GL2_SRC_KEYMAP_H

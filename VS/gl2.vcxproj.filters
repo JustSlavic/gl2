@@ -150,6 +150,15 @@
     <ClCompile Include="..\src\version.cpp">
       <Filter>Source files\src</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\core\keymap2.cpp">
+      <Filter>Source files\src\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\api\gamepad_xbox.cpp">
+      <Filter>Source files\src\api</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\core\layer.cpp">
+      <Filter>Source files\src\core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\application.h">
@@ -286,6 +295,15 @@
     </ClInclude>
     <ClInclude Include="..\src\core\layer.hpp">
       <Filter>Source files\src\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\events.hpp">
+      <Filter>Source files\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\core\keymap2.hpp">
+      <Filter>Source files\src\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\api\gamepad_xbox.hpp">
+      <Filter>Source files\src\api</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

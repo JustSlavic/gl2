@@ -31,7 +31,7 @@ struct EventQueue {
         auto& q = instance();
         std::lock_guard lock(q.m_mutex);
 
-        q.queue.push_back(std::make_shared<EventType>(std::forward<Args...>(args...)));
+        q.queue.push_back(std::make_shared<EventType>(std::forward<Args>(args)...));
         q.cv.notify_one();
     }
 
@@ -72,6 +72,22 @@ private:
     EventQueue(const EventQueue&) = delete;
     EventQueue(EventQueue&&) = delete;
 };
+
+
+namespace event_system {
+
+template <typename EventType, typename... Args>
+void emit(Args&&... args) {
+    EventQueue::push_event<EventType>(std::forward<Args>(args)...);
+}
+
+
+template <typename EventType>
+void emit() {
+    EventQueue::push_event<EventType>();
+}
+
+} // event_system
 
 
 } // core

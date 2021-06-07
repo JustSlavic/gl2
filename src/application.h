@@ -27,7 +27,7 @@ namespace gl2 {
     struct Application_2 : public core::EventReceiver {
         Window* window = nullptr;
         bool running = false;
-        std::vector<core::EventReceiver*> layers;
+        std::vector<core::ILayer*> layers;
 
         Application_2();
         ~Application_2();

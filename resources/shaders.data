@@ -1,3 +1,0 @@
-SHADER_BODY=resources/shaders/body
-SHADER_TRIANGLE=resources/shaders/triangle
-SHADER_ARROW=resources/shaders/arrow

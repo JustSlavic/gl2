@@ -34,7 +34,7 @@ void Keymap::update<Mouse::ScrollEvent>(Mouse::ScrollEvent event) {
 template<>
 void Keymap::update<Keyboard::KeyReleaseEvent>(Keyboard::KeyReleaseEvent event) {
     switch (event.key) {
-    case Keyboard::ESC: emit(EventStop()); core::EventQueue::push_event<core::EventStop>(); break;
+    case Keyboard::ESC: emit(EventStop()); core::event_system::emit<core::EventStop>(); break;
         case Keyboard::R: emit(EventRestart()); break;
         case Keyboard::SPACE: emit(EventPause()); break;
         case Keyboard::F2: emit(EventToggleF2()); break;

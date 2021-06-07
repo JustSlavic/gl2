@@ -1,6 +1,8 @@
 #ifndef GL2_SRC_CORE_EVENTS_HPP
 #define GL2_SRC_CORE_EVENTS_HPP
 
+#include <defines.h>
+
 
 namespace core {
 
@@ -17,8 +19,16 @@ enum class EventType {
     TOGGLE_VECTOR_FIELD,
     TOGGLE_VELOCITIES,
 
+    MOUSE_PRESS,
+    MOUSE_RELEASE,
+    MOUSE_MOVE,
+
     KEYBOARD_PRESS,
     KEYBOARD_RELEASE,
+
+    CONTROLLER_PRESS,
+    CONTROLLER_RELEASE,
+    CONTROLLER_AXIS_MOVE,
 };
 
 

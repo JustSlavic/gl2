@@ -58,6 +58,8 @@ struct Mouse : public IEmitter {
 
 private:
     Mouse();
+    Mouse(const Mouse&) = delete;
+    Mouse(Mouse&&) = delete;
 };
 
 inline const char *to_string(Mouse::Button b) {

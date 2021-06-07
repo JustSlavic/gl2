@@ -12,15 +12,22 @@
 #include <es/event_system.h>
 #include "mouse.h"
 #include "keyboard.h"
+#include "gamepad_xbox.hpp"
+#include <core/event_queue.hpp>
+#include <math.hpp>
 
 
 namespace gl2 {
+    constexpr f32 GL2_SDL_AXIS_MAX_VALUE = 32767.f;
+    constexpr f32 GL2_SDL_AXIS_MIN_VALUE = -32768.f;
+
     // @todo find means to remove opengl mentions from here, 
     //       amd move it to the another Api* class
     struct Window::Impl : public IEmitter {
         SDL_Window* window = nullptr;
         SDL_Surface* surface = nullptr;
         SDL_GLContext opengl_context = nullptr;
+        SDL_GameController* xbox_controller = nullptr;
 
         const char* title = nullptr;
         i32 width = 0;
@@ -41,7 +48,7 @@ namespace gl2 {
         i32 startup() {
             if (initialized) return 0;
 
-            i32 err = SDL_Init(SDL_INIT_VIDEO);
+            i32 err = SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER);
             if (err < 0) {
                 LOG_ERROR << "Could not initialize SDL2: " << SDL_GetError();
                 return err;
@@ -87,8 +94,17 @@ namespace gl2 {
             SDL_GL_DeleteContext(opengl_context);
             SDL_DestroyWindow(window);
 
+            close_controller();
+
             SDL_Quit();
             initialized = false;
+        }
+
+        void close_controller() {
+            if (xbox_controller != nullptr) {
+                SDL_GameControllerClose(xbox_controller);
+                xbox_controller = nullptr;
+            }
         }
 
         void poll_events() {
@@ -110,10 +126,12 @@ namespace gl2 {
                             emit(WindowMotionEvent(event.window.data1, event.window.data2));
                         }
                         break;
+
                     case SDL_KEYDOWN:
                     case SDL_KEYUP:
                         process_keyboard_event(event);
                         break;
+
                     case SDL_MOUSEMOTION:
                         process_mouse_motion_event(event.motion);
                         break;
@@ -124,14 +142,173 @@ namespace gl2 {
                     case SDL_MOUSEWHEEL:
                         process_mouse_wheel_event(event);
                         break;
+
+                    case SDL_JOYAXISMOTION:          /**< Joystick axis motion */
+                        // printf("SDL_JOYAXISMOTION\n");
+                        break;
+                    case SDL_JOYBALLMOTION:          /**< Joystick trackball motion */
+                        printf("SDL_JOYBALLMOTION\n");
+                        break;
+                    case SDL_JOYHATMOTION:           /**< Joystick hat position change */
+                        printf("SDL_JOYHATMOTION\n");
+                        break;
+                    case SDL_JOYBUTTONDOWN:          /**< Joystick button pressed */
+                        printf("SDL_JOYBUTTONDOWN\n");
+                        process_controller_button_press_event(event);
+                        break;
+                    case SDL_JOYBUTTONUP:            /**< Joystick button released */
+                        printf("SDL_JOYBUTTONUP\n");
+                        break;
+                    case SDL_JOYDEVICEADDED:         /**< A new joystick has been inserted into the system */
+                        printf("SDL_JOYDEVICEADDED\n");
+                        break;
+                    case SDL_JOYDEVICEREMOVED:       /**< An opened joystick has been removed */
+                        printf("SDL_JOYDEVICEREMOVED\n");
+                        break;
+
+                    case SDL_CONTROLLERAXISMOTION: /**< Game controller axis motion */
+                        process_controller_axis_event(event);
+                        break;
+                    case SDL_CONTROLLERBUTTONDOWN:          /**< Game controller button pressed */
+                        process_controller_button_press_event(event);
+                        break;
+                    case SDL_CONTROLLERBUTTONUP:            /**< Game controller button released */
+                        printf("SDL_CONTROLLERBUTTONUP\n");
+                        break;
+                    case SDL_CONTROLLERDEVICEADDED:         /**< A new Game controller has been inserted into the system */
+                    case SDL_CONTROLLERDEVICEREMOVED:       /**< An opened Game controller has been removed */
+                    case SDL_CONTROLLERDEVICEREMAPPED:      /**< The controller mapping was updated */
+                        process_controller_device_event(event);
+                        break;
+                    case SDL_CONTROLLERTOUCHPADDOWN:        /**< Game controller touchpad was touched */
+                        printf("SDL_CONTROLLERTOUCHPADDOWN\n");
+                        break;
+                    case SDL_CONTROLLERTOUCHPADMOTION:      /**< Game controller touchpad finger was moved */
+                        printf("SDL_CONTROLLERTOUCHPADMOTION\n");
+                        break;
+                    case SDL_CONTROLLERTOUCHPADUP:          /**< Game controller touchpad finger was lifted */
+                        printf("SDL_CONTROLLERTOUCHPADUP\n");
+                        break;
+                    case SDL_CONTROLLERSENSORUPDATE:        /**< Game controller sensor was updated */
+                        printf("SDL_CONTROLLERSENSORUPDATE\n");
+                        break;
+
                     case SDL_QUIT: 
                         process_quit_event(event);
                         break;
                     
                     case SDL_TEXTINPUT: break; // ignore this events
                     case SDL_TEXTEDITING: break; // ignore
-                    default: LOG_WARNING << "Event of unknown type (" << event.type << ") emmited from SDL!";
+                    default: printf("Event of unknown type (%d) emmited from SDL!", event.type);
                 }
+        }
+
+        void process_controller_device_event(const SDL_Event& e) {
+            switch (e.cdevice.type) {
+            case SDL_CONTROLLERDEVICEADDED:
+                printf("SDL_CONTROLLERDEVICEADDED(%d)\n", e.cdevice.which);
+                if (xbox_controller != nullptr) {
+                    // free controller
+                }
+                xbox_controller = SDL_GameControllerOpen(e.cdevice.which);
+                break;
+            case SDL_CONTROLLERDEVICEREMOVED:
+                close_controller();
+                break;
+            case SDL_CONTROLLERDEVICEREMAPPED:
+                printf("SDL_CONTROLLERDEVICEREMAPPED\n");
+                break;
+            }
+        }
+
+        void process_controller_axis_event(const SDL_Event& e) {
+            switch (e.caxis.axis) {
+            case SDL_CONTROLLER_AXIS_INVALID:
+                printf("INVALID AXIS!\n");
+                break;
+            case SDL_CONTROLLER_AXIS_LEFTX:
+                Gamepad_XBox::set_axis(Gamepad_XBox::Axis::STICK_LEFT_X,
+                    math::clamp(e.caxis.value / GL2_SDL_AXIS_MAX_VALUE, -1.f, 1.f));
+                break;
+            case SDL_CONTROLLER_AXIS_LEFTY:
+                Gamepad_XBox::set_axis(Gamepad_XBox::Axis::STICK_LEFT_Y,
+                    math::clamp(e.caxis.value / GL2_SDL_AXIS_MAX_VALUE, -1.f, 1.f));
+                break;
+            case SDL_CONTROLLER_AXIS_RIGHTX:
+                Gamepad_XBox::set_axis(Gamepad_XBox::Axis::STICK_RIGHT_X,
+                    math::clamp(e.caxis.value / GL2_SDL_AXIS_MAX_VALUE, -1.f, 1.f));
+                break;
+            case SDL_CONTROLLER_AXIS_RIGHTY:
+                Gamepad_XBox::set_axis(Gamepad_XBox::Axis::STICK_RIGHT_Y,
+                    math::clamp(e.caxis.value / GL2_SDL_AXIS_MAX_VALUE, -1.f, 1.f));
+                break;
+            case SDL_CONTROLLER_AXIS_TRIGGERLEFT:
+                Gamepad_XBox::set_axis(Gamepad_XBox::Axis::TRIGGER_LEFT,
+                    math::clamp(e.caxis.value / GL2_SDL_AXIS_MAX_VALUE, 0.f, 1.f));
+                break;
+            case SDL_CONTROLLER_AXIS_TRIGGERRIGHT:
+                Gamepad_XBox::set_axis(Gamepad_XBox::Axis::TRIGGER_RIGHT,
+                    math::clamp(e.caxis.value / GL2_SDL_AXIS_MAX_VALUE, 0.f, 1.f));
+                break;
+            case SDL_CONTROLLER_AXIS_MAX:
+                printf("MAX(%5.2f)\n", (float)e.caxis.value / 32767.f);
+                break;
+            }
+        }
+
+        void process_controller_button_press_event(const SDL_Event& e) {
+            switch (e.cbutton.button) {
+                case SDL_CONTROLLER_BUTTON_INVALID:
+
+                    break;
+                case SDL_CONTROLLER_BUTTON_A:
+                    Gamepad_XBox::press(Gamepad_XBox::Button::A);
+                    break;
+                case SDL_CONTROLLER_BUTTON_B:
+                    Gamepad_XBox::press(Gamepad_XBox::Button::B);
+                    break;
+                case SDL_CONTROLLER_BUTTON_X:
+                    Gamepad_XBox::press(Gamepad_XBox::Button::X);
+                    break;
+                case SDL_CONTROLLER_BUTTON_Y:
+                    Gamepad_XBox::press(Gamepad_XBox::Button::Y);
+                    break;
+                case SDL_CONTROLLER_BUTTON_BACK:
+                    Gamepad_XBox::press(Gamepad_XBox::Button::BACK);
+                    break;
+                case SDL_CONTROLLER_BUTTON_GUIDE:
+                    // what is this button
+                    break;
+                case SDL_CONTROLLER_BUTTON_START:
+                    Gamepad_XBox::press(Gamepad_XBox::Button::START);
+                    break;
+                case SDL_CONTROLLER_BUTTON_LEFTSTICK:
+                    Gamepad_XBox::press(Gamepad_XBox::Button::STICK_LEFT);
+                    break;
+                case SDL_CONTROLLER_BUTTON_RIGHTSTICK:
+                    Gamepad_XBox::press(Gamepad_XBox::Button::STICK_RIGHT);
+                    break;
+                case SDL_CONTROLLER_BUTTON_LEFTSHOULDER:
+                    // what is this button
+                    break;
+                case SDL_CONTROLLER_BUTTON_RIGHTSHOULDER:
+                    // what is this button
+                    break;
+                case SDL_CONTROLLER_BUTTON_DPAD_UP:
+                    Gamepad_XBox::press(Gamepad_XBox::Button::DPAD_UP);
+                    break;
+                case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
+                    Gamepad_XBox::press(Gamepad_XBox::Button::DPAD_DOWN);
+                    break;
+                case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
+                    Gamepad_XBox::press(Gamepad_XBox::Button::DPAD_LEFT);
+                    break;
+                case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
+                    Gamepad_XBox::press(Gamepad_XBox::Button::DPAD_RIGHT);
+                    break;
+                case SDL_CONTROLLER_BUTTON_MAX:
+                    break;
+            }
         }
 
         void process_mouse_button_event(const SDL_Event& e) {
@@ -168,6 +345,7 @@ namespace gl2 {
 
         void process_quit_event(const SDL_Event& e) {
             emit(EventStop()); // @Todo Emit EventWindowClose instead
+            core::EventQueue::push_event<core::EventStop>();
         }
 
         void process_keyboard_event(const SDL_Event& e) {

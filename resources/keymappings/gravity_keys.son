@@ -1,0 +1,17 @@
+keyboard = {
+    move_up = "W"
+    move_down = "S"
+    move_left = "A"
+    move_right = "D"
+
+    pause = "Space"
+    exit = "Esc"
+
+    toggle_traces = "T"
+    toggle_velocities = "V"
+    toggle_vector_field = "F"
+}
+
+mouse = {
+    interact = "LMB"
+}

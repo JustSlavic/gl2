@@ -15,6 +15,8 @@ struct vector2 {
         f32 at[2];
     };
 
+    constexpr static vector2 zero() { return { 0.f, 0.f }; }
+
     inline static vector2 make () { return { 0.f, 0.f }; }
     inline static vector2 make (f32 value) { return { value, value }; }
     inline static vector2 make (f32 x, f32 y) { return { x, y }; }

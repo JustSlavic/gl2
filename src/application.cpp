@@ -353,9 +353,11 @@ int Application_2::initialize() {
     i32 err = window->startup();
     if (err) return err;
 
-    Keymap::instance();
+    ::Keymap::instance();
     GraphicsApi::startup();
     Renderer::init();
+
+    layers.push_back(new core::LayerWorld());
 
     return 0;
 }
@@ -380,12 +382,18 @@ int Application_2::run() {
         Renderer::clear(background_color);
 
         // 2. draw new frame
-        // ...
+        for (auto& layer : layers) {
+            layer->draw();
+        }
 
+        // 3. Aquire events, swap buffers
         window->poll_events();
         window->swap_buffers();
 
-        // 3. Handle events
+        // 4. Frame is finished
+        core::EventQueue::push_event<core::EventFrameFinished>(dt / 1'000'000.f);
+
+        // 5. Handle events
         while (!core::EventQueue::empty()) {
             std::shared_ptr<core::IEvent> e = core::EventQueue::get_event();
             if (!e) continue;
@@ -400,8 +408,6 @@ int Application_2::run() {
 
             core::EventQueue::pop_event();
         }
-
-        core::EventQueue::push_event<core::EventFrameFinished>(dt / 1'000'000.f);
     }
 
     return 0;

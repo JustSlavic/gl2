@@ -13,6 +13,7 @@ namespace EE {
     enum class EventType {
         mouse_event,
         keyboard_event,
+        controller_event,
     };
 
     struct IEvent {
