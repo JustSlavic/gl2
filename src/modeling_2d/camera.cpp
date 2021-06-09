@@ -1,7 +1,7 @@
 #include "camera.hpp"
 #include <logging/logging.h>
 #include <es/event_system.h>
-#include <api/keyboard.h>
+#include <core/input.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
 
@@ -10,17 +10,17 @@ constexpr f32 ZOOM_SPEED = .1f;
 
 
 void update(Camera2D *camera, f32 dt) {
-    FOR_ALL_KEYS(k) {
-        if (Keyboard::is_pressed(k)) {
-            switch (k) {
-                case Keyboard::W: camera->position.y += CAMERA_SPEED*dt; break;
-                case Keyboard::S: camera->position.y -= CAMERA_SPEED*dt; break;
-                case Keyboard::A: camera->position.x += CAMERA_SPEED*dt; break;
-                case Keyboard::D: camera->position.x -= CAMERA_SPEED*dt; break;
-                default: break;
-            }
-        }
-    }
+    //FOR_ALL_KEYS(k) {
+    //    if (Keyboard::is_pressed(k)) {
+    //        switch (k) {
+    //            case Keyboard::W: camera->position.y += CAMERA_SPEED*dt; break;
+    //            case Keyboard::S: camera->position.y -= CAMERA_SPEED*dt; break;
+    //            case Keyboard::A: camera->position.x += CAMERA_SPEED*dt; break;
+    //            case Keyboard::D: camera->position.x -= CAMERA_SPEED*dt; break;
+    //            default: break;
+    //        }
+    //    }
+    //}
 }
 
 

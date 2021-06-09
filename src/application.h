@@ -10,27 +10,13 @@
 
 
 namespace gl2 {
-    struct Application : public IEmitter {
-        Window* window{nullptr};
-        bool running = false;
-
-        Application();
-        ~Application();
-
-        int initialize();
-        int run();
-
-    private:
-        void on_stop(EventStop);
-    };
-
-    struct Application_2 : public core::EventReceiver {
+    struct application : public core::EventReceiver {
         Window* window = nullptr;
         bool running = false;
         std::vector<core::ILayer*> layers;
 
-        Application_2();
-        ~Application_2();
+        application();
+        ~application();
 
         int initialize();
         int run();

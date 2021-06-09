@@ -3,7 +3,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include <es/event_system.h>
-#include <api/mouse.h>
+#include <core/input.hpp>
 #include <graphics/renderer.h>
 
 #include <random>
@@ -52,8 +52,8 @@ void generate_bodies(Model* model) {
     std::uniform_real_distribution<f32> uniform_distrib(0.f, 1.f);
     std::normal_distribution<f32> normal_distrib{50.f, 30.f};
 
-    auto inner_r = 20.f;
-    auto outer_r = inner_r + 10.f;
+    auto inner_r = 2.f;
+    auto outer_r = inner_r + 1.f;
     f32 M = 10000000.f;
 
     // f32 m_sun = 2e+10; // kg * 10^20

@@ -49,15 +49,15 @@
     <Filter Include="Source files\src\core">
       <UniqueIdentifier>{fb31f330-5a6c-47d0-98ac-f90d6048042a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source files\src\core\input">
+      <UniqueIdentifier>{bf4d15a8-8eac-42b5-833a-702277e0a9e6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\main.cpp">
       <Filter>Source files</Filter>
     </ClCompile>
     <ClCompile Include="..\src\application.cpp">
-      <Filter>Source files\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\keymap.cpp">
       <Filter>Source files\src</Filter>
     </ClCompile>
     <ClCompile Include="..\src\utils.cpp">
@@ -92,12 +92,6 @@
     </ClCompile>
     <ClCompile Include="..\src\service\string_id.cpp">
       <Filter>Source files\src\service</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\api\keyboard.cpp">
-      <Filter>Source files\src\api</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\api\mouse.cpp">
-      <Filter>Source files\src\api</Filter>
     </ClCompile>
     <ClCompile Include="..\src\api\window.cpp">
       <Filter>Source files\src\api</Filter>
@@ -150,21 +144,15 @@
     <ClCompile Include="..\src\version.cpp">
       <Filter>Source files\src</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\core\keymap2.cpp">
-      <Filter>Source files\src\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\api\gamepad_xbox.cpp">
-      <Filter>Source files\src\api</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\core\layer.cpp">
       <Filter>Source files\src\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\core\input\device_manager.cpp">
+      <Filter>Source files\src\core\input</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\application.h">
-      <Filter>Source files\src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\keymap.h">
       <Filter>Source files\src</Filter>
     </ClInclude>
     <ClInclude Include="..\src\math.hpp">
@@ -223,12 +211,6 @@
     </ClInclude>
     <ClInclude Include="..\src\es\event_system.h">
       <Filter>Source files\src\es</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\api\keyboard.h">
-      <Filter>Source files\src\api</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\api\mouse.h">
-      <Filter>Source files\src\api</Filter>
     </ClInclude>
     <ClInclude Include="..\src\api\window.h">
       <Filter>Source files\src\api</Filter>
@@ -299,11 +281,14 @@
     <ClInclude Include="..\src\events.hpp">
       <Filter>Source files\src</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\core\keymap2.hpp">
-      <Filter>Source files\src\core</Filter>
+    <ClInclude Include="..\src\core\input\device_manager.hpp">
+      <Filter>Source files\src\core\input</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\api\gamepad_xbox.hpp">
-      <Filter>Source files\src\api</Filter>
+    <ClInclude Include="..\src\core\input\devices.hpp">
+      <Filter>Source files\src\core\input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\core\input.hpp">
+      <Filter>Source files\src\core</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
