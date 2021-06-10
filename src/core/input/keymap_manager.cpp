@@ -1,4 +1,5 @@
 #include "keymap_manager.hpp"
+#include "keymap.hpp"
 
 
 namespace core::input {
@@ -11,7 +12,11 @@ keymap_manager& keymap_manager::instance() {
 
 
 void keymap_manager::register_keymap(std::string name) {
-    load_keymap(std::string("resources/keymaps/") + name + std::string(".son"));
+    // This is bullshit, but let me figure this out first,
+    // then I will fix minor details.
+    keymap* km = new keymap(load_keymap(std::string("resources/keymaps/") + name + std::string(".son")));
+    instance().mappings.emplace(name, km);
+    instance().active_keymap = km;
 }
 
 

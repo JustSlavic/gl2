@@ -63,6 +63,7 @@
     <ClInclude Include="..\src\api\window.h" />
     <ClInclude Include="..\src\application.h" />
     <ClInclude Include="..\src\core\dispatcher.hpp" />
+    <ClInclude Include="..\src\core\event.hpp" />
     <ClInclude Include="..\src\core\events.hpp" />
     <ClInclude Include="..\src\core\event_queue.hpp" />
     <ClInclude Include="..\src\core\input.hpp" />

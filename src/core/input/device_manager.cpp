@@ -1,4 +1,6 @@
 #include "device_manager.hpp"
+#include "keymap_manager.hpp"
+#include "keymap.hpp"
 
 
 namespace core::input {
@@ -40,6 +42,10 @@ void device_manager::keyboard_press(keyboard::key k) {
 
 void device_manager::keyboard_release(keyboard::key k) {
     device_manager::instance().active_keyboard.release(k);
+    keymap* km = keymap_manager::instance().active_keymap;
+    if (km != nullptr) {
+        km->activate(k);
+    }
 }
 
 

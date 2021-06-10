@@ -2,6 +2,7 @@
 #define GL2_SRC_EVENTS_HPP
 
 
+#include "core/event.hpp"
 #include "core/events.hpp"
 #include "core/dispatcher.hpp"
 #include "core/event_queue.hpp"

@@ -13,18 +13,21 @@ namespace core {
 
 
 struct EventQueue {
-    std::deque<std::shared_ptr<IEvent>> queue;
+    std::deque<std::shared_ptr<event>> queue;
     std::mutex m_mutex;
     std::condition_variable cv;
+
 
     static EventQueue& instance() {
         static EventQueue instance_;
         return instance_;
     }
 
+
     static bool empty() {
         return instance().queue.empty();
     }
+
 
     template <typename EventType, typename... Args>
     static void push_event(Args&&... args) {
@@ -46,9 +49,18 @@ struct EventQueue {
     }
 
 
-    static std::shared_ptr<IEvent> get_event() {
+    static void push_event(std::shared_ptr<event> e) {
+        auto& q = instance();
+        std::lock_guard lock(q.m_mutex);
+
+        q.queue.push_back(e);
+        q.cv.notify_one();
+    }
+
+
+    static std::shared_ptr<event> get_event() {
         auto& queue = instance();
-        std::shared_ptr<IEvent> result = nullptr;
+        std::shared_ptr<event> result = nullptr;
 
         {
             std::unique_lock lock(queue.m_mutex);
@@ -60,11 +72,16 @@ struct EventQueue {
         return result;
     }
 
+
     static void pop_event() {
         auto& queue = instance();
-        if (queue.empty()) { return; }
 
-        queue.queue.pop_front();
+        {
+            std::unique_lock lock(queue.m_mutex);
+            queue.cv.wait(lock, [&queue]() { return !queue.queue.empty(); });
+
+            queue.queue.pop_front();
+        }
     }
 
 private:
@@ -76,11 +93,14 @@ private:
 
 namespace event_system {
 
+inline void emit(std::shared_ptr<event> e) {
+    EventQueue::push_event(e);
+}
+
 template <typename EventType, typename... Args>
 void emit(Args&&... args) {
     EventQueue::push_event<EventType>(std::forward<Args>(args)...);
 }
-
 
 template <typename EventType>
 void emit() {

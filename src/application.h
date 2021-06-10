@@ -22,7 +22,7 @@ namespace gl2 {
         int run();
 
     private:
-        bool on_stop(core::EventStop*);
+        bool on_stop(core::event_exit*);
     };
 }
 

@@ -1,14 +1,14 @@
 #ifndef GL2_SRC_CORE_INPUT_KEYMAP_MANAGER_HPP
 #define GL2_SRC_CORE_INPUT_KEYMAP_MANAGER_HPP
 
-#include "keymap.hpp"
+
 #include <string>
 #include <unordered_map>
 
 
 namespace core::input {
 
-
+struct keymap;
 struct keymap_manager {
     std::unordered_map<std::string, keymap*> mappings;
     keymap* active_keymap;

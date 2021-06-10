@@ -302,5 +302,8 @@
     <ClInclude Include="..\common\defines.hpp">
       <Filter>Source files\common</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\core\event.hpp">
+      <Filter>Source files\src\core</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -4,8 +4,8 @@ keyboard = {
     move_left = "A"
     move_right = "D"
 
-    pause = "Space"
-    exit = "Esc"
+    pause = "SPACE"
+    exit = "ESC"
 
     toggle_traces = "T"
     toggle_velocities = "V"

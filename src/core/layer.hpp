@@ -48,10 +48,10 @@ struct LayerWorld : public ILayer {
 	//bool on_mouse_move(Mouse::MoveEvent* pEvent);
 	//bool on_mouse_press(Mouse::ButtonPressEvent* pEvent);
 
-	inline bool on_frame_finished(EventFrameFinished* pEvent) {
+	/*inline bool on_frame_finished(EventFrameFinished* pEvent) {
 		model.move_bodies(pEvent->dt);
 		return false;
-	}
+	}*/
 };
 
 

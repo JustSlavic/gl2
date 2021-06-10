@@ -49,7 +49,7 @@ math::vector3 intersect_z0_plane (math::vector3 ray_start, math::vector3 vector)
 
 
 application::application() {
-    bind<core::EventStop, application, &application::on_stop>(this);
+    bind<core::event_exit, application, &application::on_stop>(this);
 }
 
 
@@ -116,11 +116,11 @@ int application::run() {
         window->swap_buffers();
 
         // 4. Frame is finished
-        core::EventQueue::push_event<core::EventFrameFinished>(dt / 1'000'000.f);
+        //core::EventQueue::push_event<core::EventFrameFinished>(dt / 1'000'000.f);
 
         // 5. Handle events
         while (!core::EventQueue::empty()) {
-            std::shared_ptr<core::IEvent> e = core::EventQueue::get_event();
+            std::shared_ptr<core::event> e = core::EventQueue::get_event();
             if (!e) continue;
 
             bool handled = handle(e.get());
@@ -139,7 +139,7 @@ int application::run() {
 }
 
 
-bool application::on_stop(core::EventStop*) {
+bool application::on_stop(core::event_exit*) {
     printf("Received EventStop\n");
     running = false;
 

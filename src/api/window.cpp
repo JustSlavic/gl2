@@ -354,7 +354,7 @@ namespace gl2 {
 
         void process_quit_event(const SDL_Event& e) {
             // emit(EventStop()); // @Todo Emit EventWindowClose instead
-            core::EventQueue::push_event<core::EventStop>();
+            core::EventQueue::push_event<core::event_exit>();
         }
 
         void process_keyboard_event(const SDL_Event& e) {

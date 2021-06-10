@@ -40,7 +40,7 @@ LayerWorld::LayerWorld()
     bind<Gamepad_XBox::Event_AxisChanged, LayerWorld, &LayerWorld::on_gamepad_axis_changed>(this);
     bind<Mouse::ButtonPressEvent, LayerWorld, &LayerWorld::on_mouse_press>(this);
     bind<Mouse::MoveEvent, LayerWorld, &LayerWorld::on_mouse_move>(this);*/
-    bind<EventFrameFinished, LayerWorld, &LayerWorld::on_frame_finished>(this);
+    // bind<EventFrameFinished, LayerWorld, &LayerWorld::on_frame_finished>(this);
     
     camera.position = { 0, 0, -15 };
 

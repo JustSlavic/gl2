@@ -11,7 +11,7 @@ namespace core {
 
 class Dispatcher {
     template<typename EventType, class C, bool(C::* M)(EventType*)>
-    static bool invoke(void* instance, IEvent* e) {
+    static bool invoke(void* instance, event* e) {
         if (EventType::get_static_type() != e->get_type()) return false;
         return (static_cast<C*>(instance)->*M)(static_cast<EventType*>(e));
     }
@@ -23,7 +23,7 @@ public:
         targets.push_back(pair);
     }
 
-    bool operator()(IEvent* e) {
+    bool operator()(event* e) {
         for (auto pair : targets) {
             if ((pair.first)(pair.second, e)) {
                 return true;
@@ -34,7 +34,7 @@ public:
     }
 
 private:
-    using Fn = bool(*)(void*, IEvent*);
+    using Fn = bool(*)(void*, event*);
     std::vector<std::pair<Fn, void*>> targets;
 };
 
@@ -47,7 +47,7 @@ struct EventReceiver {
         d.bind<EventType, Host, M>(host);
     }
 
-    bool handle(IEvent* e) {
+    bool handle(event* e) {
         return d(e);
     }
 };
