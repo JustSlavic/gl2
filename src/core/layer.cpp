@@ -1,4 +1,5 @@
 #include "layer.hpp"
+#include <core/input.hpp>
 #include <config.hpp>
 
 
@@ -28,6 +29,9 @@ LayerWorld::LayerWorld()
     auto& cfg = config::get_instance();
     f32 window_ratio = (f32)cfg.window.width / (f32)cfg.window.height;
     projection = math::projection(window_ratio * NEAR_CLIP_DISTANCE, NEAR_CLIP_DISTANCE, NEAR_CLIP_DISTANCE, FAR_CLIP_DISTANCE);
+
+
+    core::input::keymap_manager::register_keymap("gravity_keys");
 
     /*Keymap2 km = load_keymap("resources/keymappings/gravity_keys.son");
     keymaps.push_back(km);

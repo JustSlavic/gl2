@@ -150,6 +150,12 @@
     <ClCompile Include="..\src\core\input\device_manager.cpp">
       <Filter>Source files\src\core\input</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\core\input\keymap.cpp">
+      <Filter>Source files\src\core\input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\core\input\keymap_manager.cpp">
+      <Filter>Source files\src\core\input</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\application.h">
@@ -286,6 +292,12 @@
     </ClInclude>
     <ClInclude Include="..\src\core\input.hpp">
       <Filter>Source files\src\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\core\input\keymap.hpp">
+      <Filter>Source files\src\core\input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\core\input\keymap_manager.hpp">
+      <Filter>Source files\src\core\input</Filter>
     </ClInclude>
     <ClInclude Include="..\common\defines.hpp">
       <Filter>Source files\common</Filter>

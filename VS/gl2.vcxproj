@@ -26,6 +26,8 @@
     <ClCompile Include="..\src\api\window.cpp" />
     <ClCompile Include="..\src\application.cpp" />
     <ClCompile Include="..\src\core\input\device_manager.cpp" />
+    <ClCompile Include="..\src\core\input\keymap.cpp" />
+    <ClCompile Include="..\src\core\input\keymap_manager.cpp" />
     <ClCompile Include="..\src\core\layer.cpp" />
     <ClCompile Include="..\src\graphics\graphics_api.cpp" />
     <ClCompile Include="..\src\graphics\index_buffer.cpp" />
@@ -66,6 +68,8 @@
     <ClInclude Include="..\src\core\input.hpp" />
     <ClInclude Include="..\src\core\input\devices.hpp" />
     <ClInclude Include="..\src\core\input\device_manager.hpp" />
+    <ClInclude Include="..\src\core\input\keymap.hpp" />
+    <ClInclude Include="..\src\core\input\keymap_manager.hpp" />
     <ClInclude Include="..\src\core\layer.hpp" />
     <ClInclude Include="..\src\es\dispatcher.h" />
     <ClInclude Include="..\src\es\emitter.h" />
