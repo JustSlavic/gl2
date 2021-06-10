@@ -4,7 +4,7 @@
 #include <unordered_map>
 #include <glm/glm.hpp>
 #include <math.hpp>
-#include <defines.h>
+#include <defines.hpp>
 
 
 struct Shader {

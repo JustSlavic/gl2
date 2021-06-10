@@ -1,6 +1,6 @@
 #pragma once
 
-#include <defines.h>
+#include <defines.hpp>
 #include "float.hpp"
 #include "color.hpp"
 #include "vector2.hpp"

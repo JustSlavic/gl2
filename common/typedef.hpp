@@ -1,5 +1,5 @@
-#ifndef GL2_TYPEDEF_H
-#define GL2_TYPEDEF_H
+#ifndef GL2_TYPEDEF_HPP
+#define GL2_TYPEDEF_HPP
 
 #include <stdint.h>
 
@@ -46,4 +46,4 @@ typedef double   f64;
 typedef float    float32;
 typedef double   float64;
 
-#endif // GL2_TYPEDEF_H
+#endif // GL2_TYPEDEF_HPP

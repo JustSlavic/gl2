@@ -1,7 +1,7 @@
 #ifndef GL2_APPLICATION_H
 #define GL2_APPLICATION_H
 
-#include <defines.h>
+#include <defines.hpp>
 #include <api/window.h>
 #include <events.hpp>
 #include <logging/logging.h>

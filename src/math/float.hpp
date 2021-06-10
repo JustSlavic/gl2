@@ -2,7 +2,7 @@
 
 #include "consts.hpp"
 
-#include <defines.h>
+#include <defines.hpp>
 #include <type_traits>
 
 namespace math {

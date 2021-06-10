@@ -5,7 +5,7 @@
 #include <string>
 #include <type_traits>
 
-#include <defines.h>
+#include <defines.hpp>
 
 
 std::string now_as_string();

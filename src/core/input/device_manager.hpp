@@ -54,7 +54,6 @@ private:
         return active_mouse.lock() || active_gamepad.lock();
     }
 
-
     template <typename Device>
     std::shared_ptr<Device> get_device(device::id_t id) {
         static_assert(std::is_base_of<device, Device>::value, "Passed type have to be heir of device.");

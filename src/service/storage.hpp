@@ -1,6 +1,6 @@
 #pragma once
 
-#include <defines.h>
+#include <defines.hpp>
 #include <stdio.h>
 
 namespace service {

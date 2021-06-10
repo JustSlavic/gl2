@@ -2,7 +2,6 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
-#include <es/event_system.h>
 #include <core/input.hpp>
 #include <graphics/renderer.h>
 
@@ -96,15 +95,15 @@ void generate_random_bodies_in_square(Model* model, f32 square_size = 1.f) {
 
 Model::Model()
 {
-    Dispatcher<EventFrameFinished>::subscribe([this] (EventFrameFinished e) {
-        this->move_bodies(e.dt);
-    });
-    Dispatcher<EventRestart>::subscribe(EVENT_CALLBACK(clean));
-    Dispatcher<EventPause>::subscribe([this](EventPause) { this->pause = not this->pause; });
-    Dispatcher<EventToggleF2>::subscribe([this](EventToggleF2) { this->elastic = not this->elastic; });
-    Dispatcher<EventToggleBodyTraces>::subscribe(EVENT_CALLBACK(toggle_body_traces));
-    Dispatcher<EventToggleVelocities>::subscribe(EVENT_CALLBACK(toggle_velocities));
-    Dispatcher<EventToggleVectorField>::subscribe(EVENT_CALLBACK(toggle_vector_field));
+    //Dispatcher<EventFrameFinished>::subscribe([this] (EventFrameFinished e) {
+    //    this->move_bodies(e.dt);
+    //});
+    //Dispatcher<EventRestart>::subscribe(EVENT_CALLBACK(clean));
+    //Dispatcher<EventPause>::subscribe([this](EventPause) { this->pause = not this->pause; });
+    //Dispatcher<EventToggleF2>::subscribe([this](EventToggleF2) { this->elastic = not this->elastic; });
+    //Dispatcher<EventToggleBodyTraces>::subscribe(EVENT_CALLBACK(toggle_body_traces));
+    //Dispatcher<EventToggleVelocities>::subscribe(EVENT_CALLBACK(toggle_velocities));
+    //Dispatcher<EventToggleVectorField>::subscribe(EVENT_CALLBACK(toggle_vector_field));
 
     bodies.reserve(5000);
     bodies_buffer.reserve(5000);
@@ -409,11 +408,11 @@ void Model::move_bodies(f32 dt) {
     interact_inelastic(this);
     
     if (selected_body_index > -1) {
-        emit<EventSelectedBodyMoved>(bodies[selected_body_index].position);
+        //emit<EventSelectedBodyMoved>(bodies[selected_body_index].position);
     }
 }
 
-void Model::clean(EventRestart) {
+void Model::clean() {
     bodies.clear();
     radii.clear();
     traces.clear();
@@ -421,7 +420,7 @@ void Model::clean(EventRestart) {
     //generate_random_bodies_in_square(this);
 }
 
-void Model::toggle_body_traces(EventToggleBodyTraces) {
+void Model::toggle_body_traces() {
     if (draw_body_traces) {
         traces.clear();
         traces_buffer.clear();
@@ -431,12 +430,12 @@ void Model::toggle_body_traces(EventToggleBodyTraces) {
 }
 
 
-void Model::toggle_velocities(EventToggleVelocities) {
+void Model::toggle_velocities() {
     draw_velocities = not draw_velocities;
 }
 
 
-void Model::toggle_vector_field(EventToggleVectorField) {
+void Model::toggle_vector_field() {
     draw_vector_field = not draw_vector_field;
 }
 

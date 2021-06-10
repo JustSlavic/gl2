@@ -1,7 +1,7 @@
 #ifndef GIR1_VERTEX_BUFFER_H
 #define GIR1_VERTEX_BUFFER_H
 
-#include <defines.h>
+#include <defines.hpp>
 
 
 struct VertexBuffer {

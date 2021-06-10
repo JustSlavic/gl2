@@ -1,7 +1,7 @@
 #ifndef GL2_WM_WINDOW_H
 #define GL2_WM_WINDOW_H
 
-#include <defines.h>
+#include <defines.hpp>
 
 
 namespace gl2 {

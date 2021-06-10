@@ -230,9 +230,6 @@
     <ClInclude Include="..\src\modeling_2d\model.hpp">
       <Filter>Source files\src\modeling_2d</Filter>
     </ClInclude>
-    <ClInclude Include="..\common\defines.h">
-      <Filter>Source files\common</Filter>
-    </ClInclude>
     <ClInclude Include="..\common\typedef.hpp">
       <Filter>Source files\common</Filter>
     </ClInclude>
@@ -289,6 +286,9 @@
     </ClInclude>
     <ClInclude Include="..\src\core\input.hpp">
       <Filter>Source files\src\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\defines.hpp">
+      <Filter>Source files\common</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

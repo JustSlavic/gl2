@@ -9,7 +9,6 @@
 #endif
 
 #include <logging/logging.h>
-#include <es/event_system.h>
 #include <core/event_queue.hpp>
 #include <core/input.hpp>
 #include <math.hpp>
@@ -21,7 +20,7 @@ namespace gl2 {
 
     // @todo find means to remove opengl mentions from here, 
     //       amd move it to the another Api* class
-    struct Window::Impl : public IEmitter {
+    struct Window::Impl {
         SDL_Window* window = nullptr;
         SDL_Surface* surface = nullptr;
         SDL_GLContext opengl_context = nullptr;
@@ -121,7 +120,7 @@ namespace gl2 {
             switch (event.type) {
                     case SDL_WINDOWEVENT:
                         if (event.window.event == SDL_WINDOWEVENT_MOVED) {
-                            emit(WindowMotionEvent(event.window.data1, event.window.data2));
+                            // emit(WindowMotionEvent(event.window.data1, event.window.data2));
                         }
                         break;
 
@@ -354,7 +353,7 @@ namespace gl2 {
         }
 
         void process_quit_event(const SDL_Event& e) {
-            emit(EventStop()); // @Todo Emit EventWindowClose instead
+            // emit(EventStop()); // @Todo Emit EventWindowClose instead
             core::EventQueue::push_event<core::EventStop>();
         }
 

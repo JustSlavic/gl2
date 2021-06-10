@@ -1,7 +1,7 @@
 #ifndef GL2_SRC_CORE_EVENTS_HPP
 #define GL2_SRC_CORE_EVENTS_HPP
 
-#include <defines.h>
+#include <defines.hpp>
 
 
 namespace core {

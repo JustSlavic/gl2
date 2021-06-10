@@ -54,7 +54,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\.generated\config.hpp" />
-    <ClInclude Include="..\common\defines.h" />
+    <ClInclude Include="..\common\defines.hpp" />
     <ClInclude Include="..\common\os\file.hpp" />
     <ClInclude Include="..\common\os\path.hpp" />
     <ClInclude Include="..\common\typedef.hpp" />

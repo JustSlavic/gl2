@@ -1,5 +1,5 @@
 #include "string_id.hpp"
-#include <defines.h>
+#include <defines.hpp>
 
 #include <vector>
 #include <string>
@@ -17,7 +17,7 @@ struct string_id_pool {
 
     struct {
         size_t saved_ids = 0;
-        size_t consumed_space = 0; // in bytes
+        size_t allocated_space = 0; // in bytes
         size_t used_space = 0;     // in bytes
     } statistics;
 
@@ -30,7 +30,7 @@ struct string_id_pool {
         end = data;
         initialized = true;
 
-        statistics.consumed_space = POOL_SIZE;
+        statistics.allocated_space = POOL_SIZE;
     }
 
     void terminate () {
@@ -65,11 +65,11 @@ struct string_id_pool {
 
         printf("statistics {\n"
                "    saved ids = %ld;\n"
-               "    overall space = %ld bytes;\n"
-               "    used space = %ld bytes;\n"
+               "    allocated %ld bytes;\n"
+               "    used %ld bytes;\n"
                "}\n",
                statistics.saved_ids,
-               statistics.consumed_space,
+               statistics.allocated_space,
                statistics.used_space
             );
 

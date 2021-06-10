@@ -1,6 +1,5 @@
 #include "camera.hpp"
 #include <logging/logging.h>
-#include <es/event_system.h>
 #include <core/input.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -27,14 +26,14 @@ void update(Camera2D *camera, f32 dt) {
 Camera2D::Camera2D()
     : position{0.f, 0.f, -15.f}
 {
-    Dispatcher<EventFrameFinished>::subscribe([this](EventFrameFinished e){
-        update(this, e.dt);
-    });
-    Dispatcher<EventZoom>::subscribe([this](EventZoom e) {
-        auto z = this->position.z + e.factor * ZOOM_SPEED;
-        if (z > -.11f) z = -.11f;
-        this->position.z = z;
-    });
+    //Dispatcher<EventFrameFinished>::subscribe([this](EventFrameFinished e){
+    //    update(this, e.dt);
+    //});
+    //Dispatcher<EventZoom>::subscribe([this](EventZoom e) {
+    //    auto z = this->position.z + e.factor * ZOOM_SPEED;
+    //    if (z > -.11f) z = -.11f;
+    //    this->position.z = z;
+    //});
 }
 
 

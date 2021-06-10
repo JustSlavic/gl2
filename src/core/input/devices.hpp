@@ -2,7 +2,7 @@
 #define GL2_SRC_CORE_INPUT_DEVICES_HPP
 
 
-#include <defines.h>
+#include <defines.hpp>
 
 
 namespace core::input {

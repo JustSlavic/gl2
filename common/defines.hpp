@@ -1,5 +1,5 @@
-#ifndef GIR1_DEFINES_H
-#define GIR1_DEFINES_H
+#ifndef GIR1_DEFINES_HPP
+#define GIR1_DEFINES_HPP
 
 
 #include "typedef.hpp"
@@ -48,4 +48,4 @@
 #define DEFINE_BIT_MASK(NAME, ...) DEFINE_BIT_MASK_T(NAME, u32, __VA_ARGS__)
 
 
-#endif // GIR1_DEFINES_H
+#endif // GIR1_DEFINES_HPP
