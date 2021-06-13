@@ -12,6 +12,7 @@ namespace core {
 
 struct ILayer : public EventReceiver {
 	virtual void draw() = 0;
+	virtual void advance(f32 dt) = 0;
 };
 
 
@@ -34,6 +35,7 @@ struct LayerWorld : public ILayer {
 
 	LayerWorld();
 	void draw() override;
+	void advance(f32 dt) override;
 
 	//inline bool on_gamepad_button_pressed(Gamepad_XBox::Event_ButtonPressed* pEvent) {
 	//	printf("XBOX button pressed: %d\n", (i32)pEvent->button);

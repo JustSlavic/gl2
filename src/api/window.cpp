@@ -177,18 +177,21 @@ namespace gl2 {
                     case SDL_CONTROLLERDEVICEREMAPPED:      /**< The controller mapping was updated */
                         process_controller_device_event(event);
                         break;
-                    case SDL_CONTROLLERTOUCHPADDOWN:        /**< Game controller touchpad was touched */
-                        printf("SDL_CONTROLLERTOUCHPADDOWN\n");
-                        break;
-                    case SDL_CONTROLLERTOUCHPADMOTION:      /**< Game controller touchpad finger was moved */
-                        printf("SDL_CONTROLLERTOUCHPADMOTION\n");
-                        break;
-                    case SDL_CONTROLLERTOUCHPADUP:          /**< Game controller touchpad finger was lifted */
-                        printf("SDL_CONTROLLERTOUCHPADUP\n");
-                        break;
-                    case SDL_CONTROLLERSENSORUPDATE:        /**< Game controller sensor was updated */
-                        printf("SDL_CONTROLLERSENSORUPDATE\n");
-                        break;
+
+                    // @Fix: probably it's old version of SDL in my linux distribution,
+                    //       because events below are not defined.
+                    // case SDL_CONTROLLERTOUCHPADDOWN:        /**< Game controller touchpad was touched */
+                    //     printf("SDL_CONTROLLERTOUCHPADDOWN\n");
+                    //     break;
+                    // case SDL_CONTROLLERTOUCHPADMOTION:      /**< Game controller touchpad finger was moved */
+                    //     printf("SDL_CONTROLLERTOUCHPADMOTION\n");
+                    //     break;
+                    // case SDL_CONTROLLERTOUCHPADUP:          /**< Game controller touchpad finger was lifted */
+                    //     printf("SDL_CONTROLLERTOUCHPADUP\n");
+                    //     break;
+                    // case SDL_CONTROLLERSENSORUPDATE:        /**< Game controller sensor was updated */
+                    //     printf("SDL_CONTROLLERSENSORUPDATE\n");
+                    //     break;
 
                     case SDL_QUIT: 
                         process_quit_event(event);
@@ -220,9 +223,12 @@ namespace gl2 {
 
         void process_controller_axis_event(const SDL_Event& e) {
             switch (e.caxis.axis) {
-            case SDL_CONTROLLER_AXIS_INVALID:
-                printf("INVALID AXIS!\n");
-                break;
+
+            // @Investigate @Fix: this case is also does not compile in my linux distribution.
+            // case SDL_CONTROLLER_AXIS_INVALID:
+            //     printf("INVALID AXIS!\n");
+            //     break;
+
             case SDL_CONTROLLER_AXIS_LEFTX:
                 core::input::device_manager::gamepad_axis_move(
                     e.caxis.which,
@@ -267,9 +273,9 @@ namespace gl2 {
 
         void process_controller_button_press_event(const SDL_Event& e) {
             switch (e.cbutton.button) {
-                case SDL_CONTROLLER_BUTTON_INVALID:
-
-                    break;
+                // @Investigate @Fix: this case does not compile on my linux distribution.
+                // case SDL_CONTROLLER_BUTTON_INVALID:
+                    // break;
                 case SDL_CONTROLLER_BUTTON_A:
                     // Gamepad_XBox::press(Gamepad_XBox::Button::A);
                     break;

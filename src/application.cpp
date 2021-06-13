@@ -92,21 +92,26 @@ int application::run() {
     running = true;
 
     auto& cfg = config::get_instance();
-    math::color24 background_color{ cfg.window.default_color.r, cfg.window.default_color.g, cfg.window.default_color.b };
+    math::color24 background_color{
+        (float)cfg.window.default_color.r,
+        (float)cfg.window.default_color.g,
+        (float)cfg.window.default_color.b
+    };
 
     auto t = std::chrono::steady_clock::now();
     std::this_thread::sleep_for(std::chrono::milliseconds(16));
 
     while (running) {
         auto t_ = std::chrono::steady_clock::now();
-        auto dt = std::chrono::duration_cast<std::chrono::microseconds>(t_ - t).count();
-        //printf("%llu: dt = %ld microseconds; fps = %lf\n", frame_counter++, dt, 1000000.0 / dt);
+        auto dt_microseconds = std::chrono::duration_cast<std::chrono::microseconds>(t_ - t).count();
+        f32 dt = dt_microseconds / 1'000'000.f;
+        //printf("%llu: dt = %ld microseconds; fps = %lf\n", frame_counter++, dt, 1'000'000.0 / dt);
         t = t_;
 
-        // 1. clear the frame
+        // 1. Clear the frame.
         Renderer::clear(background_color);
 
-        // 2. draw new frame
+        // 2. Draw layers in forward direction, "background first".
         for (auto& layer : layers) {
             layer->draw();
         }
@@ -115,23 +120,30 @@ int application::run() {
         window->poll_events();
         window->swap_buffers();
 
-        // 4. Frame is finished
-        //core::EventQueue::push_event<core::EventFrameFinished>(dt / 1'000'000.f);
+        // 4. Frame is finished.
+        // core::EventQueue::push_event<core::EventFrameFinished>(dt);
 
-        // 5. Handle events
+        // 5. Handle events.
         while (!core::EventQueue::empty()) {
             std::shared_ptr<core::event> e = core::EventQueue::get_event();
             if (!e) continue;
 
             bool handled = handle(e.get());
             if (!handled) {
-                for (auto& layer : layers) {
+                // Events are handled in opposite direction, from back to end, "UI first".
+                for (auto it = layers.rbegin(); it < layers.rend(); it++) {
+                    auto& layer = *it;
                     handled = layer->handle(e.get());
                     if (handled) break;
                 }
             }
 
             core::EventQueue::pop_event();
+        }
+
+        // 6. Advance world modeling forward, move animations, etc.
+        for (auto& layer : layers) {
+            layer->advance(dt);
         }
     }
 

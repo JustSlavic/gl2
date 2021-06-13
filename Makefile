@@ -4,15 +4,17 @@ CXX_STANDARD = c++17
 
 INC_DIR = \
 	/usr/include \
-	.generated \
+	generated \
 	common \
 	src \
 	libs \
+	external/son/include \
 
 LIB_DIR = \
 	/usr/lib/ \
 
 LOCAL_LIBS = \
+	son \
 #     stb \
 #     imgui \
 
@@ -61,14 +63,14 @@ endif
 
 SOURCES = \
 	application \
-	config \
-	keymap \
+	generated/config \
 	utils \
 	graphics/graphics_api \
-	api/keyboard \
-	api/mouse \
 	api/window \
-	fs/watcher \
+	core/layer \
+	core/input/device_manager \
+	core/input/keymap \
+	core/input/keymap_manager \
 	graphics/shader \
 	graphics/vertex_array \
 	graphics/vertex_buffer \
@@ -86,16 +88,12 @@ SOURCES = \
 	modeling_2d/model \
 	modeling_2d/creatures \
 	service/shader_library \
-	common/parse/reader \
-	common/son/object \
-	common/son/parser \
-	common/son/visitor \
 
 
 OBJECTS      := $(addprefix build/$(SUB_DIR)/, $(addsuffix .o,   $(SOURCES)))
 SOURCES      := $(addprefix src/,              $(addsuffix .cpp, $(SOURCES)))
 
-STATIC_LIBS  := $(foreach lib, $(LOCAL_LIBS), $(addprefix libs/$(lib)/bin/lib, $(addsuffix .a, $(lib))))
+STATIC_LIBS  := $(foreach lib, $(LOCAL_LIBS), $(addprefix external/$(lib)/bin/$(SUB_DIR)/lib, $(addsuffix .a, $(lib))))
 
 # CURRENT_DIR  := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
@@ -124,10 +122,9 @@ test:
 # ================= UTILITY ================= #
 
 
-prebuild: src/version.cpp
+prebuild: src/version.cpp $(STATIC_LIBS) config
 	@mkdir -p bin/$(SUB_DIR)
 	@mkdir -p build/$(SUB_DIR)
-	$(MAKE) -C config_builder
 
 postbuild:
 	ln -sfn bin/$(SUB_DIR)/$(PROJECT) run
@@ -145,13 +142,13 @@ clean:
 	@find build -type f -name '*.d' -delete
 	@rm -fv build/*/lib$(PROJECT).a
 	@rm -fv bin/*/$(PROJECT)
-	@rm -fv .generated/*
+	@rm -fv generated/*
 	@rm -fv run
 	@rm -fv test
 	@rm -fv perf.data
 	@rm -fv perf.data.old
 	$(MAKE) -C tests clean
-	$(MAKE) -C config_builder clean
+	$(MAKE) -C config_generator clean
 
 # Cleaning local lib's builds
 # .PHONY: $(LOCAL_LIBS)
@@ -166,15 +163,12 @@ clean:
 # ================= CONFIG ================== #
 
 
-config: .generated/config.hpp .generated/config.cpp .generated/config.scheme.son
+config: generated/config.hpp generated/config.cpp generated/config.scheme.son
 
-build/$(SUB_DIR)/config.o: .generated/config.cpp
-	@mkdir -p $(dir $@)
-	@g++ -MM -MT "$@" $(CXXFLAGS) $< > $*.d
-	g++ $< -c -o $@ $(CXXFLAGS)
-
-.generated/config.hpp .generated/config.cpp .generated/config.scheme.son: config_builder/builder config.son
-	./config_builder/builder config.son
+generated/config.hpp generated/config.cpp generated/config.scheme.son: config.son
+	$(MAKE) -C config_generator
+	@mkdir -p generated
+	./config_generator/generator config.son
 
 
 # ================= PROJECT ================= #
@@ -193,9 +187,14 @@ build/$(SUB_DIR)/%.o: src/%.cpp ./Makefile
 
 build/$(SUB_DIR)/common/%.o: common/%.cpp ./Makefile
 	@mkdir -p $(dir $@)
-	@g++ -MM -MT "$@" $(CXXFLAGS) $< > build/$(SUB_DIR)/common/$*.d
+	@g++ -MM -MT "$@" $(CXXFLAGS) $< > build/$(SUB_DIR)/$*.d
+	g++ $< -c -o $@ $(CXXFLAGS)
+
+build/$(SUB_DIR)/generated/%.o: generated/%.cpp ./Makefile
+	@mkdir -p $(dir $@)
+	@g++ -MM -MT "$@" $(CXXFLAGS) $< > build/$(SUB_DIR)/$*.d
 	g++ $< -c -o $@ $(CXXFLAGS)
 
 ${STATIC_LIBS}:
-	$(MAKE) -C $(shell dirname $(dir $@))
+	$(MAKE) -C $(shell dirname $(dir $@)) $(MAKECMDGOALS)
 

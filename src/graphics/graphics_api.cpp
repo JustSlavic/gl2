@@ -2,7 +2,7 @@
 
 #include <GL/glew.h>
 
-#include <defines.h>
+#include <defines.hpp>
 #include <logging/logging.h>
 
 

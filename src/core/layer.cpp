@@ -84,6 +84,11 @@ void LayerWorld::draw() {
 }
 
 
+void LayerWorld::advance(f32 dt) {
+    model.move_bodies(dt);
+}
+
+
 //bool LayerWorld::on_mouse_move(Mouse::MoveEvent* pEvent) {
 //	auto& cfg = config::get_instance();
 //	f32 window_ratio = (f32)cfg.window.width / (f32)cfg.window.height;
