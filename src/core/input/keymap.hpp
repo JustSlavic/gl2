@@ -14,7 +14,10 @@ struct keymap {
 	std::unordered_map<keyboard::key, std::string> keyboard_mapping;
 	std::unordered_map<mouse::key, std::string> mouse_mapping;
 
+    void activate();
+
 	void activate(keyboard::key k);
+	void deactivate(keyboard::key k);
 	void activate(mouse::key k);
 };
 

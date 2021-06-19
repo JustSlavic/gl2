@@ -42,7 +42,7 @@ namespace gl2 {
         i32 get_width() { return width; }
         i32 get_height() { return height; }
 
-        i32 startup() {
+        i32 initialize() {
             if (initialized) return 0;
 
             i32 err = SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER);
@@ -84,8 +84,7 @@ namespace gl2 {
             initialized = true;
             return 0;
         }
-
-        void shutdown() {
+void terminate() {
             if (not initialized) return;
 
             SDL_GL_DeleteContext(opengl_context);
@@ -366,10 +365,11 @@ namespace gl2 {
         void process_keyboard_event(const SDL_Event& e) {
 #define PRESS_OR_RELEASE(KEY) \
     if (e.type == SDL_KEYUP) { \
-        core::input::device_manager::keyboard_press(KEY); \
-    } else { \
         core::input::device_manager::keyboard_release(KEY); \
+    } else { \
+        core::input::device_manager::keyboard_press(KEY); \
     } void(0)
+
              switch (e.key.keysym.scancode) {
                  case SDL_SCANCODE_ESCAPE: PRESS_OR_RELEASE(core::input::keyboard::ESC); break;
                  case SDL_SCANCODE_SPACE:  PRESS_OR_RELEASE(core::input::keyboard::SPACE); break;
@@ -459,8 +459,8 @@ namespace gl2 {
         delete impl;
     }
 
-    i32 Window::startup() { return impl->startup(); }
-    void Window::shutdown() { impl->shutdown(); }
+    i32 Window::initialize() { return impl->initialize(); }
+    void Window::terminate() { impl->terminate(); }
     i32 Window::get_width() { return impl->get_width(); }
     i32 Window::get_height() { return impl->get_height(); }
     void Window::poll_events() { impl->poll_events(); }

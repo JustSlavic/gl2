@@ -1,4 +1,5 @@
 #include "layer.hpp"
+#include <events.hpp>
 #include <core/input.hpp>
 #include <config.hpp>
 
@@ -30,19 +31,15 @@ LayerWorld::LayerWorld()
     f32 window_ratio = (f32)cfg.window.width / (f32)cfg.window.height;
     projection = math::projection(window_ratio * NEAR_CLIP_DISTANCE, NEAR_CLIP_DISTANCE, NEAR_CLIP_DISTANCE, FAR_CLIP_DISTANCE);
 
-
     core::input::keymap_manager::register_keymap("gravity_keys");
-
-    /*Keymap2 km = load_keymap("resources/keymappings/gravity_keys.son");
-    keymaps.push_back(km);
-
-    bind<Gamepad_XBox::Event_ButtonPressed, LayerWorld, &LayerWorld::on_gamepad_button_pressed>(this);
-    bind<Gamepad_XBox::Event_AxisChanged, LayerWorld, &LayerWorld::on_gamepad_axis_changed>(this);
-    bind<Mouse::ButtonPressEvent, LayerWorld, &LayerWorld::on_mouse_press>(this);
-    bind<Mouse::MoveEvent, LayerWorld, &LayerWorld::on_mouse_move>(this);*/
-    // bind<EventFrameFinished, LayerWorld, &LayerWorld::on_frame_finished>(this);
     
-    camera.position = { 0, 0, -15 };
+    bind<core::event_camera_move, LayerWorld, &LayerWorld::on_camera_move>(this);
+    bind<core::event_toggle_velocities, LayerWorld, &LayerWorld::on_toggle_velocities>(this);
+    bind<core::event_toggle_traces, LayerWorld, &LayerWorld::on_toggle_traces>(this);
+    bind<core::event_toggle_vector_field, LayerWorld, &LayerWorld::on_toggle_vector_field>(this);
+    bind<core::event_toggle_F2, LayerWorld, &LayerWorld::on_toggle_F2>(this);
+
+    camera.position = { 0, 0, -1 };
 
     body_shader.load_shader(Shader::Type::Vertex, "resources/shaders/body.vshader")
         .load_shader(Shader::Type::Fragment, "resources/shaders/body.fshader")
@@ -85,6 +82,8 @@ void LayerWorld::draw() {
 
 
 void LayerWorld::advance(f32 dt) {
+    using namespace core::input;
+    camera.position.xy += (camera_velocity_up_left + camera_velocity_down_right) * 2.f * dt;
     model.move_bodies(dt);
 }
 
@@ -185,6 +184,47 @@ void LayerWorld::advance(f32 dt) {
 //
 //    return true;
 //}
+
+
+bool LayerWorld::on_camera_move(core::event_camera_move* e) {
+    if (e->t == core::event_camera_move::type::start) {
+        switch (e->d) {
+        case core::event_camera_move::direction::up: camera_velocity_up_left.y = 1.f; break;
+        case core::event_camera_move::direction::down: camera_velocity_down_right.y = -1.f; break;
+        case core::event_camera_move::direction::left: camera_velocity_up_left.x = 1.f; break;
+        case core::event_camera_move::direction::right: camera_velocity_down_right.x = -1.f; break;
+        }
+    }
+    if (e->t == core::event_camera_move::type::stop) {
+        switch (e->d) {
+        case core::event_camera_move::direction::up: camera_velocity_up_left.y = 0.f; break;
+        case core::event_camera_move::direction::down: camera_velocity_down_right.y = 0.f; break;
+        case core::event_camera_move::direction::left: camera_velocity_up_left.x = 0.f; break;
+        case core::event_camera_move::direction::right: camera_velocity_down_right.x = 0.f; break;
+        }
+    }
+    return true;
+}
+
+bool LayerWorld::on_toggle_velocities(core::event_toggle_velocities* e) {
+    model.toggle_velocities();
+    return true;
+}
+
+bool LayerWorld::on_toggle_traces(core::event_toggle_traces* e) {
+    model.toggle_body_traces();
+    return true;
+}
+
+bool LayerWorld::on_toggle_vector_field(core::event_toggle_vector_field* e) {
+    model.toggle_vector_field();
+    return true;
+}
+
+bool LayerWorld::on_toggle_F2(core::event_toggle_F2* e) {
+    return false;
+}
+
 
 } // core
 

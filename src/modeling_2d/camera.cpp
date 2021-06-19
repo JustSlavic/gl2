@@ -8,33 +8,9 @@ constexpr f32 CAMERA_SPEED = 2.f;
 constexpr f32 ZOOM_SPEED = .1f;
 
 
-void update(Camera2D *camera, f32 dt) {
-    //FOR_ALL_KEYS(k) {
-    //    if (Keyboard::is_pressed(k)) {
-    //        switch (k) {
-    //            case Keyboard::W: camera->position.y += CAMERA_SPEED*dt; break;
-    //            case Keyboard::S: camera->position.y -= CAMERA_SPEED*dt; break;
-    //            case Keyboard::A: camera->position.x += CAMERA_SPEED*dt; break;
-    //            case Keyboard::D: camera->position.x -= CAMERA_SPEED*dt; break;
-    //            default: break;
-    //        }
-    //    }
-    //}
-}
-
-
 Camera2D::Camera2D()
     : position{0.f, 0.f, -15.f}
-{
-    //Dispatcher<EventFrameFinished>::subscribe([this](EventFrameFinished e){
-    //    update(this, e.dt);
-    //});
-    //Dispatcher<EventZoom>::subscribe([this](EventZoom e) {
-    //    auto z = this->position.z + e.factor * ZOOM_SPEED;
-    //    if (z > -.11f) z = -.11f;
-    //    this->position.z = z;
-    //});
-}
+{}
 
 
 glm::mat4 Camera2D::get_view_matrix() const {

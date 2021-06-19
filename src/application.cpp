@@ -43,18 +43,17 @@ void print_matrix4(math::matrix4 m) {
     );
 }
 
+
 math::vector3 intersect_z0_plane (math::vector3 ray_start, math::vector3 vector) {
     return intersect_plane(ray_start, vector, math::vector3::make(0.f), math::vector3::make(0.f, 0.f, 1.f));
 }
 
 
-application::application() {
-    bind<core::event_exit, application, &application::on_stop>(this);
-}
+application::application() {}
 
 
 application::~application() {
-    window->shutdown();
+    window->terminate();
     delete window;
 
     GraphicsApi::shutdown();
@@ -76,11 +75,13 @@ int application::initialize() {
 
     window = new Window(cfg.window.width, cfg.window.height, cfg.name.c_str());
 
-    i32 err = window->startup();
+    i32 err = window->initialize();
     if (err) return err;
 
     GraphicsApi::startup();
     Renderer::init();
+
+    bind<core::event_exit, application, &application::on_exit>(this);
 
     layers.push_back(new core::LayerWorld());
 
@@ -103,7 +104,7 @@ int application::run() {
 
     while (running) {
         auto t_ = std::chrono::steady_clock::now();
-        auto dt_microseconds = std::chrono::duration_cast<std::chrono::microseconds>(t_ - t).count();
+        u64 dt_microseconds = std::chrono::duration_cast<std::chrono::microseconds>(t_ - t).count();
         f32 dt = dt_microseconds / 1'000'000.f;
         //printf("%llu: dt = %ld microseconds; fps = %lf\n", frame_counter++, dt, 1'000'000.0 / dt);
         t = t_;
@@ -126,7 +127,10 @@ int application::run() {
         // 5. Handle events.
         while (!core::EventQueue::empty()) {
             std::shared_ptr<core::event> e = core::EventQueue::get_event();
-            if (!e) continue;
+            if (!e) {
+                core::EventQueue::pop_event();
+                continue;
+            }
 
             bool handled = handle(e.get());
             if (!handled) {
@@ -151,8 +155,8 @@ int application::run() {
 }
 
 
-bool application::on_stop(core::event_exit*) {
-    printf("Received EventStop\n");
+bool application::on_exit(core::event_exit*) {
+    printf("Received core::event_exit\n");
     running = false;
 
     return true;

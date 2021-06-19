@@ -39,6 +39,15 @@ inline f64 angles(f64 a) {
     return a * 180.0 / consts<f64>::pi();
 }
 
+inline bool is_zero(f32 x) {
+    return ::math::abs(x) < consts<f32>::eps();
+}
+
+inline bool is_zero(f64 x) {
+    return ::math::abs(x) < consts<f64>::eps();
+}
+
+
 // @todo make all operations below by myself
 inline bool is_nan(f32 a) {
     return ::std::isnan(a);

@@ -11,8 +11,8 @@ struct Window {
     Window(i32 width, i32 height, const char* title);
     ~Window();
 
-    i32 startup();
-    void shutdown();
+    i32 initialize();
+    void terminate();
 
     i32 get_width();
     i32 get_height();

@@ -36,15 +36,21 @@ std::shared_ptr<device> device_manager::get_device(device::id_t id) {
 
 
 void device_manager::keyboard_press(keyboard::key k) {
+    printf("keyboard press\n");
     device_manager::instance().active_keyboard.press(k);
+    keymap* km = keymap_manager::instance().active_keymap;
+    if (km != nullptr) {
+        km->activate(k);
+    }
 }
 
 
 void device_manager::keyboard_release(keyboard::key k) {
+    printf("keyboard release\n");
     device_manager::instance().active_keyboard.release(k);
     keymap* km = keymap_manager::instance().active_keymap;
     if (km != nullptr) {
-        km->activate(k);
+        km->deactivate(k);
     }
 }
 

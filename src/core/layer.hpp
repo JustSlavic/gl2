@@ -1,6 +1,7 @@
 #ifndef GL2_SRC_CORE_LAYER_HPP
 #define GL2_SRC_CORE_LAYER_HPP
 
+#include <defines.hpp>
 #include "dispatcher.hpp"
 #include <modeling_2d/model.hpp>
 #include <modeling_2d/camera.hpp>
@@ -33,27 +34,19 @@ struct LayerWorld : public ILayer {
 	IndexBuffer ib;
 	VertexBufferLayout vbl;
 
+	math::vector2 camera_velocity_up_left = math::vector2::zero();
+	math::vector2 camera_velocity_down_right = math::vector2::zero();
+
 	LayerWorld();
+
 	void draw() override;
 	void advance(f32 dt) override;
 
-	//inline bool on_gamepad_button_pressed(Gamepad_XBox::Event_ButtonPressed* pEvent) {
-	//	printf("XBOX button pressed: %d\n", (i32)pEvent->button);
-	//	return true;
-	//}
-
-	//inline bool on_gamepad_axis_changed(Gamepad_XBox::Event_AxisChanged* pEvent) {
-	//	printf("XBOX axis changed: %d (%f -> %f)\n", (i32)pEvent->axis, pEvent->old_value, pEvent->new_value);
-	//	return true;
-	//}
-
-	//bool on_mouse_move(Mouse::MoveEvent* pEvent);
-	//bool on_mouse_press(Mouse::ButtonPressEvent* pEvent);
-
-	/*inline bool on_frame_finished(EventFrameFinished* pEvent) {
-		model.move_bodies(pEvent->dt);
-		return false;
-	}*/
+	bool on_camera_move(core::event_camera_move* e);
+	bool on_toggle_velocities(core::event_toggle_velocities* e);
+	bool on_toggle_traces(core::event_toggle_traces* e);
+	bool on_toggle_vector_field(core::event_toggle_vector_field* e);
+	bool on_toggle_F2(core::event_toggle_F2* e);
 };
 
 

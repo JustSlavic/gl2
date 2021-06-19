@@ -43,12 +43,12 @@ public:
     static void gamepad_release(device::id_t id, gamepad::key k);
     static void gamepad_axis_move(device::id_t id, gamepad::axis a, f32 value);
 
+    static device_manager& instance();
+
 private:
     device_manager() = default;
     device_manager(const device_manager&) = delete;
     device_manager(device_manager&&) = delete;
-
-    static device_manager& instance();
 
     inline bool is_active(device::id_t id) {
         return active_mouse.lock() || active_gamepad.lock();

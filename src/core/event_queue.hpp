@@ -50,6 +50,8 @@ struct EventQueue {
 
 
     static void push_event(std::shared_ptr<event> e) {
+        if (!e) return;
+
         auto& q = instance();
         std::lock_guard lock(q.m_mutex);
 

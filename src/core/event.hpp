@@ -18,15 +18,20 @@ struct event {
         FRAME_FINISHED,
 
         ACTION_EXIT,
+        ACTION_MOVE_CAMERA_LEFT,
+        ACTION_MOVE_CAMERA_RIGHT,
+        ACTION_MOVE_CAMERA_UP,
+        ACTION_MOVE_CAMERA_DOWN,
+        ACTION_TOGGLE_VELOCITIES,
+        ACTION_TOGGLE_F2,
+        ACTION_TOGGLE_TRACES,
+        ACTION_TOGGLE_VECTOR_FIELD,
 
         PAUSE,
         RESTART,
         ZOOM,
         WINDOW_MOTION,
-        TOGGLE_F2,
-        TOGGLE_BODY_TRACES,
-        TOGGLE_VECTOR_FIELD,
-        TOGGLE_VELOCITIES,
+        
 
         MOUSE_PRESS,
         MOUSE_RELEASE,
