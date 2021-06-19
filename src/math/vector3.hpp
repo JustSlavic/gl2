@@ -1,6 +1,6 @@
 #pragma once
 
-#include <defines.h>
+#include <defines.hpp>
 #include "float.hpp"
 #include "color.hpp"
 #include "vector2.hpp"
@@ -110,6 +110,9 @@ inline vector3 lerp (const vector3& a, const vector3& b, f32 t) {
     return { lerp(a.x, b.x, t), lerp(a.y, b.y, t), lerp(a.z, b.z, t) };
 }
 
+
 math::vector3 intersect_plane(math::vector3 ray_origin, math::vector3 ray_direction, math::vector3 point_on_plane, math::vector3 plane_normal);
+math::vector3 intersect_z0_plane(math::vector3 ray_start, math::vector3 vector);
+
 
 } // math

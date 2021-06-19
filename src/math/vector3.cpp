@@ -34,4 +34,10 @@ math::vector3 intersect_plane(
     return r0 + r * t;
 }
 
+
+math::vector3 intersect_z0_plane(math::vector3 ray_start, math::vector3 vector) {
+    return intersect_plane(ray_start, vector, math::vector3::make(0.f), math::vector3::make(0.f, 0.f, 1.f));
+}
+
+
 } // math

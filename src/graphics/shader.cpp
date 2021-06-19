@@ -1,8 +1,7 @@
 #include "shader.h"
 #include <utils.h>
-#include <defines.h>
+#include <defines.hpp>
 #include <logging/logging.h>
-#include <es/event_system.h>
 
 #include <GL/glew.h>
 #include <vector>

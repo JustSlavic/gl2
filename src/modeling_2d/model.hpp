@@ -1,11 +1,10 @@
 #pragma once
 
 #include <vector>
-#include <defines.h>
+#include <defines.hpp>
 #include <graphics/shader.h>
 #include <graphics/vertex_array.h>
 #include <graphics/index_buffer.h>
-#include <es/event_system.h>
 
 #include <math/vector2.hpp>
 
@@ -29,7 +28,7 @@ struct EventSelectedBodyMoved {
 };
 
 
-struct Model : public IEmitter {
+struct Model {
     std::vector<body> bodies;
     std::vector<body> bodies_buffer;
 
@@ -61,10 +60,10 @@ struct Model : public IEmitter {
     void add_body(math::vector2 position, math::vector2 velocity, f32 mass);
     void draw_bodies();
     void move_bodies(f32 dt);
-    void clean(EventRestart);
-    void toggle_body_traces(EventToggleBodyTraces);
-    void toggle_velocities(EventToggleVelocities);
-    void toggle_vector_field(EventToggleVectorField);
+    void clean();
+    void toggle_body_traces();
+    void toggle_velocities();
+    void toggle_vector_field();
     void on_mouse_move(math::vector2 position) { mouse_position = position; }
     void on_left_mouse_click(math::vector2 position);
     void on_right_mouse_click(math::vector2 position);

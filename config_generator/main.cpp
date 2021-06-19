@@ -1,10 +1,11 @@
 #include <stdio.h>
 #include <son.hpp>
+#include <string.h>
 
 
-const char* scheme_filename     = ".generated/config.scheme.son";
-const char* config_hpp_filename = ".generated/config.hpp";
-const char* config_cpp_filename = ".generated/config.cpp";
+const char* scheme_filename     = "generated/config.scheme.son";
+const char* config_hpp_filename = "generated/config.hpp";
+const char* config_cpp_filename = "generated/config.cpp";
 
 
 jslavic::son create_scheme_from_son(jslavic::son& value, std::string* key = nullptr) {
@@ -34,6 +35,8 @@ jslavic::son create_scheme_from_son(jslavic::son& value, std::string* key = null
         return { {"key", key ? *key : son()}, {"type", value.type_name()}, {"values", {}} };
     }
     }
+
+    return {};
 }
 
 
@@ -53,6 +56,8 @@ static inline const char* son_type_to_cpp_type(const char* son_type) {
     else if (strcmp(son_type, "string") == 0) {
         return "std::string";
     }
+
+    return nullptr;
 }
 
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <defines.h>
+#include <defines.hpp>
 #include <graphics/shader.h>
 #include <graphics/vertex_array.h>
 #include <graphics/index_buffer.h>

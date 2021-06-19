@@ -1,7 +1,7 @@
 #ifndef GIR1_INDEX_BUFFER_H
 #define GIR1_INDEX_BUFFER_H
 
-#include <defines.h>
+#include <defines.hpp>
 
 
 struct IndexBuffer {

@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <GL/glew.h>
-#include <defines.h>
+#include <defines.hpp>
 
 
 struct LayoutElement {

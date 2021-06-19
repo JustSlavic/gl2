@@ -1,4 +1,4 @@
-PROJECT = config_builder
+PROJECT = config_generator
 CXX = g++
 CXX_STANDARD = c++17
 
@@ -6,11 +6,13 @@ INC_DIR = \
 	/usr/include \
 	src \
 	../common \
+	../external/son/include \
 
 LIB_DIR = \
 	/usr/lib/ \
 
 LOCAL_LIBS = \
+	son
 
 LIBS = \
 
@@ -53,15 +55,12 @@ endif
 
 SOURCES = \
 	main \
-	common/son/object \
-	common/son/visitor \
-	common/son/parser \
-	common/parse/reader \
-	
+
 
 OBJECTS      := $(addprefix build/$(SUB_DIR)/, $(addsuffix .o,   $(SOURCES)))
 SOURCES      := $(addprefix src/,              $(addsuffix .cpp, $(SOURCES)))
 
+STATIC_LIBS  := $(foreach lib, $(LOCAL_LIBS), $(addprefix ../external/$(lib)/bin/$(SUB_DIR)/lib, $(addsuffix .a, $(lib))))
 
 PROJECT_LIB := build/$(SUB_DIR)/lib$(PROJECT).a
 PROJECT_EXE := bin/$(SUB_DIR)/$(PROJECT)
@@ -78,7 +77,7 @@ prebuild:
 	@mkdir -p build/$(SUB_DIR)
 
 postbuild:
-	ln -sfn bin/$(SUB_DIR)/$(PROJECT) builder
+	ln -sfn bin/$(SUB_DIR)/$(PROJECT) generator
 
 
 clean:
@@ -86,7 +85,7 @@ clean:
 	@find build -type f -name '*.d' -delete
 	@rm -fv build/*/lib$(PROJECT).a
 	@rm -fv bin/*/$(PROJECT)
-	@rm -fv builder
+	@rm -fv generator
 
 
 # ================= PROJECT ================= #
@@ -112,3 +111,6 @@ build/$(SUB_DIR)/common/%.o: ../common/%.cpp ./Makefile
 	@mkdir -p $(dir $@)
 	@g++ -MM -MT "$@" $(CXXFLAGS) $< > build/$(SUB_DIR)/common/$*.d
 	g++ $< -c -o $@ $(CXXFLAGS)
+
+${STATIC_LIBS}:
+	$(MAKE) -C $(shell dirname $(dir $@))

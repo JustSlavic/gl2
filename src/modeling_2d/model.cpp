@@ -2,8 +2,7 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
-#include <es/event_system.h>
-#include <api/mouse.h>
+#include <core/input.hpp>
 #include <graphics/renderer.h>
 
 #include <random>
@@ -52,8 +51,8 @@ void generate_bodies(Model* model) {
     std::uniform_real_distribution<f32> uniform_distrib(0.f, 1.f);
     std::normal_distribution<f32> normal_distrib{50.f, 30.f};
 
-    auto inner_r = 20.f;
-    auto outer_r = inner_r + 10.f;
+    auto inner_r = 2.f;
+    auto outer_r = inner_r + 1.f;
     f32 M = 10000000.f;
 
     // f32 m_sun = 2e+10; // kg * 10^20
@@ -96,16 +95,6 @@ void generate_random_bodies_in_square(Model* model, f32 square_size = 1.f) {
 
 Model::Model()
 {
-    Dispatcher<EventFrameFinished>::subscribe([this] (EventFrameFinished e) {
-        this->move_bodies(e.dt);
-    });
-    Dispatcher<EventRestart>::subscribe(EVENT_CALLBACK(clean));
-    Dispatcher<EventPause>::subscribe([this](EventPause) { this->pause = not this->pause; });
-    Dispatcher<EventToggleF2>::subscribe([this](EventToggleF2) { this->elastic = not this->elastic; });
-    Dispatcher<EventToggleBodyTraces>::subscribe(EVENT_CALLBACK(toggle_body_traces));
-    Dispatcher<EventToggleVelocities>::subscribe(EVENT_CALLBACK(toggle_velocities));
-    Dispatcher<EventToggleVectorField>::subscribe(EVENT_CALLBACK(toggle_vector_field));
-
     bodies.reserve(5000);
     bodies_buffer.reserve(5000);
 
@@ -115,8 +104,8 @@ Model::Model()
     traces.reserve(5000);
     traces_buffer.reserve(5000);
 
-    generate_bodies(this);
-    //generate_random_bodies_in_square(this, 0.8f);
+    // generate_bodies(this);
+    generate_random_bodies_in_square(this, 0.8f);
 }
 
 
@@ -218,9 +207,9 @@ void Model::draw_bodies() {
     }
 
     if (draw_vector_field) {
-        float width = 50;
-        float height = 50;
-        float step = 0.5f;
+        float width = 1;
+        float height = 1;
+        float step = 0.03f;
         for (float x = -width / 2.f; x < width / 2.f + 0.01f; x += step) {
             for (float y = -height / 2.f; y < height / 2.f + 0.01f; y += step) {
                 math::vector2 F{ 0.f };
@@ -236,14 +225,15 @@ void Model::draw_bodies() {
                     F += dr * G * b.m / (dr_2 * dr_1);
                 }
 
-                f32 v = -F.length(); v = -0.2f;
+                f32 v = -F.length(); 
+                v = -0.02f;
                 f32 angle = std::atan2(F.y, F.x);
 
                 auto model_matrix = glm::mat4(1.f);
                 model_matrix = glm::translate(model_matrix, glm::vec3(position.x, position.y, 0.f));
                 model_matrix = glm::rotate(model_matrix, angle, glm::vec3(0.f, 0.f, 1.f));
                 model_matrix = glm::translate(model_matrix, glm::vec3(v * 0.5f, 0.f, 0.f));
-                model_matrix = glm::scale(model_matrix, glm::vec3(v, 0.02f, 0.f));
+                model_matrix = glm::scale(model_matrix, glm::vec3(v, 0.001f, 0.f));
 
                 // drawing the arrows
                 arrow_shader->set_uniform_mat4f("u_model", model_matrix);
@@ -261,7 +251,7 @@ void Model::draw_bodies() {
 void interact_inelastic(Model* model) {
     model->bodies_buffer.clear();
     model->radii_buffer.clear();
-    model->traces_buffer.clear();
+    if (model->draw_body_traces) model->traces_buffer.clear();
 
     size_t n = model->bodies.size();
 
@@ -307,8 +297,9 @@ void interact_inelastic(Model* model) {
 
     std::swap(model->bodies, model->bodies_buffer);
     std::swap(model->radii, model->radii_buffer);
-    std::swap(model->traces, model->traces_buffer);
+    if (model->draw_body_traces) std::swap(model->traces, model->traces_buffer);
 }
+
 
 //void interact_elastic(std::vector<body>& bodies, std::vector<body>& buffer) {
 //    buffer.clear();
@@ -355,13 +346,14 @@ void interact_inelastic(Model* model) {
 //    std::swap(bodies, buffer);
 //}
 
+
 void Model::move_bodies(f32 dt) {
     if (pause) return;
 
     //dt = 0.01f;
     bodies_buffer.clear();
     radii_buffer.clear();
-    traces_buffer.clear();
+    if (draw_body_traces) traces_buffer.clear();
 
     auto run_move_from_to = [&](size_t from, size_t to) {
         for (size_t i = from; i < to; i++) {
@@ -387,7 +379,7 @@ void Model::move_bodies(f32 dt) {
             radii_buffer.push_back(mass_to_radius(b.m));
 
             if (draw_body_traces) {
-                //if (traces[i].size() > 50) traces[i].erase(traces[i].begin());
+                // if (traces[i].size() > 50) traces[i].erase(traces[i].begin());
                 traces[i].push_back(new_position);
                 traces_buffer.push_back(traces[i]);
             }
@@ -404,16 +396,16 @@ void Model::move_bodies(f32 dt) {
 
     std::swap(bodies, bodies_buffer);
     std::swap(radii, radii_buffer);
-    std::swap(traces, traces_buffer);
+    if (draw_body_traces) std::swap(traces, traces_buffer);
     
     interact_inelastic(this);
     
     if (selected_body_index > -1) {
-        emit<EventSelectedBodyMoved>(bodies[selected_body_index].position);
+        //emit<EventSelectedBodyMoved>(bodies[selected_body_index].position);
     }
 }
 
-void Model::clean(EventRestart) {
+void Model::clean() {
     bodies.clear();
     radii.clear();
     traces.clear();
@@ -421,22 +413,20 @@ void Model::clean(EventRestart) {
     //generate_random_bodies_in_square(this);
 }
 
-void Model::toggle_body_traces(EventToggleBodyTraces) {
+void Model::toggle_body_traces() {
     if (draw_body_traces) {
-        traces.clear();
-        traces_buffer.clear();
+        for (auto& trace : traces) trace.clear();
     }
-
     draw_body_traces = not draw_body_traces;
 }
 
 
-void Model::toggle_velocities(EventToggleVelocities) {
+void Model::toggle_velocities() {
     draw_velocities = not draw_velocities;
 }
 
 
-void Model::toggle_vector_field(EventToggleVectorField) {
+void Model::toggle_vector_field() {
     draw_vector_field = not draw_vector_field;
 }
 

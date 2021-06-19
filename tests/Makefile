@@ -7,6 +7,7 @@ INC_DIR = \
 	../common \
 	../src \
 	../libs \
+	../external/son/include \
 
 LIB_DIR = \
 	/usr/lib/ \
