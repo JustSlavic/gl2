@@ -138,9 +138,6 @@
     <ClCompile Include="..\src\graphics\vertex_buffer_layout.cpp">
       <Filter>Source files\graphics</Filter>
     </ClCompile>
-    <ClCompile Include="..\.generated\config.cpp">
-      <Filter>Source files\generated</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\version.cpp">
       <Filter>Source files\src</Filter>
     </ClCompile>
@@ -155,6 +152,9 @@
     </ClCompile>
     <ClCompile Include="..\src\core\input\keymap_manager.cpp">
       <Filter>Source files\src\core\input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\generated\config.cpp">
+      <Filter>Source files\generated</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -266,9 +266,6 @@
     <ClInclude Include="..\src\graphics\vertex_buffer_layout.h">
       <Filter>Source files\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="..\.generated\config.hpp">
-      <Filter>Source files\generated</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\core\dispatcher.hpp">
       <Filter>Source files\src\core</Filter>
     </ClInclude>
@@ -304,6 +301,9 @@
     </ClInclude>
     <ClInclude Include="..\src\core\event.hpp">
       <Filter>Source files\src\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\generated\config.hpp">
+      <Filter>Source files\generated</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
