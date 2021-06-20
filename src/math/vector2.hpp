@@ -21,10 +21,10 @@ struct vector2 {
     inline static vector2 make (f32 value) { return { value, value }; }
     inline static vector2 make (f32 x, f32 y) { return { x, y }; }
 
-    inline f32  length_2   () const { return x*x + y*y; }
-    inline f32  length     () const { return math::sqrt(length_2()); }
-    inline f32  norm       () const { return length(); }
-    inline vector2 normalized() const { auto n = norm(); return { x / n, y / n }; }
+    inline float32 length_2   () const { return x*x + y*y; }
+    inline float32 length     () const { return math::sqrt(length_2()); }
+    inline float32 norm       () const { return length(); }
+    inline vector2 normalized () const { auto n = norm(); return { x / n, y / n }; }
 
     inline vector2& operator += (const vector2& other) {
         x += other.x;

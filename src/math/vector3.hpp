@@ -30,9 +30,9 @@ struct vector3 {
     inline static vector3 make (f32 x, vector2 v2) { return { x, v2.x, v2.y }; }
     inline static vector3 make (vector2 v2, f32 z) { return { v2.x, v2.y, z }; }
 
-    inline f32  length_2   () const { return x*x + y*y + z*z; } // length squared
-    inline f32  length     () const { return math::sqrt(length_2()); }
-    inline f32  norm       () const { return length(); }
+    inline float32 length_2   () const { return x*x + y*y + z*z; } // length squared
+    inline float32 length     () const { return math::sqrt(length_2()); }
+    inline float32 norm       () const { return length(); }
     inline vector3 normalized () const { return { x / norm(), y / norm(), z / norm() }; }
 
     inline vector3& operator += (const vector3& other) {

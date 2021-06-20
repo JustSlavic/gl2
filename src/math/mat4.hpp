@@ -7,7 +7,7 @@
 namespace math {
 
 
-struct mat4 {
+struct matrix4 {
     union {
         struct {
             f32 _11, _12, _13, _14;
@@ -19,8 +19,23 @@ struct mat4 {
         f32 at[16];
     };
 
-    static mat4 zero ();
-    static mat4 identity ();
+    static matrix4 zero () {
+        return matrix4{
+            0, 0, 0, 0,
+            0, 0, 0, 0,
+            0, 0, 0, 0,
+            0, 0, 0, 0
+        };
+    }
+
+    static matrix4 identity () {
+        return matrix4{
+            1, 0, 0, 0,
+            0, 1, 0, 0,
+            0, 0, 1, 0,
+            0, 0, 0, 1
+        };
+    }
 
     inline const f32* data () const { return &at[0]; }
     inline       f32* data ()       { return &at[0]; }
@@ -29,19 +44,19 @@ struct mat4 {
 };
 
 
-using matrix4 = mat4;
+using mat4 = matrix4;
 
 
-f32 determinant (const mat4& matrix);
+inline f32 determinant(const matrix4& matrix) { return matrix.det(); }
 
 matrix4 projection (f32 width, f32 height, f32 near, f32 far);
 matrix4 projection_fov (f32 fov, f32 width, f32 height, f32 near, f32 far);
 matrix4 projection_fov (f32 fov, f32 ratio, f32 near, f32 far);
-matrix4 projection_far (f32 width, f32 height, f32 near, f32 far);
+matrix4 projection_1 (f32 width, f32 height, f32 near, f32 far);
 
 
-inline mat4 operator + (const mat4& lhs, const mat4& rhs) {
-    mat4 result;
+inline matrix4 operator + (const matrix4& lhs, const matrix4& rhs) {
+    matrix4 result;
 
     for (size_t i = 0; i < 16; i++) {
         result.at[i] = lhs.at[i] + rhs.at[i];
@@ -51,8 +66,8 @@ inline mat4 operator + (const mat4& lhs, const mat4& rhs) {
 }
 
 
-inline mat4 operator * (const mat4& lhs, const mat4& rhs) {
-    mat4 result;
+inline matrix4 operator * (const matrix4& lhs, const matrix4& rhs) {
+    matrix4 result;
 
     for (size_t i = 0; i < 4; i++) {
         for (size_t j = 0; j < 4; j++) {
@@ -66,7 +81,7 @@ inline mat4 operator * (const mat4& lhs, const mat4& rhs) {
 }
 
 
-inline vector4 operator * (const mat4& m, const vector4& v) {
+inline vector4 operator * (const matrix4& m, const vector4& v) {
     vector4 result;
 
     result._1 = m._11 * v._1 + m._12 * v._2 + m._13 * v._3 + m._14 * v._4;

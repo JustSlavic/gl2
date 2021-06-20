@@ -30,13 +30,13 @@ struct vector4 {
     inline static vector4 make (f32 value) { return { value, value, value, value }; }
     inline static vector4 make (f32 x, f32 y, f32 z, f32 w) { return { x, y, z, w }; }
 
-    inline static vector4 make (f32 x, f32 y, vector2 v2) { return { x, y, v2.x, v2.y }; }
-    inline static vector4 make (vector2 v1, f32 z, f32 w) { return { v1.x, v1.y, z, w }; }
-    inline static vector4 make (f32 x, vector2 v1, f32 w) { return { x, v1.x, v1.y, w }; }
+    inline static vector4 make (vector2 v, f32 z, f32 w) { return { v.x, v.y, z, w }; }
+    inline static vector4 make (f32 x, vector2 v, f32 w) { return { x, v.x, v.y, w }; }
+    inline static vector4 make (f32 x, f32 y, vector2 v) { return { x, y, v.x, v.y }; }
     inline static vector4 make (vector2 v1, vector2 v2) { return { v1.x, v1.y, v2.x, v2.y }; }
 
-    inline static vector4 make (f32 x, vector3 v3) { return { x, v3.x, v3.y, v3.z }; }
-    inline static vector4 make (vector3 v3, f32 w) { return { v3.x, v3.y, v3.z, w }; }
+    inline static vector4 make (f32 x, vector3 v) { return { x, v.x, v.y, v.z }; }
+    inline static vector4 make (vector3 v, f32 w) { return { v.x, v.y, v.z, w }; }
 
     inline vector4& operator += (const vector4& other) {
         x += other.x;

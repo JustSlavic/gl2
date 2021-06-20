@@ -4,32 +4,6 @@
 
 namespace math {
 
-matrix4 mat4::zero() {
-    matrix4 result;
-
-    for (size_t i = 0; i < 16; i++) {
-        result.at[i] = 0;
-    }
-
-    return result;
-}
-
-matrix4 mat4::identity() {
-    matrix4 result;
-
-    for (size_t i = 0; i < 16; i++) {
-        result.at[i] = 0;
-    }
-
-    result._11 = 1.f;
-    result._22 = 1.f;
-    result._33 = 1.f;
-    result._44 = 1.f;
-
-    return result;
-}
-
-
 // 11 12 13 14
 // 21 22 23 24
 // 31 32 33 34
@@ -41,10 +15,6 @@ float32 matrix4::det() const {
          - _14 * (_21 * (_32 * _43 - _33 * _42) - _22 * (_31 * _43 - _33 * _41) + _23 * (_31 * _42 - _32 * _41));
 }
 
-
-float32 determinant(const matrix4& matrix) {
-    return matrix.det();
-}
 
 mat4 projection(f32 width, f32 height, f32 near, f32 far) {
     auto a = mat4::zero();

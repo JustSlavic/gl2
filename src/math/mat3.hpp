@@ -7,7 +7,7 @@
 namespace math {
 
 
-struct mat3 {
+struct matrix3 {
     union {
         struct {
             f32 _11, _12, _13;
@@ -18,23 +18,38 @@ struct mat3 {
         f32 at[9];
     };
 
-    static mat3 zero ();
-    static inline mat3 identity () { return diagonal(1.f); }
-    static inline mat3 diagonal (f32 v) { return diagonal(v, v, v); }
-    static mat3 diagonal (f32 v11, f32 v22, f32 v33);
+    static inline matrix3 zero () {
+        return matrix3{
+            0, 0, 0,
+            0, 0, 0,
+            0, 0, 0
+        };
+    }
 
-    f32 det () const;
+    static inline matrix3 identity () {
+        return matrix3{
+            1, 0, 0,
+            0, 1, 0,
+            0, 0, 1
+        };
+    }
+
+    inline f32 det () const {
+        return _11 * (_22 * _33 - _23 * _32)
+             - _12 * (_21 * _33 - _23 * _31)
+             + _13 * (_21 * _32 - _22 * _31);
+    }
 };
 
 
-using matrix3 = mat3;
+using mat3 = matrix3;
 
 
-f32 determinant (const mat3& matrix);
+inline f32 determinant (const matrix3& matrix) { return matrix.det(); }
 
 
-inline mat3 operator + (const mat3& a, const mat3& b) {
-    mat3 result;
+inline matrix3 operator + (const matrix3& a, const matrix3& b) {
+    matrix3 result;
 
     for (int i = 0; i < 9; i++) {
         result.at[i] = a.at[i] + b.at[i];
@@ -44,8 +59,8 @@ inline mat3 operator + (const mat3& a, const mat3& b) {
 }
 
 
-inline mat3 operator - (const mat3& a, const mat3& b) {
-    mat3 result;
+inline matrix3 operator - (const matrix3& a, const matrix3& b) {
+    matrix3 result;
 
     for (int i = 0; i < 9; i++) {
         result.at[i] = a.at[i] - b.at[i];
@@ -55,8 +70,8 @@ inline mat3 operator - (const mat3& a, const mat3& b) {
 }
 
 
-inline mat3 operator * (const mat3& a, const mat3& b) {
-    mat3 result;
+inline matrix3 operator * (const matrix3& a, const matrix3& b) {
+    matrix3 result;
 
     result._11 = a._11 * b._11 + a._12 * b._21 + a._13 * b._31;
     result._12 = a._11 * b._12 + a._12 * b._22 + a._13 * b._32;
@@ -74,22 +89,22 @@ inline mat3 operator * (const mat3& a, const mat3& b) {
 }
 
 
-inline vector3 operator * (const mat3& m, const vector3& v) {
+inline vector3 operator * (const matrix3& m, const vector3& v) {
     return { m._11 * v._1 + m._12 * v._2 + m._13 * v._3,
              m._21 * v._1 + m._22 * v._2 + m._23 * v._3,
              m._31 * v._1 + m._32 * v._2 + m._33 * v._3 };
 }
 
 
-inline vector3 operator * (const vector3& v, const mat3& m) {
+inline vector3 operator * (const vector3& v, const matrix3& m) {
     return { v._1 * m._11 + v._2 * m._21 + v._3 * m._31,
              v._1 * m._12 + v._2 * m._22 + v._3 * m._32,
              v._1 * m._13 + v._2 * m._23 + v._3 * m._33 };
 }
 
 
-inline mat3 operator * (const mat3& m, f32 a) {
-    mat3 result;
+inline matrix3 operator * (const matrix3& m, f32 a) {
+    matrix3 result;
 
     for (int i = 0; i < 9; i++) {
         result.at[i] = m.at[i] * a;
@@ -99,7 +114,7 @@ inline mat3 operator * (const mat3& m, f32 a) {
 }
 
 
-inline mat3 operator * (f32 a, const mat3& m) {
+inline matrix3 operator * (f32 a, const matrix3& m) {
     return m * a;
 }
 
