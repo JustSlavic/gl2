@@ -5,11 +5,11 @@
 #include <math/vector4.hpp>
 
 
-TEST(Vec4, SizeOf) {
+TEST(Vector4, SizeOf) {
     EXPECT_EQ(sizeof(math::vector4), sizeof(f32) * 4);
 }
 
-TEST(Vec4, XY_Coords) {
+TEST(Vector4, XY_Coords) {
     auto v = math::vector4::make(1.f, 2.f, 3.f, 4.f);
 
     EXPECT_EQ(v.x, v.u); EXPECT_EQ(v.x, v.r);
@@ -18,14 +18,14 @@ TEST(Vec4, XY_Coords) {
     EXPECT_EQ(v.w, v.t); EXPECT_EQ(v.w, v.a);
 }
 
-TEST(Vec4, FromVec2) {
+TEST(Vector4, FromVec2) {
     auto v = math::vector2::make(1.f, 2.f);
 
     auto t = math::vector4::make(v, 7.f, -1.f);
     EXPECT_EQ(t, math::vector4::make(1.f, 2.f, 7.f, -1.f));
 }
 
-TEST(Vec4, Operations) {
+TEST(Vector4, Operations) {
     auto v = math::vector4::make(1.f, 2.f, 3.f, 4.f);
     auto w = math::vector4::make(3.f, 4.f, 5.f, 6.f);
 
@@ -45,7 +45,7 @@ TEST(Vec4, Operations) {
     EXPECT_EQ(v, math::vector4::make(17.f, 26.f, 35.f, 44.f));
 }
 
-TEST(Vec4, DotProduct) {
+TEST(Vector4, DotProduct) {
     auto v = math::vector4::make(1.f, 2.f, 3.f, 4.f);
     auto w = math::vector4::make(3.f, 4.f, 5.f, 6.f);
 

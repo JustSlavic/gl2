@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include <defines.h>
+#include <defines.hpp>
 #include <service/string_id.hpp>
 
 

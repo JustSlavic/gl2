@@ -193,6 +193,7 @@ bool LayerWorld::on_camera_move(core::event_camera_move* e) {
         case core::event_camera_move::direction::down: camera_velocity_down_right.y = -1.f; break;
         case core::event_camera_move::direction::left: camera_velocity_up_left.x = 1.f; break;
         case core::event_camera_move::direction::right: camera_velocity_down_right.x = -1.f; break;
+        case core::event_camera_move::direction::none: break;
         }
     }
     if (e->t == core::event_camera_move::type::stop) {
@@ -201,6 +202,7 @@ bool LayerWorld::on_camera_move(core::event_camera_move* e) {
         case core::event_camera_move::direction::down: camera_velocity_down_right.y = 0.f; break;
         case core::event_camera_move::direction::left: camera_velocity_up_left.x = 0.f; break;
         case core::event_camera_move::direction::right: camera_velocity_down_right.x = 0.f; break;
+        case core::event_camera_move::direction::none: break;
         }
     }
     return true;

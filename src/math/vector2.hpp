@@ -1,10 +1,17 @@
 #pragma once
 
+#include <stdio.h>
 #include <defines.hpp>
 #include "float.hpp"
 
 
 namespace math {
+
+
+enum class aspect {
+    column,
+    row
+};
 
 
 struct vector2 {
@@ -98,5 +105,16 @@ inline vector2 lerp (vector2 a, vector2 b, f32 t) {
     return { lerp(a.x, b.x, t), lerp(a.y, b.y, t) };
 }
 
+template <aspect A = aspect::column>
+void print(const vector2& v) {
+    if constexpr (A == aspect::column) {
+        printf("[%f]\n[%f]\n", v.x, v.y);
+        return;
+    }
+
+    if constexpr (A == aspect::row) {
+        printf("[%f, %f]\n", v.x, v.y);
+    }
+}
 
 } // math

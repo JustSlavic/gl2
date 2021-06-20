@@ -43,6 +43,9 @@ SOURCES = \
 	math/vector2 \
 	math/vector3 \
 	math/vector4 \
+	math/matrix2 \
+	math/matrix3 \
+	math/matrix4 \
 	math/color \
 	service/string_id \
 	utils \
@@ -53,8 +56,9 @@ TESTCPP = \
 	vec3 \
 	vec4 \
 	string_id \
+	mat2 \
+	mat4 \
 # 	bit_masks \
-# 	mat4 \
 # 	color \
 # 	shader_manager \
 

@@ -83,7 +83,9 @@ SOURCES = \
 	math/vector2 \
 	math/vector3 \
 	math/vector4 \
-	math/mat4 \
+	math/matrix2 \
+	math/matrix3 \
+	math/matrix4 \
 	modeling_2d/camera \
 	modeling_2d/model \
 	modeling_2d/creatures \

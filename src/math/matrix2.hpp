@@ -50,8 +50,8 @@ inline matrix2 operator - (const matrix2& a, const matrix2& b) {
 
 inline matrix2 operator * (const matrix2& a, const matrix2& b) {
     return matrix2{
-        a._11 * b._11 + a._12 * b._21, a._11 * b._21 + a._12 * b._22,
-        a._21 * b._11 + a._22 * b._21, a._21 * b._21 + a._22 * b._22,
+        a._11 * b._11 + a._12 * b._21, a._11 * b._12 + a._12 * b._22,
+        a._21 * b._11 + a._22 * b._21, a._21 * b._12 + a._22 * b._22,
     };
 }
 
@@ -79,5 +79,18 @@ inline matrix2 operator * (const matrix2& m, f32 a) {
 inline matrix2 operator * (f32 a, const matrix2& m) {
     return m * a;
 }
+
+inline bool operator == (const matrix2& lhs, const matrix2& rhs) {
+    for (int i = 0; i < 4; i++) {
+        if (lhs.at[i] != rhs.at[i]) return false;
+    }
+
+    return true;
+}
+
+inline bool operator != (const matrix2& lhs, const matrix2& rhs) {
+    return !(lhs == rhs);
+}
+
 
 } // math

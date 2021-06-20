@@ -118,5 +118,17 @@ inline matrix3 operator * (f32 a, const matrix3& m) {
     return m * a;
 }
 
+inline bool operator == (const matrix3& lhs, const matrix3& rhs) {
+    for (int i = 0; i < 9; i++) {
+        if (lhs.at[i] != rhs.at[i]) return false;
+    }
+
+    return true;
+}
+
+inline bool operator != (const matrix3& lhs, const matrix3& rhs) {
+    return !(lhs == rhs);
+}
+
 
 } // math

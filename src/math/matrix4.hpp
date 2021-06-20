@@ -105,5 +105,19 @@ inline vector4 operator * (const vector4& v, const matrix4& m) {
 }
 
 
+inline bool operator == (const matrix4& lhs, const matrix4& rhs) {
+    for (int i = 0; i < 16; i++) {
+        if (lhs.at[i] != rhs.at[i]) return false;
+    }
+
+    return true;
+}
+
+
+inline bool operator != (const matrix4& lhs, const matrix4& rhs) {
+    return !(lhs == rhs);
+}
+
+
 } // math
 

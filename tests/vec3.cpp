@@ -4,11 +4,11 @@
 #include <math/vector3.hpp>
 
 
-TEST(Vec3, SizeOf) {
+TEST(Vector3, SizeOf) {
     EXPECT_EQ(sizeof(math::vector3), sizeof(f32) * 3);
 }
 
-TEST(Vec3, XY_Coords) {
+TEST(Vector3, XY_Coords) {
     auto v = math::vector3::make(1.f, 2.f, 3.f);
 
     EXPECT_EQ(v.x, v.u); EXPECT_EQ(v.x, v.r);
@@ -16,7 +16,7 @@ TEST(Vec3, XY_Coords) {
     EXPECT_EQ(v.z, v.s); EXPECT_EQ(v.z, v.b);
 }
 
-TEST(Vec3, FromVec2) {
+TEST(Vector3, FromVec2) {
     auto v = math::vector2::make(1.f, 2.f);
 
     auto t = math::vector3::make(v, 7.f);
@@ -26,7 +26,7 @@ TEST(Vec3, FromVec2) {
     EXPECT_EQ(s, math::vector3::make(9.f, 1.f, 2.f));
 }
 
-TEST(Vec3, Length) {
+TEST(Vector3, Length) {
     auto v = math::vector3::make(3.f, 4.f, 12.f);
 
     EXPECT_TRUE(math::equal(v.length_2(), 169.f));
@@ -35,7 +35,7 @@ TEST(Vec3, Length) {
     EXPECT_TRUE(math::equal(v.normalized().norm(), 1.f));
 }
 
-TEST(Vec3, Operations) {
+TEST(Vector3, Operations) {
     auto v = math::vector3::make(1.f, 2.f, 3.f);
     auto w = math::vector3::make(3.f, 4.f, 5.f);
 
@@ -55,7 +55,7 @@ TEST(Vec3, Operations) {
     EXPECT_EQ(v, math::vector3::make(17.f, 26.f, 35.f));
 }
 
-TEST(Vec3, DotProduct) {
+TEST(Vector3, DotProduct) {
     auto v = math::vector3::make(1.f, 2.f, 3.f);
     auto w = math::vector3::make(3.f, 4.f, 5.f);
 
@@ -63,7 +63,7 @@ TEST(Vec3, DotProduct) {
     EXPECT_EQ(dot_product, 26.f);
 }
 
-TEST(Vec3, CrossProduct) {
+TEST(Vector3, CrossProduct) {
     auto v = math::vector3::make(2.f, 0.f, 0.f);
     auto w = math::vector3::make(0.f, 3.f, 0.f);
     auto u = math::vector3::make(0.f, 0.f, 6.f);
