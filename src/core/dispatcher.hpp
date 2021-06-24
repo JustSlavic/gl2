@@ -12,6 +12,7 @@ namespace core {
 class Dispatcher {
     template<typename EventType, class C, bool(C::* M)(EventType*)>
     static bool invoke(void* instance, event* e) {
+        if (EventType::get_static_type() == 0) return false;
         if (EventType::get_static_type() != e->get_type()) return false;
         return (static_cast<C*>(instance)->*M)(static_cast<EventType*>(e));
     }
