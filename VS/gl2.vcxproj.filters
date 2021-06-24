@@ -66,15 +66,6 @@
     <ClCompile Include="..\src\math\color.cpp">
       <Filter>Source files\src\math</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\math\mat2.cpp">
-      <Filter>Source files\src\math</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\math\mat3.cpp">
-      <Filter>Source files\src\math</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\math\mat4.cpp">
-      <Filter>Source files\src\math</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\math\vector2.cpp">
       <Filter>Source files\src\math</Filter>
     </ClCompile>
@@ -156,6 +147,21 @@
     <ClCompile Include="..\generated\config.cpp">
       <Filter>Source files\generated</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\math\matrix2.cpp">
+      <Filter>Source files\src\math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\math\matrix3.cpp">
+      <Filter>Source files\src\math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\math\matrix4.cpp">
+      <Filter>Source files\src\math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\core\event.cpp">
+      <Filter>Source files\src\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\core\events.cpp">
+      <Filter>Source files\src\core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\application.h">
@@ -177,15 +183,6 @@
       <Filter>Source files\src\math</Filter>
     </ClInclude>
     <ClInclude Include="..\src\math\float.hpp">
-      <Filter>Source files\src\math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\math\mat2.hpp">
-      <Filter>Source files\src\math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\math\mat3.hpp">
-      <Filter>Source files\src\math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\math\mat4.hpp">
       <Filter>Source files\src\math</Filter>
     </ClInclude>
     <ClInclude Include="..\src\math\vector2.hpp">
@@ -304,6 +301,15 @@
     </ClInclude>
     <ClInclude Include="..\generated\config.hpp">
       <Filter>Source files\generated</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\math\matrix2.hpp">
+      <Filter>Source files\src\math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\math\matrix3.hpp">
+      <Filter>Source files\src\math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\math\matrix4.hpp">
+      <Filter>Source files\src\math</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

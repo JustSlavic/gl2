@@ -8,15 +8,17 @@
 namespace core {
 
 
+void initialize_core_events();
+void terminate_core_events();
+
+
 struct event_exit : public event {
-    EVENT_DECLARE_CATEGORY(event::category::INPUT_EVENT);
-    EVENT_DECLARE_TYPE(event::type::ACTION_EXIT);
+    EVENT_DECLARE(event::category::INPUT_EVENT);
 };
 
 
 struct event_camera_move : public event {
-    EVENT_DECLARE_CATEGORY(event::category::INPUT_EVENT);
-    EVENT_DECLARE_TYPE(event::type::ACTION_MOVE_CAMERA_LEFT);
+    EVENT_DECLARE(event::category::INPUT_EVENT);
 
     enum class direction : u8 { none, left, right, up, down };
     enum class type : u8 { start, stop };
@@ -29,26 +31,22 @@ struct event_camera_move : public event {
 
 
 struct event_toggle_velocities : public event {
-    EVENT_DECLARE_CATEGORY(event::category::ACTION_EVENT);
-    EVENT_DECLARE_TYPE(event::type::ACTION_TOGGLE_VELOCITIES);
+    EVENT_DECLARE(event::category::ACTION_EVENT);
 };
 
 
 struct event_toggle_traces : public event {
-    EVENT_DECLARE_CATEGORY(event::category::ACTION_EVENT);
-    EVENT_DECLARE_TYPE(event::type::ACTION_TOGGLE_TRACES);
+    EVENT_DECLARE(event::category::ACTION_EVENT);
 };
 
 
 struct event_toggle_vector_field : public event {
-    EVENT_DECLARE_CATEGORY(event::category::ACTION_EVENT);
-    EVENT_DECLARE_TYPE(event::type::ACTION_TOGGLE_VECTOR_FIELD);
+    EVENT_DECLARE(event::category::ACTION_EVENT);
 };
 
 
 struct event_toggle_F2 : public event {
-    EVENT_DECLARE_CATEGORY(event::category::ACTION_EVENT);
-    EVENT_DECLARE_TYPE(event::type::ACTION_TOGGLE_F2);
+    EVENT_DECLARE(event::category::ACTION_EVENT);
 };
 
 

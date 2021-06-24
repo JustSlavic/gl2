@@ -25,6 +25,8 @@
     <ClCompile Include="..\main.cpp" />
     <ClCompile Include="..\src\api\window.cpp" />
     <ClCompile Include="..\src\application.cpp" />
+    <ClCompile Include="..\src\core\event.cpp" />
+    <ClCompile Include="..\src\core\events.cpp" />
     <ClCompile Include="..\src\core\input\device_manager.cpp" />
     <ClCompile Include="..\src\core\input\keymap.cpp" />
     <ClCompile Include="..\src\core\input\keymap_manager.cpp" />
@@ -39,9 +41,9 @@
     <ClCompile Include="..\src\logging\handler.cpp" />
     <ClCompile Include="..\src\logging\logging.cpp" />
     <ClCompile Include="..\src\math\color.cpp" />
-    <ClCompile Include="..\src\math\mat2.cpp" />
-    <ClCompile Include="..\src\math\mat3.cpp" />
-    <ClCompile Include="..\src\math\mat4.cpp" />
+    <ClCompile Include="..\src\math\matrix2.cpp" />
+    <ClCompile Include="..\src\math\matrix3.cpp" />
+    <ClCompile Include="..\src\math\matrix4.cpp" />
     <ClCompile Include="..\src\math\vector2.cpp" />
     <ClCompile Include="..\src\math\vector3.cpp" />
     <ClCompile Include="..\src\math\vector4.cpp" />
@@ -90,9 +92,9 @@
     <ClInclude Include="..\src\math\color.hpp" />
     <ClInclude Include="..\src\math\consts.hpp" />
     <ClInclude Include="..\src\math\float.hpp" />
-    <ClInclude Include="..\src\math\mat2.hpp" />
-    <ClInclude Include="..\src\math\mat3.hpp" />
-    <ClInclude Include="..\src\math\mat4.hpp" />
+    <ClInclude Include="..\src\math\matrix2.hpp" />
+    <ClInclude Include="..\src\math\matrix3.hpp" />
+    <ClInclude Include="..\src\math\matrix4.hpp" />
     <ClInclude Include="..\src\math\vector2.hpp" />
     <ClInclude Include="..\src\math\vector3.hpp" />
     <ClInclude Include="..\src\math\vector4.hpp" />
@@ -165,6 +167,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);src;</IncludePath>
+    <OutDir>$(SolutionDir)\..\bin\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)\..\build\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -183,12 +187,15 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)/../src;$(SolutionDir)/../common;$(SolutionDir)/../generated;C:\Projects\SDL2\include\;C:\Projects\glew\include\;C:\Projects\glm\;$(SolutionDir)/../external/son/include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>C:\Projects\glew\bin\Release\Win32;C:\Projects\glew\lib\Release\Win32;C:\Projects\SDL2\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -220,7 +227,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>C:\Projects\SDL2\lib\x64\SDL2.lib;C:\Projects\glew\lib\Release\x64\glew32.lib;C:\Projects\glew\lib\Release\x64\glew32s.lib;OpenGL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\Projects\glew\bin\Release\x64;C:\Projects\glew\lib\Release\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Projects\glew\bin\Release\x64;C:\Projects\glew\lib\Release\x64</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

@@ -81,6 +81,8 @@ int application::initialize() {
     GraphicsApi::startup();
     Renderer::init();
 
+    core::initialize_core_events();
+
     bind<core::event_exit, application, &application::on_exit>(this);
 
     layers.push_back(new core::LayerWorld());
