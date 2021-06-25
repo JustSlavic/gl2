@@ -119,5 +119,18 @@ inline bool operator != (const matrix4& lhs, const matrix4& rhs) {
 }
 
 
+inline void print_matrix4(matrix4 m) {
+    printf("|%5.2f, %5.2f, %5.2f, %5.2f|\n"
+           "|%5.2f, %5.2f, %5.2f, %5.2f|\n"
+           "|%5.2f, %5.2f, %5.2f, %5.2f|\n"
+           "|%5.2f, %5.2f, %5.2f, %5.2f|\n",
+        m._11, m._12, m._13, m._14,
+        m._21, m._22, m._23, m._24,
+        m._31, m._32, m._33, m._34,
+        m._41, m._42, m._43, m._44
+    );
+}
+
+
 } // math
 

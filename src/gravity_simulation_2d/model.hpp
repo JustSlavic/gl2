@@ -9,6 +9,9 @@
 #include <math/vector2.hpp>
 
 
+namespace gravity_simulation_2d {
+
+
 struct body {
     math::vector2 position;
     math::vector2 velocity;
@@ -68,3 +71,5 @@ struct Model {
     void on_left_mouse_click(math::vector2 position);
     void on_right_mouse_click(math::vector2 position);
 };
+
+} // gravity_simulation_2d

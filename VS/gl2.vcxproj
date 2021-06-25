@@ -38,6 +38,10 @@
     <ClCompile Include="..\src\graphics\vertex_array.cpp" />
     <ClCompile Include="..\src\graphics\vertex_buffer.cpp" />
     <ClCompile Include="..\src\graphics\vertex_buffer_layout.cpp" />
+    <ClCompile Include="..\src\gravity_simulation_2d\camera.cpp" />
+    <ClCompile Include="..\src\gravity_simulation_2d\creatures.cpp" />
+    <ClCompile Include="..\src\gravity_simulation_2d\gravity_layer.cpp" />
+    <ClCompile Include="..\src\gravity_simulation_2d\model.cpp" />
     <ClCompile Include="..\src\logging\handler.cpp" />
     <ClCompile Include="..\src\logging\logging.cpp" />
     <ClCompile Include="..\src\math\color.cpp" />
@@ -47,9 +51,6 @@
     <ClCompile Include="..\src\math\vector2.cpp" />
     <ClCompile Include="..\src\math\vector3.cpp" />
     <ClCompile Include="..\src\math\vector4.cpp" />
-    <ClCompile Include="..\src\modeling_2d\camera.cpp" />
-    <ClCompile Include="..\src\modeling_2d\creatures.cpp" />
-    <ClCompile Include="..\src\modeling_2d\model.cpp" />
     <ClCompile Include="..\src\service\storage.cpp" />
     <ClCompile Include="..\src\service\string.cpp" />
     <ClCompile Include="..\src\service\string_id.cpp" />
@@ -86,6 +87,10 @@
     <ClInclude Include="..\src\graphics\vertex_array.h" />
     <ClInclude Include="..\src\graphics\vertex_buffer.h" />
     <ClInclude Include="..\src\graphics\vertex_buffer_layout.h" />
+    <ClInclude Include="..\src\gravity_simulation_2d\camera.hpp" />
+    <ClInclude Include="..\src\gravity_simulation_2d\creatures.hpp" />
+    <ClInclude Include="..\src\gravity_simulation_2d\gravity_layer.hpp" />
+    <ClInclude Include="..\src\gravity_simulation_2d\model.hpp" />
     <ClInclude Include="..\src\logging\handler.h" />
     <ClInclude Include="..\src\logging\logging.h" />
     <ClInclude Include="..\src\math.hpp" />
@@ -98,9 +103,7 @@
     <ClInclude Include="..\src\math\vector2.hpp" />
     <ClInclude Include="..\src\math\vector3.hpp" />
     <ClInclude Include="..\src\math\vector4.hpp" />
-    <ClInclude Include="..\src\modeling_2d\camera.hpp" />
-    <ClInclude Include="..\src\modeling_2d\creatures.hpp" />
-    <ClInclude Include="..\src\modeling_2d\model.hpp" />
+    <ClInclude Include="..\src\physics_simulation_2d\physics_layer.hpp" />
     <ClInclude Include="..\src\service\storage.hpp" />
     <ClInclude Include="..\src\service\string.hpp" />
     <ClInclude Include="..\src\service\string_id.hpp" />

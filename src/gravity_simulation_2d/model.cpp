@@ -10,6 +10,8 @@
 
 
 
+namespace gravity_simulation_2d {
+
 constexpr f32 G = .00001f;
 
 
@@ -448,3 +450,6 @@ void Model::on_left_mouse_click(math::vector2 position) {
 void Model::on_right_mouse_click(math::vector2 position) {
     selected_body_index = -1; // Nobody under mouse - drop selection.
 }
+
+
+} // gravity_simulation_2d

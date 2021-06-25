@@ -31,9 +31,6 @@
     <Filter Include="Source files\src\logging">
       <UniqueIdentifier>{355a3885-2f9e-45ca-a49a-2171f7b44fc0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source files\src\modeling_2d">
-      <UniqueIdentifier>{260616ae-2f1d-4080-bbac-5cfaa29cceb7}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source files\common">
       <UniqueIdentifier>{c98ad22a-534c-4980-b33b-3d56a0d38f43}</UniqueIdentifier>
     </Filter>
@@ -51,6 +48,12 @@
     </Filter>
     <Filter Include="Source files\src\core\input">
       <UniqueIdentifier>{bf4d15a8-8eac-42b5-833a-702277e0a9e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\src\gravity_simulation_2d">
+      <UniqueIdentifier>{ce188882-56fd-48b7-8835-bd3fbe4e1769}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\src\physics_simulation_2d">
+      <UniqueIdentifier>{c2ea6d54-b75d-42ec-b79c-6db132fa22bd}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -92,15 +95,6 @@
     </ClCompile>
     <ClCompile Include="..\src\logging\logging.cpp">
       <Filter>Source files\src\logging</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\modeling_2d\camera.cpp">
-      <Filter>Source files\src\modeling_2d</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\modeling_2d\creatures.cpp">
-      <Filter>Source files\src\modeling_2d</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\modeling_2d\model.cpp">
-      <Filter>Source files\src\modeling_2d</Filter>
     </ClCompile>
     <ClCompile Include="..\common\os\file.cpp">
       <Filter>Source files\common\os</Filter>
@@ -161,6 +155,18 @@
     </ClCompile>
     <ClCompile Include="..\src\core\events.cpp">
       <Filter>Source files\src\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\gravity_simulation_2d\camera.cpp">
+      <Filter>Source files\src\gravity_simulation_2d</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\gravity_simulation_2d\creatures.cpp">
+      <Filter>Source files\src\gravity_simulation_2d</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\gravity_simulation_2d\gravity_layer.cpp">
+      <Filter>Source files\src\gravity_simulation_2d</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\gravity_simulation_2d\model.cpp">
+      <Filter>Source files\src\gravity_simulation_2d</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -223,15 +229,6 @@
     </ClInclude>
     <ClInclude Include="..\src\logging\logging.h">
       <Filter>Source files\src\logging</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\modeling_2d\camera.hpp">
-      <Filter>Source files\src\modeling_2d</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\modeling_2d\creatures.hpp">
-      <Filter>Source files\src\modeling_2d</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\modeling_2d\model.hpp">
-      <Filter>Source files\src\modeling_2d</Filter>
     </ClInclude>
     <ClInclude Include="..\common\typedef.hpp">
       <Filter>Source files\common</Filter>
@@ -310,6 +307,21 @@
     </ClInclude>
     <ClInclude Include="..\src\math\matrix4.hpp">
       <Filter>Source files\src\math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\gravity_simulation_2d\camera.hpp">
+      <Filter>Source files\src\gravity_simulation_2d</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\gravity_simulation_2d\creatures.hpp">
+      <Filter>Source files\src\gravity_simulation_2d</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\gravity_simulation_2d\gravity_layer.hpp">
+      <Filter>Source files\src\gravity_simulation_2d</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\gravity_simulation_2d\model.hpp">
+      <Filter>Source files\src\gravity_simulation_2d</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\physics_simulation_2d\physics_layer.hpp">
+      <Filter>Source files\src\physics_simulation_2d</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

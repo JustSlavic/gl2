@@ -15,7 +15,7 @@ namespace gl2 {
 struct application : public core::event_receiver {
     Window* window = nullptr;
     bool running = false;
-    std::vector<core::ILayer*> layers;
+    std::vector<core::layer*> layers;
 
     application();
     ~application();
@@ -30,7 +30,7 @@ private:
 };
 
 
-struct gravity_simulation_2d : public application {
+struct gravity_simulation_app : public application {
     using super = application;
 
     int initialize() override;

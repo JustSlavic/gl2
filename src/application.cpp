@@ -8,6 +8,7 @@
 #include <core/event_queue.hpp>
 
 #include <math/vector3.hpp>
+
 #include <graphics/graphics_api.h>
 #include <graphics/shader.h>
 #include <graphics/vertex_array.h>
@@ -15,33 +16,15 @@
 #include <graphics/index_buffer.h>
 #include <graphics/renderer.h>
 
-#include <modeling_2d/camera.hpp>
-#include <modeling_2d/model.hpp>
-
-#include <service/shader_library.hpp>
-
-
-#define GRAVITY
-
-
-constexpr f32 NEAR_CLIP_DISTANCE = 0.1f;
-constexpr f32 FAR_CLIP_DISTANCE = 1000.f;
+#include <gravity_simulation_2d/camera.hpp>
+#include <gravity_simulation_2d/model.hpp>
+#include <gravity_simulation_2d/gravity_layer.hpp>
 
 
 namespace gl2 {
 
 
-void print_matrix4(math::matrix4 m) {
-    printf("|%5.2f, %5.2f, %5.2f, %5.2f|\n"
-            "|%5.2f, %5.2f, %5.2f, %5.2f|\n"
-            "|%5.2f, %5.2f, %5.2f, %5.2f|\n"
-            "|%5.2f, %5.2f, %5.2f, %5.2f|\n",
-        m._11, m._12, m._13, m._14,
-        m._21, m._22, m._23, m._24,
-        m._31, m._32, m._33, m._34,
-        m._41, m._42, m._43, m._44
-    );
-}
+
 
 
 math::vector3 intersect_z0_plane (math::vector3 ray_start, math::vector3 vector) {
@@ -168,18 +151,18 @@ bool application::on_exit(core::event_exit*) {
 }
 
 
-int gravity_simulation_2d::initialize() {
+int gravity_simulation_app::initialize() {
     int err = application::initialize();
     if (err) {
         return err;
     }
 
-    layers.push_back(new core::LayerWorld());
+    layers.push_back(new gravity_simulation_2d::layer_world());
     return 0;
 }
 
 
-int gravity_simulation_2d::terminate() {
+int gravity_simulation_app::terminate() {
     return 0;
 }
 
