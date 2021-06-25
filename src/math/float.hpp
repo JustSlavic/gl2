@@ -78,6 +78,21 @@ inline f64 lerp (f64 a, f64 b, f64 t) {
     return (1.0 - t) * a + t * b;
 }
 
+inline f32 min(f32 x, f32 y) {
+    return x < y ? x : y;
+}
+
+inline f64 min(f64 x, f64 y) {
+    return x < y ? x : y;
+}
+
+inline f32 max(f32 x, f32 y) {
+    return x < y ? y : x;
+}
+
+inline f64 max(f64 x, f64 y) {
+    return x < y ? y : x;
+}
 
 inline f32 clamp (f32 x, f32 min, f32 max) {
     if (x < min) return min;

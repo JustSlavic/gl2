@@ -105,6 +105,19 @@ inline vector2 lerp (vector2 a, vector2 b, f32 t) {
     return { lerp(a.x, b.x, t), lerp(a.y, b.y, t) };
 }
 
+
+// Reflect 2D-vector from the plane with the normal n
+//
+// |--->n
+// | /
+// |/
+// |\
+// | \ v
+//
+inline vector2 reflect(vector2 v, vector2 n) {
+    return v - 2 * dot(v, n) * n;
+}
+
 template <aspect A = aspect::column>
 void print(const vector2& v) {
     if constexpr (A == aspect::column) {
