@@ -12,7 +12,7 @@ int main(int argc, char** argv, char** env) {
 
     LOG_INFO << "Welcome to Gir2 v." << version;
 
-    gl2::application app;
+    gl2::gravity_simulation_2d app;
 
     if (app.initialize()) {
         LOG_ERROR << "Failed to initialize some context!";

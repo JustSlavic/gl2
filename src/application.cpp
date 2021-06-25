@@ -85,8 +85,11 @@ int application::initialize() {
 
     bind<core::event_exit, application, &application::on_exit>(this);
 
-    layers.push_back(new core::LayerWorld());
+    return 0;
+}
 
+
+int application::terminate() {
     return 0;
 }
 
@@ -162,6 +165,32 @@ bool application::on_exit(core::event_exit*) {
     running = false;
 
     return true;
+}
+
+
+int gravity_simulation_2d::initialize() {
+    int err = application::initialize();
+    if (err) {
+        return err;
+    }
+
+    layers.push_back(new core::LayerWorld());
+    return 0;
+}
+
+
+int gravity_simulation_2d::terminate() {
+    return 0;
+}
+
+
+int physics_engine_test::initialize() {
+    return 0;
+}
+
+
+int physics_engine_test::terminate() {
+    return 0;
 }
 
 

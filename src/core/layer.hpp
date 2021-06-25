@@ -11,7 +11,7 @@
 namespace core {
 
 
-struct ILayer : public EventReceiver {
+struct ILayer : public event_receiver {
 	virtual void draw() = 0;
 	virtual void advance(f32 dt) = 0;
 };

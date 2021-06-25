@@ -10,20 +10,42 @@
 
 
 namespace gl2 {
-    struct application : public core::EventReceiver {
-        Window* window = nullptr;
-        bool running = false;
-        std::vector<core::ILayer*> layers;
 
-        application();
-        ~application();
 
-        int initialize();
-        int run();
+struct application : public core::event_receiver {
+    Window* window = nullptr;
+    bool running = false;
+    std::vector<core::ILayer*> layers;
 
-    private:
-        bool on_exit(core::event_exit*);
-    };
+    application();
+    ~application();
+
+    virtual int initialize();
+    virtual int terminate();
+
+    int run();
+
+private:
+    bool on_exit(core::event_exit*);
+};
+
+
+struct gravity_simulation_2d : public application {
+    using super = application;
+
+    int initialize() override;
+    int terminate() override;
+};
+
+
+struct physics_engine_test : public application {
+    using super = application;
+
+    int initialize() override;
+    int terminate() override;
+};
+
+
 }
 
 

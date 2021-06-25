@@ -10,17 +10,17 @@ namespace core {
 
 
 class Dispatcher {
-    template<typename EventType, class C, bool(C::* M)(EventType*)>
+    template<typename EventT, class C, bool(C::*M)(EventT*)>
     static bool invoke(void* instance, event* e) {
-        if (EventType::get_static_type() == 0) return false;
-        if (EventType::get_static_type() != e->get_type()) return false;
-        return (static_cast<C*>(instance)->*M)(static_cast<EventType*>(e));
+        if (EventT::get_static_type() == 0) return false;
+        if (EventT::get_static_type() != e->get_type()) return false;
+        return (static_cast<C*>(instance)->*M)(static_cast<EventT*>(e));
     }
 
 public:
-    template<typename EventType, class C, bool(C::* M)(EventType*)>
+    template<typename EventT, class C, bool(C::*M)(EventT*)>
     void bind(C* instance) {
-        auto pair = std::make_pair(&invoke<EventType, C, M>, instance);
+        auto pair = std::make_pair(&invoke<EventT, C, M>, instance);
         targets.push_back(pair);
     }
 
@@ -40,12 +40,14 @@ private:
 };
 
 
-struct EventReceiver {
+struct event_receiver {
+private:
     Dispatcher d;
 
-    template <typename EventType, typename Host, bool(Host::*M)(EventType*)>
+public:
+    template <typename EventT, typename Host, bool(Host::*M)(EventT*)>
     void bind(Host* host) {
-        d.bind<EventType, Host, M>(host);
+        d.bind<EventT, Host, M>(host);
     }
 
     bool handle(event* e) {
