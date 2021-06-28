@@ -40,6 +40,12 @@ struct color24 {
 
     template <color_layout L, typename T>
     packed_color<L> pack_32bit (T) const = delete;
+
+    static color24 black;
+    static color24 white;
+    static color24 red;
+    static color24 green;
+    static color24 blue;
 };
 
 template <> color24 color24::unpack (packed_color<color_layout::RGB> color_);

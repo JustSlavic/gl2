@@ -11,6 +11,11 @@ struct static_segment_2d {
     math::vector2 start;
     math::vector2 end;
 
+public:
+    static_segment_2d(math::vector2 from, math::vector2 to)
+        : start(from), end(to)
+    {}
+
     inline math::vector2 get_normal() {
         auto v = start - end;
         return math::normalize(math::vector2{ v.y, v.x });
@@ -19,9 +24,9 @@ struct static_segment_2d {
 
 
 struct dynamic_body_2d {
-    math::vector2 position; // aka origin of the local coordinate system in world's coordinate system
-    math::vector2 velocity; // in world coordinates
-    float32 mass;
+    math::vector2 position; // [m] aka origin of the local coordinate system in world's coordinate system
+    math::vector2 velocity; // [m/s] in world coordinates
+    float32 mass; // [kg]
 
     dynamic_body_2d(math::vector2 p, math::vector2 v, float32 m)
         : position(p)

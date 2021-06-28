@@ -13,5 +13,10 @@ void main()
 
     vec2 zo = vec2(0.f, 1.f);
     float r = length(uv);
-    out_color = vec4(u_color, smoothstep(.5f, .5f - .01f, r));
+
+    if (r < 0.5f) {
+        out_color = vec4(u_color, 1.f);
+    } else {
+        out_color = vec4(u_color, 0.f);
+    }
 }

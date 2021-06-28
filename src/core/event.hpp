@@ -26,6 +26,7 @@ struct event {
         EventT::id = registered_events;
     }
 
+    virtual ~event() = default;
     virtual id_t get_type() const = 0;
     virtual category get_category() const = 0;
 };

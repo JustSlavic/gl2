@@ -5,6 +5,12 @@
 namespace math {
 
 
+color24 color24::black = color24{ 0, 0, 0 };
+color24 color24::white = color24{ 1, 1, 1 };
+color24 color24::red   = color24{ 1, 0, 0 };
+color24 color24::green = color24{ 0, 1, 0 };
+color24 color24::blue  = color24{ 0, 0, 1 };
+
 color24 color24::make (f32 v) {
     ASSERT(0.f <= v && v <= 1.f);
 

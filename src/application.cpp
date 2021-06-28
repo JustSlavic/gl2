@@ -16,9 +16,8 @@
 #include <graphics/index_buffer.h>
 #include <graphics/renderer.h>
 
-#include <gravity_simulation_2d/camera.hpp>
-#include <gravity_simulation_2d/model.hpp>
 #include <gravity_simulation_2d/gravity_layer.hpp>
+#include <physics_simulation_2d/physics_layer.hpp>
 
 
 namespace gl2 {
@@ -68,16 +67,19 @@ int application::initialize() {
 
     bind<core::event_exit, application, &application::on_exit>(this);
 
+    initialized = true;
     return 0;
 }
 
 
 int application::terminate() {
+    initialized = false;
     return 0;
 }
 
 
 int application::run() {
+    if (not initialized) return 1;
     running = true;
 
     auto& cfg = config::get_instance();
@@ -153,26 +155,36 @@ bool application::on_exit(core::event_exit*) {
 
 int gravity_simulation_app::initialize() {
     int err = application::initialize();
-    if (err) {
-        return err;
-    }
+    if (err) { return err; }
 
+    // Initialize after base class.
     layers.push_back(new gravity_simulation_2d::layer_world());
     return 0;
 }
 
 
 int gravity_simulation_app::terminate() {
+    // Terminate before base class.
+
+    application::terminate();
     return 0;
 }
 
 
-int physics_engine_test::initialize() {
+int physics_engine_app::initialize() {
+    int err = application::initialize();
+    if (err) { return err; }
+
+    // Initialize after base class.
+    layers.push_back(new physics_simulation_2d::layer_world());
     return 0;
 }
 
 
-int physics_engine_test::terminate() {
+int physics_engine_app::terminate() {
+    // Terminate before base class.
+
+    application::terminate();
     return 0;
 }
 

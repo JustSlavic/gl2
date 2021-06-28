@@ -8,8 +8,8 @@
 namespace core {
 
 struct layer : public event_receiver {
-	virtual void draw() = 0;
-	virtual void advance(f32 dt) = 0;
+	virtual void draw () = 0;
+	virtual void advance (f32 dt) = 0;
 };
 
 } // core

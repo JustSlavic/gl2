@@ -33,7 +33,7 @@ struct vector3 {
     inline float32 length_2   () const { return x*x + y*y + z*z; } // length squared
     inline float32 length     () const { return math::sqrt(length_2()); }
     inline float32 norm       () const { return length(); }
-    inline vector3 normalized () const { return { x / norm(), y / norm(), z / norm() }; }
+    inline vector3 normalized () const { auto n = norm(); return { x / n, y / n, z / n }; }
 
     inline vector3& operator += (const vector3& other) {
         x += other.x;
@@ -63,38 +63,45 @@ inline f32 dot (const vector3& a, const vector3& b) {
 }
 
 inline vector3 cross (const vector3& a, const vector3& b) {
+    //  i  j  k
+    // ax ay az
+    // bx by bz
     return {
         a.y*b.z - a.z*b.y,
-        a.x*b.z - a.z*b.x,
+        a.z*b.x - a.x*b.z,
         a.x*b.y - a.y*b.x
     };
+}
+
+inline bool is_zero (const vector3& a) {
+    return math::is_zero(a.x) && math::is_zero(a.y) && math::is_zero(a.z);
 }
 
 inline bool equal (const vector3& a, const vector3& b) {
     return math::equal(a.x, b.x) && math::equal(a.y, b.y) && math::equal(a.z, b.z);
 }
 
-inline vector3 operator -  (const vector3& a) {
+inline vector3 operator - (const vector3& a) {
     return { -a.x, -a.y, -a.z };
 }
 
-inline vector3 operator +  (const vector3& a, const vector3& b) {
+inline vector3 operator + (const vector3& a, const vector3& b) {
     return { a.x + b.x, a.y + b.y, a.z + b.z };
 }
 
-inline vector3 operator -  (const vector3& a, const vector3& b) {
+inline vector3 operator - (const vector3& a, const vector3& b) {
     return { a.x - b.x, a.y - b.y, a.z - b.z };
 }
 
-inline vector3 operator *  (const vector3& a, f32 c) {
+inline vector3 operator * (const vector3& a, f32 c) {
     return { c * a.x, c * a.y, c * a.z };
 }
 
-inline vector3 operator *  (f32 c, const vector3& a) {
+inline vector3 operator * (f32 c, const vector3& a) {
     return { c * a.x, c * a.y, c * a.z };
 }
 
-inline vector3 operator /  (const vector3& a, f32 denom) {
+inline vector3 operator / (const vector3& a, f32 denom) {
     return { a.x / denom, a.y / denom, a.z / denom };
 }
 
@@ -107,7 +114,7 @@ inline bool operator != (const vector3& a, const vector3& b) {
 }
 
 inline vector3 lerp (const vector3& a, const vector3& b, f32 t) {
-    return { lerp(a.x, b.x, t), lerp(a.y, b.y, t), lerp(a.z, b.z, t) };
+    return { math::lerp(a.x, b.x, t), math::lerp(a.y, b.y, t), math::lerp(a.z, b.z, t) };
 }
 
 

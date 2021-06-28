@@ -9,7 +9,7 @@ constexpr f32 ZOOM_SPEED = .1f;
 
 
 Camera2D::Camera2D()
-    : position{0.f, 0.f, -15.f}
+    : position{0.f, 0.f, 15.f}
 {}
 
 
@@ -44,7 +44,7 @@ math::mat4 Camera2D::get_view_matrix_math() const {
 
 
 math::vector3 Camera2D::get_forward_vector () const {
-    return { 0.f, 0.f, 1.f };
+    return { 0.f, 0.f, -1.f };
 }
 
 

@@ -55,6 +55,9 @@
     <Filter Include="Source files\src\physics_simulation_2d">
       <UniqueIdentifier>{c2ea6d54-b75d-42ec-b79c-6db132fa22bd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source files\src\physics">
+      <UniqueIdentifier>{5aa5f2f8-fea3-446c-ab4c-551709da61cd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\main.cpp">
@@ -331,6 +334,9 @@
     </ClInclude>
     <ClInclude Include="..\src\physics_simulation_2d\model.hpp">
       <Filter>Source files\src\physics_simulation_2d</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\physics\rigid_body.hpp">
+      <Filter>Source files\src\physics</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

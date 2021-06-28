@@ -45,6 +45,18 @@ struct vector2 {
         return *this;
     }
 
+    inline vector2& operator += (float32 constant) {
+        x += constant;
+        y += constant;
+        return *this;
+    }
+
+    inline vector2& operator -= (float32 constant) {
+        x -= constant;
+        y -= constant;
+        return *this;
+    }
+
     inline vector2& operator *= (f32 c) {
         x *= c;
         y *= c;
