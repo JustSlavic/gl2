@@ -8,8 +8,10 @@ namespace math {
 
 // Rectangle with sides aligned to coordinate axis
 struct rectangle {
+private:
     float32 top, left, bottom, right;
 
+public:
     inline f32 get_width() const {
         return math::abs(right - left);
     }
@@ -36,6 +38,11 @@ struct rectangle {
 
     inline bool is_empty() const {
         return math::is_zero(get_width()) || math::is_zero(get_height());
+    }
+
+    inline bool contains(math::vector2 p) {
+        return left <= p.x && p.x <= right
+            && bottom <= p.y && p.y <= top;
     }
 
     inline rectangle intersect(const rectangle& other) const {
