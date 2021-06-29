@@ -15,8 +15,12 @@ bool shape::hit_test (math::vector2 p_in_parent) {
 }
 
 
-void container::draw (const math::matrix4& parent_view) {
+void container::draw (const math::matrix4& parent_matrix) {
+    auto transform = get_transform_matrix() * parent_matrix;
 
+    for (auto& p_shape : childs) {
+        bool success = p_shape->draw(transform);
+    }
 }
 
 
