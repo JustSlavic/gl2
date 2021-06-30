@@ -56,7 +56,7 @@ private:
 public:
     void draw (const math::matrix4& parent_matrix) override;
     bool hit_test (math::vector2 p_in_parent) override;
-    void push(std::shared_ptr<shape> child) { childs.push_back(child); }
+    void push (std::shared_ptr<shape> child) { childs.push_back(child); }
 };
 
 
