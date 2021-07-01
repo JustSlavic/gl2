@@ -29,8 +29,8 @@ struct layer_world : public core::layer {
     IndexBuffer ib;
     VertexBufferLayout vbl;
 
-    math::vector2 camera_velocity_up_left = math::vector2::zero();
-    math::vector2 camera_velocity_down_right = math::vector2::zero();
+    math::vector2 camera_velocity_up_left = math::vector2::zero;
+    math::vector2 camera_velocity_down_right = math::vector2::zero;
 
     layer_world();
 

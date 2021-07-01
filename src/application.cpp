@@ -20,6 +20,8 @@
 #include <gravity_simulation_2d/model.hpp>
 #include <gravity_simulation_2d/gravity_layer.hpp>
 
+#include <ui/ui_layer.hpp>
+
 
 namespace gl2 {
 
@@ -158,6 +160,10 @@ int gravity_simulation_app::initialize() {
     }
 
     layers.push_back(new gravity_simulation_2d::layer_world());
+
+    auto* ui_layer = new ui::ui_layer();
+    ui_layer->initialize();
+    layers.push_back(ui_layer);
     return 0;
 }
 

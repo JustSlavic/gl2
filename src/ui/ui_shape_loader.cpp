@@ -5,15 +5,19 @@
 namespace ui {
 
 
-int ui_shape_loader::initialize() {}
+int ui_shape_loader::initialize() {
+    return 0;
+}
 
 
-int ui_shape_loader::terminate() {}
+int ui_shape_loader::terminate() {
+    return 0;
+}
 
 
-shape ui_shape_loader::load_ui_shape(const char* name) {
+std::shared_ptr<shape> ui_shape_loader::load_ui_shape(const char* name) {
     jslavic::son value = jslavic::parse(std::string(name) + ".son");
-
+    return nullptr;
 }
 
 

@@ -22,7 +22,10 @@ struct vector2 {
         f32 at[2];
     };
 
-    constexpr static vector2 zero() { return { 0.f, 0.f }; }
+    static vector2 zero;
+    static vector2 one;
+    static vector2 one_x;
+    static vector2 one_y;
 
     inline static vector2 make () { return { 0.f, 0.f }; }
     inline static vector2 make (f32 value) { return { value, value }; }

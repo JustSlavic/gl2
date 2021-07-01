@@ -52,8 +52,8 @@
     <Filter Include="Source files\src\gravity_simulation_2d">
       <UniqueIdentifier>{ce188882-56fd-48b7-8835-bd3fbe4e1769}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source files\src\physics_simulation_2d">
-      <UniqueIdentifier>{c2ea6d54-b75d-42ec-b79c-6db132fa22bd}</UniqueIdentifier>
+    <Filter Include="Source files\src\ui">
+      <UniqueIdentifier>{e678dad3-9e48-4de4-8b3e-dc6d8cd6c6a5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -159,14 +159,20 @@
     <ClCompile Include="..\src\gravity_simulation_2d\camera.cpp">
       <Filter>Source files\src\gravity_simulation_2d</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\gravity_simulation_2d\creatures.cpp">
-      <Filter>Source files\src\gravity_simulation_2d</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\gravity_simulation_2d\gravity_layer.cpp">
       <Filter>Source files\src\gravity_simulation_2d</Filter>
     </ClCompile>
     <ClCompile Include="..\src\gravity_simulation_2d\model.cpp">
       <Filter>Source files\src\gravity_simulation_2d</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ui\ui_layer.cpp">
+      <Filter>Source files\src\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ui\ui_shape.cpp">
+      <Filter>Source files\src\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ui\ui_shape_loader.cpp">
+      <Filter>Source files\src\ui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -311,17 +317,23 @@
     <ClInclude Include="..\src\gravity_simulation_2d\camera.hpp">
       <Filter>Source files\src\gravity_simulation_2d</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\gravity_simulation_2d\creatures.hpp">
-      <Filter>Source files\src\gravity_simulation_2d</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\gravity_simulation_2d\gravity_layer.hpp">
       <Filter>Source files\src\gravity_simulation_2d</Filter>
     </ClInclude>
     <ClInclude Include="..\src\gravity_simulation_2d\model.hpp">
       <Filter>Source files\src\gravity_simulation_2d</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\physics_simulation_2d\physics_layer.hpp">
-      <Filter>Source files\src\physics_simulation_2d</Filter>
+    <ClInclude Include="..\src\ui\ui_layer.hpp">
+      <Filter>Source files\src\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ui\ui_shape.hpp">
+      <Filter>Source files\src\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ui\ui_shape_loader.hpp">
+      <Filter>Source files\src\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\math\rectangle.hpp">
+      <Filter>Source files\src\math</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

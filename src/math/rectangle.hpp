@@ -12,6 +12,10 @@ private:
     float32 top, left, bottom, right;
 
 public:
+    rectangle(f32 t, f32 l, f32 b, f32 r)
+        : top(t), left(l), bottom(b), right(r)
+    {}
+
     inline f32 get_width() const {
         return math::abs(right - left);
     }
@@ -46,23 +50,23 @@ public:
     }
 
     inline rectangle intersect(const rectangle& other) const {
-        return {
-            min(top, other.top),
-            max(left, other.left),
-            max(bottom, other.bottom),
-            min(right, other.right)
-        };
+        return rectangle(
+            math::min(top, other.top),
+            math::max(left, other.left),
+            math::max(bottom, other.bottom),
+            math::min(right, other.right)
+        );
     }
 
     inline rectangle extend(const rectangle& other) const {
-        return {
+        return rectangle(
             max(top, other.top),
             min(left, other.left),
             min(bottom, other.bottom),
             max(right, other.right)
-        };
+        );
     }
-}
+};
 
 
 //
@@ -71,7 +75,7 @@ struct rotated_rectangle {
     vector2 top_right;
     vector2 bottom_right;
     vector2 bottom_left;
-}
+};
 
 
 } // math

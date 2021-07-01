@@ -10,21 +10,21 @@ namespace ui {
 
 
 struct shape {
-private:
+public:
     // Pivot is the origin of the local coordinate system in parent's coordinates.
-    math::vector2 pivot = math::vector2::zero();
+    math::vector2 pivot = math::vector2::zero;
 
     // Position is the top left corner of the shape in local coordinate system.
-    math::vector2 position = math::vector2::zero();
+    math::vector2 position = math::vector2::zero;
 
     // Size is the width and height of the object's bounding box in local coordinates.
-    math::vector2 size = math::vector2::zero();
+    math::vector2 size = math::vector2::zero;
 
     // Scale is the multiply coefficients, that dictate size transformation of the shape.
-    math::vector2 scale = math::vector2::zero();
+    math::vector2 scale = math::vector2::one;
 
     // Rotation of the local coordinate system around Z axis clock-wise (accoding to the right-hand rule).
-    f32 rotation_z = 0.0f;
+    f32 rotation_z = 0.f;
 
 public:
     virtual ~shape () = default;

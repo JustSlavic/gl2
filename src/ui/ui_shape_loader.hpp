@@ -24,9 +24,9 @@ public:
     int initialize();
     int terminate();
 
-    shape load_ui_shape(const char* name);
+    std::shared_ptr<shape> load_ui_shape(const char* name);
 
-    shape get_debug_ui();
+    std::shared_ptr<shape> get_debug_ui();
 };
 
 

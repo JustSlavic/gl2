@@ -6,12 +6,12 @@ namespace ui {
 
 bool shape::hit_test (math::vector2 p_in_parent) {
     // Transform from parent's coordinates to local coordinates
-    math::matrix4 view = get_view_matrix();
-    math::vector4 p_in_local = view * math::vector4{p_in_parent, 0, 1};
+    math::matrix4 view = get_transform_matrix();
+    math::vector4 p_in_local = view * math::vector4::make(p_in_parent, 0, 1);
 
     // Check if p in local lies within local rectangle
     math::rectangle local_bounds{0, 0, size.x, size.y};
-    return local_bounds.contains(p_in_local);
+    return local_bounds.contains(p_in_local.xy);
 }
 
 
@@ -19,7 +19,7 @@ void container::draw (const math::matrix4& parent_matrix) {
     auto transform = get_transform_matrix() * parent_matrix;
 
     for (auto& p_shape : childs) {
-        bool success = p_shape->draw(transform);
+        p_shape->draw(transform);
     }
 }
 
@@ -34,12 +34,14 @@ bool container::hit_test (math::vector2 p_in_parent) {
 
 
 void rectangle::draw (const math::matrix4& parent_view) {
-
+    printf("Draw rectangle (%5.2f, %5.2f) -- (%5.2f, %5.2f)\n",
+        position.x, position.y,
+        position.x + size.x, position.y + size.y);
 }
 
 
 bool rectangle::hit_test (math::vector2 p_in_parent) {
-
+    return false;
 }
 
 
@@ -49,7 +51,7 @@ void circle::draw (const math::matrix4& parent_view) {
 
 
 bool circle::hit_test (math::vector2 p_in_parent) {
-
+    return false;
 }
 
 
