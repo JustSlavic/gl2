@@ -3,9 +3,11 @@
 
 
 #include <defines.hpp>
+#include <stdio.h>
 
 
 namespace core::input {
+
 
 struct device {
     using id_t = uint32_t;
@@ -83,7 +85,8 @@ struct mouse : public device {
     };
 
     key_state state[MOUSE_KEY_MAX];
-    i32 x = 0, y = 0;
+    i32 x = 0;
+    i32 y = 0;
 
     mouse(uint32_t id) : device(category::mouse, id), state{} {}
 
@@ -94,7 +97,7 @@ struct mouse : public device {
     inline bool is_released(key k) { return state[k] == RELEASED; }
 
     inline void scroll(i32 amount) {}
-    inline void move(i32 new_x, i32 new_y) { x = new_x, y = new_y; }
+    inline void move(i32 new_x, i32 new_y) { x = new_x; y = new_y; }
 
     static category get_static_category() { return category::mouse; }
 };

@@ -27,7 +27,7 @@ struct vector2 {
     static vector2 one_x;
     static vector2 one_y;
 
-    inline static vector2 make () { return { 0.f, 0.f }; }
+    inline static vector2 make () { return { 0, 0 }; }
     inline static vector2 make (f32 value) { return { value, value }; }
     inline static vector2 make (f32 x, f32 y) { return { x, y }; }
 
@@ -107,6 +107,38 @@ inline f32 dot (const vector2& a, const vector2& b) {
 inline vector2 lerp (vector2 a, vector2 b, f32 t) {
     return { lerp(a.x, b.x, t), lerp(a.y, b.y, t) };
 }
+
+// Reflect 2D-vector from the plane with the normal n
+//
+// v\  /r | n
+//   \/   |
+// --------
+//
+inline vector2 reflect(vector2 v, vector2 n) {
+    return v - 2 * dot(v, n) * n;
+}
+
+// Refract 2D-vector through the plane with the normal n and ratio of indices of refraction eta
+//
+// v\    | n
+//   \   |
+// --------
+//    |
+//    |r
+//
+// Exact documentation see at
+// https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/refract.xhtml
+inline vector2 refract (vector2 v, vector2 n, f32 eta) {
+    f32 k = 1 - eta * eta * (1 - dot(n, v) * dot(n, v));
+    if (k < 0) {
+        return vector2::zero;
+    }
+    
+    return eta * v - (eta * dot(n, v) + sqrt(k)) * n;
+}
+
+
+
 
 template <aspect A = aspect::column>
 void print(const vector2& v) {

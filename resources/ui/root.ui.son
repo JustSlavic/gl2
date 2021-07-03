@@ -1,0 +1,11 @@
+type = "ui_rectangle"
+position = {
+    type = "vector2"
+    x = 20
+    y = 0
+}
+size = {
+    type = "vector2"
+    x = 100
+    y = 50
+}

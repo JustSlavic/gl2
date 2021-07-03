@@ -93,6 +93,7 @@ SOURCES = \
 	ui/ui_layer \
 	ui/ui_shape \
 	ui/ui_shape_loader\
+	ui/ui_renderer \
 	service/shader_library \
 
 
@@ -202,5 +203,5 @@ build/$(SUB_DIR)/generated/%.o: generated/%.cpp ./Makefile
 	g++ $< -c -o $@ $(CXXFLAGS)
 
 ${STATIC_LIBS}:
-	$(MAKE) -C $(shell dirname $(dir $@)) $(MAKECMDGOALS)
+	$(MAKE) -C $(shell dirname $(shell dirname $(dir $@))) $(MAKECMDGOALS)
 

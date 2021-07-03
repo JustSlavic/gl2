@@ -3,6 +3,7 @@
 
 #include <core/layer.hpp>
 #include "ui_shape.hpp"
+#include <math.hpp>
 
 
 namespace ui {
@@ -10,6 +11,7 @@ namespace ui {
 
 struct ui_layer : public core::layer {
     std::shared_ptr<shape> ui_root;
+    math::matrix4 ui_transform;
 
     void initialize();
     void terminate();

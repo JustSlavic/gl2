@@ -78,19 +78,12 @@ inline T max (T a, T b) {
     return a < b ? b : a;
 }
 
+template <typename T, std::enable_if_t<std::is_floating_point<T>::value, bool> = true>
+inline T lerp (T a, T b, T t) {
+    ASSERT(0 <= t && t <= 1);
 
-inline f32 lerp (f32 a, f32 b, f32 t) {
-    ASSERT(0.f <= t && t <= 1.f);
-
-    return (1.f - t) * a + t * b;
+    return (1 - t) * a + t * b;
 }
-
-inline f64 lerp (f64 a, f64 b, f64 t) {
-    ASSERT(0.0 <= t && t <= 1.0);
-
-    return (1.0 - t) * a + t * b;
-}
-
 
 template <typename T, std::enable_if_t<std::is_floating_point<T>::value, bool> = true>
 inline T clamp (T x, T min, T max) {

@@ -350,7 +350,7 @@ void terminate() {
         }
 
         void process_mouse_motion_event(const SDL_MouseMotionEvent& e) {
-            // Mouse::move(e.x, e.y);
+            core::input::device_manager::mouse_move(e.which, e.x, e.y);
         }
 
         void process_mouse_wheel_event(const SDL_Event& e) {

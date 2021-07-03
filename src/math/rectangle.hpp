@@ -16,6 +16,10 @@ public:
         : top(t), left(l), bottom(b), right(r)
     {}
 
+    rectangle(vector2 tl, vector2 br)
+        : top(tl.y), left(tl.x), bottom(br.y), right(br.x)
+    {}
+
     inline f32 get_width() const {
         return math::abs(right - left);
     }
