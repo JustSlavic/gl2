@@ -32,7 +32,6 @@ LIBS = \
 CXXFLAGS = \
 	-Wall \
 	-Werror \
-	-fno-rtti \
 	-std=$(CXX_STANDARD) \
 
 CXXFLAGS += $(addprefix -I, $(INC_DIR))
@@ -67,6 +66,8 @@ SOURCES = \
 	utils \
 	graphics/graphics_api \
 	api/window \
+	core/event \
+	core/events \
 	core/layer \
 	core/input/device_manager \
 	core/input/keymap \
@@ -86,9 +87,12 @@ SOURCES = \
 	math/matrix2 \
 	math/matrix3 \
 	math/matrix4 \
-	modeling_2d/camera \
-	modeling_2d/model \
-	modeling_2d/creatures \
+	gravity_simulation_2d/camera \
+	gravity_simulation_2d/model \
+	gravity_simulation_2d/gravity_layer \
+	ui/ui_layer \
+	ui/ui_shape \
+	ui/ui_shape_loader\
 	service/shader_library \
 
 
