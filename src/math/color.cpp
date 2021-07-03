@@ -5,6 +5,9 @@
 namespace math {
 
 
+color32 color32::white = color32{1, 1, 1, 1};
+
+
 color24 color24::make (f32 v) {
     ASSERT(0.f <= v && v <= 1.f);
 

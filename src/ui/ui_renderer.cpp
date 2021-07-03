@@ -17,7 +17,7 @@ static Shader* p_ui_shader = nullptr;
 static math::matrix4 ui_transform;
 
 
-void renderer::draw_rectangle(const math::rectangle& rect) {    
+void renderer::draw_rectangle(const math::rectangle& rect, const math::color32& color) {
     if (p_ui_shader == nullptr) {
         p_ui_shader = new Shader();
 
@@ -54,6 +54,7 @@ void renderer::draw_rectangle(const math::rectangle& rect) {
 
     vbl.push<f32>(2);
     va.add_buffer(vb, vbl);
+    p_ui_shader->set_uniform_4f("u_color", color);
 
     gl2::Renderer::draw(va, ib, *p_ui_shader);
 }
