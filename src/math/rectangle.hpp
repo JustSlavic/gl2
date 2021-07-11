@@ -20,29 +20,20 @@ public:
         : top(tl.y), left(tl.x), bottom(br.y), right(br.x)
     {}
 
-    inline f32 get_width() const {
-        return math::abs(right - left);
-    }
+    inline f32 get_width() const { return math::abs(right - left); }
+    inline f32 get_height() const { return math::abs(top - bottom); }
 
-    inline f32 get_height() const {
-        return math::abs(top - bottom);
-    }
+    inline vector2 get_size() const { return vector2{ get_width(), get_height() }; }
 
-    inline vector2 get_top_left() const {
-        return vector2{ left, top };
-    }
+    inline f32 get_top() const { return top; }
+    inline f32 get_left() const { return left; }
+    inline f32 get_right() const { return right; }
+    inline f32 get_bottom() const { return bottom; }
 
-    inline vector2 get_top_right() const {
-        return vector2{ right, top };
-    }
-
-    inline vector2 get_bottom_left() const {
-        return vector2{ left, bottom };
-    }
-
-    inline vector2 get_bottom_right() const {
-        return vector2{ right, bottom };
-    }
+    inline vector2 get_top_left() const { return vector2{ left, top }; }
+    inline vector2 get_top_right() const { return vector2{ right, top }; }
+    inline vector2 get_bottom_left() const { return vector2{ left, bottom }; }
+    inline vector2 get_bottom_right() const { return vector2{ right, bottom }; }
 
     inline bool is_empty() const {
         return math::is_zero(get_width()) || math::is_zero(get_height());

@@ -7,17 +7,13 @@
 #include <graphics/shader.h>
 #include <graphics/renderer.h>
 
-#include <config.hpp>
-
-
 namespace ui {
 
 
 static Shader* p_ui_shader = nullptr;
-static math::matrix4 ui_transform;
 
 
-void renderer::draw_rectangle(const math::rectangle& rect, const math::color32& color) {
+void renderer::draw_rectangle(const math::rectangle& rect, const math::matrix4& transform, const math::color32& color) {
     if (p_ui_shader == nullptr) {
         p_ui_shader = new Shader();
 
@@ -25,21 +21,18 @@ void renderer::draw_rectangle(const math::rectangle& rect, const math::color32& 
             .load_shader(Shader::Type::Fragment, "resources/shaders/ui.fs")
             .compile()
             .bind();
-
-        auto& cfg = config::get_instance();
-        ui_transform = math::matrix4{
-            2.f / cfg.window.width, 0, 0, -1.f,
-            0, -2.f / cfg.window.height, 0, 1.f,
-            0, 0, 1, 0,
-            0, 0, 0, 1,
-        };
     }
+    
+    auto rect_size = rect.get_size();
+
+    auto tl = (transform * math::vector4::make(0, 0, 0, 1)).xy;
+    auto br = (transform * math::vector4::make(rect_size, 0, 1)).xy;
 
     math::vector2 vertices[4] = {
-        (ui_transform * math::vector4::make(rect.get_top_left(), 0, 1)).xy,
-        (ui_transform * math::vector4::make(rect.get_top_right(), 0, 1)).xy,
-        (ui_transform * math::vector4::make(rect.get_bottom_right(), 0, 1)).xy,
-        (ui_transform * math::vector4::make(rect.get_bottom_left(), 0, 1)).xy,
+        math::vector2{ tl.x, tl.y }, // top left
+        math::vector2{ br.x, tl.y }, // top right
+        math::vector2{ br.x, br.y }, // bottom right
+        math::vector2{ tl.x, br.y }, // bottom left
     };
 
     static const u32 indices[] = {  // note that we start from 0!

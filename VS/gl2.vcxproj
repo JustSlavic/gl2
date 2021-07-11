@@ -54,6 +54,7 @@
     <ClCompile Include="..\src\service\string.cpp" />
     <ClCompile Include="..\src\service\string_id.cpp" />
     <ClCompile Include="..\src\ui\ui_layer.cpp" />
+    <ClCompile Include="..\src\ui\ui_renderer.cpp" />
     <ClCompile Include="..\src\ui\ui_shape.cpp" />
     <ClCompile Include="..\src\ui\ui_shape_loader.cpp" />
     <ClCompile Include="..\src\utils.cpp" />
@@ -109,6 +110,7 @@
     <ClInclude Include="..\src\service\string.hpp" />
     <ClInclude Include="..\src\service\string_id.hpp" />
     <ClInclude Include="..\src\ui\ui_layer.hpp" />
+    <ClInclude Include="..\src\ui\ui_renderer.hpp" />
     <ClInclude Include="..\src\ui\ui_shape.hpp" />
     <ClInclude Include="..\src\ui\ui_shape_loader.hpp" />
     <ClInclude Include="..\src\utils.h" />

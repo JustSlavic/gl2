@@ -25,7 +25,8 @@ bool shape::hit_test (math::vector2 p_in_parent) {
 
 
 void container::draw (const math::matrix4& parent_matrix) {
-    auto transform = get_transform_matrix() * parent_matrix;
+    auto transform_ = get_transform_matrix();
+    auto transform = parent_matrix * transform_;
 
     for (auto& p_shape : childs) {
         p_shape->draw(transform);
@@ -43,42 +44,13 @@ bool container::hit_test (math::vector2 p_in_parent) {
 
 
 void rectangle::draw (const math::matrix4& parent_matrix) {
-    // printf("Draw rectangle (%5.2f, %5.2f) -- (%5.2f, %5.2f)\n",
-    //     position.x, position.y,
-    //     position.x + size.x, position.y + size.y);
+    auto transform_ = get_transform_matrix();
+    auto transform = parent_matrix * transform_;
 
     auto top_left = position;
     auto bottom_right = position + size;
 
-    renderer::draw_rectangle(math::rectangle(top_left, bottom_right));
-    // renderer::draw_rectangle(math::rectangle(0, 0, 100, 20));
-
-    // math::vector2 vertices[4] = {
-    //     math::vector2{position.x,          position.y},
-    //     math::vector2{position.x + size.x, position.y},
-    //     math::vector2{position.x + size.x, position.y + size.y},
-    //     math::vector2{position.x,          position.y + size.y},
-    // };
-
-    // for (math::vector2& v : vertices) {
-    //     auto w = parent_matrix * math::vector4::make(v, 0, 1);
-    //     v = w.xy;
-    // }
-
-    // static const u32 indices[] = {  // note that we start from 0!
-    //     0, 1, 2,
-    //     2, 3, 0,
-    // };
-
-    // VertexBuffer vb(vertices, sizeof(vertices) * 2);
-    // IndexBuffer  ib(indices, sizeof(indices) / sizeof(u32));
-    // VertexBufferLayout vbl;
-    // VertexArray va;
-
-    // vbl.push<f32>(2);
-    // va.add_buffer(vb, vbl);
-
-    // gl2::Renderer::draw(va, ib, *p_ui_shader);
+    renderer::draw_rectangle(math::rectangle(top_left, bottom_right), transform);
 }
 
 

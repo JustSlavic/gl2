@@ -35,10 +35,10 @@ public:
 
     math::matrix4 get_transform_matrix () const {
         return {
-            1, 0, 0, 0,
-            0, 1, 0, 0,
-            0, 0, 1, 0,
-            0, 0, 0, 1,
+            scale.x, 0, 0, position.x - pivot.x,
+            0, scale.y, 0, position.y - pivot.y,
+            0,       0, 1, 0,
+            0,       0, 0, 1,
         };
     }
 

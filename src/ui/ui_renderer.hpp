@@ -8,7 +8,7 @@ namespace ui {
 
 
 struct renderer {
-    static void draw_rectangle(const math::rectangle& rect, const math::color32& color = math::color32::white);
+    static void draw_rectangle(const math::rectangle& rect, const math::matrix4& transform, const math::color32& color = math::color32::white);
 };
 
 

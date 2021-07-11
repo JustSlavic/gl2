@@ -13,8 +13,8 @@ void ui_layer::initialize() {
     ui_root = loader.load_ui_shape("resources/ui/root.ui.son"); // loader.get_debug_ui();
 
     ui_transform = math::matrix4{
-        1.f / cfg.window.width, 0, 0, -1.f,
-        0, -1.f / cfg.window.height, 0, 1.f,
+        2.f / cfg.window.width, 0, 0, -1.f,
+        0, -2.f / cfg.window.height, 0, 1.f,
         0, 0, 1, 0,
         0, 0, 0, 1,
     };
