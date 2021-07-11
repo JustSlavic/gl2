@@ -1,0 +1,76 @@
+#pragma once
+
+#include "vector2.hpp"
+
+
+namespace math {
+
+
+// Rectangle with sides aligned to coordinate axis
+struct rectangle {
+private:
+    float32 top, left, bottom, right;
+
+public:
+    rectangle(f32 t, f32 l, f32 b, f32 r)
+        : top(t), left(l), bottom(b), right(r)
+    {}
+
+    rectangle(vector2 tl, vector2 br)
+        : top(tl.y), left(tl.x), bottom(br.y), right(br.x)
+    {}
+
+    inline f32 get_width() const { return math::abs(right - left); }
+    inline f32 get_height() const { return math::abs(top - bottom); }
+
+    inline vector2 get_size() const { return vector2{ get_width(), get_height() }; }
+
+    inline f32 get_top() const { return top; }
+    inline f32 get_left() const { return left; }
+    inline f32 get_right() const { return right; }
+    inline f32 get_bottom() const { return bottom; }
+
+    inline vector2 get_top_left() const { return vector2{ left, top }; }
+    inline vector2 get_top_right() const { return vector2{ right, top }; }
+    inline vector2 get_bottom_left() const { return vector2{ left, bottom }; }
+    inline vector2 get_bottom_right() const { return vector2{ right, bottom }; }
+
+    inline bool is_empty() const {
+        return math::is_zero(get_width()) || math::is_zero(get_height());
+    }
+
+    inline bool contains(math::vector2 p) {
+        return left <= p.x && p.x <= right
+            && bottom <= p.y && p.y <= top;
+    }
+
+    inline rectangle intersect(const rectangle& other) const {
+        return rectangle(
+            math::min(top, other.top),
+            math::max(left, other.left),
+            math::max(bottom, other.bottom),
+            math::min(right, other.right)
+        );
+    }
+
+    inline rectangle extend(const rectangle& other) const {
+        return rectangle(
+            max(top, other.top),
+            min(left, other.left),
+            min(bottom, other.bottom),
+            max(right, other.right)
+        );
+    }
+};
+
+
+//
+struct rotated_rectangle {
+    vector2 top_left;
+    vector2 top_right;
+    vector2 bottom_right;
+    vector2 bottom_left;
+};
+
+
+} // math

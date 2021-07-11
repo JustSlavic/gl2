@@ -7,3 +7,4 @@
 #include "math/matrix3.hpp"
 #include "math/matrix4.hpp"
 #include "math/color.hpp"
+#include "math/rectangle.hpp"

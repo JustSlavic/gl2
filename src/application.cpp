@@ -19,11 +19,10 @@
 #include <gravity_simulation_2d/gravity_layer.hpp>
 #include <physics_simulation_2d/physics_layer.hpp>
 
+#include <ui/ui_layer.hpp>
+
 
 namespace gl2 {
-
-
-
 
 
 math::vector3 intersect_z0_plane (math::vector3 ray_start, math::vector3 vector) {
@@ -159,6 +158,10 @@ int gravity_simulation_app::initialize() {
 
     // Initialize after base class.
     layers.push_back(new gravity_simulation_2d::layer_world());
+
+    auto* ui_layer = new ui::ui_layer();
+    ui_layer->initialize();
+    layers.push_back(ui_layer);
     return 0;
 }
 

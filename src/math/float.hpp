@@ -66,42 +66,27 @@ inline f64 sqrt(f64 x) {
     return ::std::sqrt(x);
 }
 
-inline f32 lerp (f32 a, f32 b, f32 t) {
-    ASSERT(0.f <= t && t <= 1.f);
 
-    return (1.f - t) * a + t * b;
-}
-
-inline f64 lerp (f64 a, f64 b, f64 t) {
-    ASSERT(0.0 <= t && t <= 1.0);
-
-    return (1.0 - t) * a + t * b;
-}
-
-inline f32 min(f32 x, f32 y) {
-    return x < y ? x : y;
-}
-
-inline f64 min(f64 x, f64 y) {
-    return x < y ? x : y;
-}
-
-inline f32 max(f32 x, f32 y) {
-    return x < y ? y : x;
-}
-
-inline f64 max(f64 x, f64 y) {
-    return x < y ? y : x;
-}
-
-inline f32 clamp (f32 x, f32 min, f32 max) {
-    if (x < min) return min;
-    if (x > max) return max;
-    return x;
+template <typename T, std::enable_if_t<std::is_floating_point<T>::value, bool> = true>
+inline T min (T a, T b) {
+    return a < b ? a : b;
 }
 
 
-inline f64 clamp (f64 x, f64 min, f64 max) {
+template <typename T, std::enable_if_t<std::is_floating_point<T>::value, bool> = true>
+inline T max (T a, T b) {
+    return a < b ? b : a;
+}
+
+template <typename T, std::enable_if_t<std::is_floating_point<T>::value, bool> = true>
+inline T lerp (T a, T b, T t) {
+    ASSERT(0 <= t && t <= 1);
+
+    return (1 - t) * a + t * b;
+}
+
+template <typename T, std::enable_if_t<std::is_floating_point<T>::value, bool> = true>
+inline T clamp (T x, T min, T max) {
     if (x < min) return min;
     if (x > max) return max;
     return x;

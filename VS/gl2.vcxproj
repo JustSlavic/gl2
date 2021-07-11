@@ -39,7 +39,6 @@
     <ClCompile Include="..\src\graphics\vertex_buffer.cpp" />
     <ClCompile Include="..\src\graphics\vertex_buffer_layout.cpp" />
     <ClCompile Include="..\src\gravity_simulation_2d\camera.cpp" />
-    <ClCompile Include="..\src\gravity_simulation_2d\creatures.cpp" />
     <ClCompile Include="..\src\gravity_simulation_2d\gravity_layer.cpp" />
     <ClCompile Include="..\src\gravity_simulation_2d\model.cpp" />
     <ClCompile Include="..\src\logging\handler.cpp" />
@@ -58,6 +57,10 @@
     <ClCompile Include="..\src\service\storage.cpp" />
     <ClCompile Include="..\src\service\string.cpp" />
     <ClCompile Include="..\src\service\string_id.cpp" />
+    <ClCompile Include="..\src\ui\ui_layer.cpp" />
+    <ClCompile Include="..\src\ui\ui_renderer.cpp" />
+    <ClCompile Include="..\src\ui\ui_shape.cpp" />
+    <ClCompile Include="..\src\ui\ui_shape_loader.cpp" />
     <ClCompile Include="..\src\utils.cpp" />
     <ClCompile Include="..\src\version.cpp" />
   </ItemGroup>
@@ -92,7 +95,6 @@
     <ClInclude Include="..\src\graphics\vertex_buffer.h" />
     <ClInclude Include="..\src\graphics\vertex_buffer_layout.h" />
     <ClInclude Include="..\src\gravity_simulation_2d\camera.hpp" />
-    <ClInclude Include="..\src\gravity_simulation_2d\creatures.hpp" />
     <ClInclude Include="..\src\gravity_simulation_2d\gravity_layer.hpp" />
     <ClInclude Include="..\src\gravity_simulation_2d\model.hpp" />
     <ClInclude Include="..\src\logging\handler.h" />
@@ -104,6 +106,7 @@
     <ClInclude Include="..\src\math\matrix2.hpp" />
     <ClInclude Include="..\src\math\matrix3.hpp" />
     <ClInclude Include="..\src\math\matrix4.hpp" />
+    <ClInclude Include="..\src\math\rectangle.hpp" />
     <ClInclude Include="..\src\math\vector2.hpp" />
     <ClInclude Include="..\src\math\vector3.hpp" />
     <ClInclude Include="..\src\math\vector4.hpp" />
@@ -113,6 +116,10 @@
     <ClInclude Include="..\src\service\storage.hpp" />
     <ClInclude Include="..\src\service\string.hpp" />
     <ClInclude Include="..\src\service\string_id.hpp" />
+    <ClInclude Include="..\src\ui\ui_layer.hpp" />
+    <ClInclude Include="..\src\ui\ui_renderer.hpp" />
+    <ClInclude Include="..\src\ui\ui_shape.hpp" />
+    <ClInclude Include="..\src\ui\ui_shape_loader.hpp" />
     <ClInclude Include="..\src\utils.h" />
     <ClInclude Include="..\src\version.h" />
   </ItemGroup>

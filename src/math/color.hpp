@@ -63,6 +63,8 @@ struct color32 {
         f32 a;
     };
 
+    static color32 white;
+
     static color32 make ();
     static color32 make (f32 r, f32 g, f32 b, f32 a = 1.f);
     static color32 make (i32 r, i32 g, i32 b, i32 a = 255);

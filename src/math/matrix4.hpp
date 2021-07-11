@@ -67,7 +67,7 @@ inline matrix4 operator + (const matrix4& lhs, const matrix4& rhs) {
 
 
 inline matrix4 operator * (const matrix4& lhs, const matrix4& rhs) {
-    matrix4 result;
+    matrix4 result = matrix4::zero();
 
     for (size_t i = 0; i < 4; i++) {
         for (size_t j = 0; j < 4; j++) {

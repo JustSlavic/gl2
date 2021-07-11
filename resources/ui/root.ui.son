@@ -1,0 +1,16 @@
+type = "ui_container"
+children = [
+    {
+        type = "ui_rectangle"
+        position = {
+            type = "vector2"
+            x = 10
+            y = 10
+        }
+        size = {
+            type = "vector2"
+            x = 100
+            y = 100
+        }
+    }
+]
