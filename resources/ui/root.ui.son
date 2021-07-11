@@ -1,9 +1,4 @@
 type = "ui_container"
-scale = {
-    type = "vector2"
-    x = 2.0
-    y = 0.5
-}
 children = [
     {
         type = "ui_rectangle"
@@ -16,11 +11,6 @@ children = [
             type = "vector2"
             x = 100
             y = 100
-        }
-        scale = {
-            type = "vector2"
-            x = 2.0
-            y = 4.0
         }
     }
 ]

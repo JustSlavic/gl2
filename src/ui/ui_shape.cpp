@@ -50,7 +50,7 @@ void rectangle::draw (const math::matrix4& parent_matrix) {
     auto top_left = position;
     auto bottom_right = position + size;
 
-    renderer::draw_rectangle(math::rectangle(top_left, bottom_right), transform);
+    renderer::draw_rectangle(math::rectangle(top_left, bottom_right), transform, math::color32::unpack(math::packed_color<math::color_layout::ARGB>(0xFFAB8FE2)));
 }
 
 
