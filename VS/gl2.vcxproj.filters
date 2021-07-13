@@ -168,12 +168,6 @@
     <ClCompile Include="..\src\gravity_simulation_2d\model.cpp">
       <Filter>Source files\src\gravity_simulation_2d</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\physics_simulation_2d\model.cpp">
-      <Filter>Source files\src\physics_simulation_2d</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\physics_simulation_2d\physics_layer.cpp">
-      <Filter>Source files\src\physics_simulation_2d</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\ui\ui_layer.cpp">
       <Filter>Source files\src\ui</Filter>
     </ClCompile>
@@ -185,6 +179,12 @@
     </ClCompile>
     <ClCompile Include="..\src\ui\ui_renderer.cpp">
       <Filter>Source files\src\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\physics_simulation_2d\model.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\physics_simulation_2d\physics_layer.cpp">
+      <Filter>Source files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -350,11 +350,14 @@
     <ClInclude Include="..\src\ui\ui_renderer.hpp">
       <Filter>Source files\src\ui</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\physics_simulation_2d\model.hpp">
-      <Filter>Source files\src\physics_simulation_2d</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\physics\rigid_body.hpp">
       <Filter>Source files\src\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\physics_simulation_2d\model.hpp">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\physics_simulation_2d\physics_layer.hpp">
+      <Filter>Header files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

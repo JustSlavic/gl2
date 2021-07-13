@@ -2,8 +2,14 @@
 #include <application.h>
 #include <version.h>
 #include <logging/logging.h>
+#include <defines.hpp>
+
+#ifdef PLATFORM_WINDOWS
+#include <windows.h>
+#endif
 
 
+#ifdef PLATFORM_LINUX
 int main(int argc, char** argv, char** env) {
     LogGlobalContext::instance()
         .set_level(Log::Level::Info)
@@ -21,3 +27,21 @@ int main(int argc, char** argv, char** env) {
 
     return app.run();
 }
+#endif
+
+
+#ifdef PLATFORM_WINDOWS
+int WINAPI
+WinMain(
+    HINSTANCE hInstance,
+    HINSTANCE hPrevInstance,
+    LPSTR lpCmdLine,
+    int nCmdShow)
+{
+    const char* msg = "Hello world!\n";
+
+    OutputDebugStringA(msg);
+
+    return 0;
+}
+#endif

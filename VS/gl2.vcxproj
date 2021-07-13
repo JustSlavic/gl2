@@ -240,7 +240,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>C:\Projects\SDL2\lib\x64\SDL2.lib;C:\Projects\glew\lib\Release\x64\glew32.lib;C:\Projects\glew\lib\Release\x64\glew32s.lib;OpenGL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>C:\Projects\glew\bin\Release\x64;C:\Projects\glew\lib\Release\x64</AdditionalLibraryDirectories>
