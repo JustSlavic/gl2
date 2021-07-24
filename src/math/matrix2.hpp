@@ -92,5 +92,8 @@ inline bool operator != (const matrix2& lhs, const matrix2& rhs) {
     return !(lhs == rhs);
 }
 
-
 } // math
+
+#ifdef UNITY_BUILD
+#include "matrix2.cpp"
+#endif

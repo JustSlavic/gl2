@@ -32,4 +32,9 @@ void print_binary_repr(T x) {
 void print_binary_repr(f32 x);
 void print_binary_repr(f64 x);
 
+
+#ifdef UNITY_BUILD
+#include "utils.cpp"
+#endif
+
 #endif // GIR1_UTIL_H

@@ -165,3 +165,7 @@ void print(const vector2& v) {
 }
 
 } // math
+
+#ifdef UNITY_BUILD
+#include "vector2.cpp"
+#endif

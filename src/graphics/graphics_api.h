@@ -29,5 +29,9 @@ namespace gl2 {
     const char *to_string(GraphicsApi::Name);
 }
 
+#ifdef UNITY_BUILD
+#include "graphics_api.cpp"
+#endif
+
 #endif // WM_GRAPHICS_API_H
 

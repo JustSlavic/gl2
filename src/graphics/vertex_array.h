@@ -19,4 +19,8 @@ struct VertexArray {
 };
 
 
+#ifdef UNITY_BUILD
+#include "vertex_array.cpp"
+#endif
+
 #endif // GIR1_VERTEX_ARRAY_H

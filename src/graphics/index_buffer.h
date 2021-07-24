@@ -15,5 +15,8 @@ struct IndexBuffer {
     void unbind() const;
 };
 
+#ifdef UNITY_BUILD
+#include "index_buffer.cpp"
+#endif
 
 #endif // GIR1_INDEX_BUFFER_H

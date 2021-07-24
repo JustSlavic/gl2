@@ -83,4 +83,9 @@ private:
     LogGlobalContext() = default;
 };
 
+
+#ifdef UNITY_BUILD
+#include "logging.cpp"
+#endif
+
 #endif //GIR1_LOGGING_H

@@ -121,3 +121,7 @@ inline color32 lerp (const color32& a, const color32& b, f32 t) {
 
 
 } // math
+
+#ifdef UNITY_BUILD
+#include "color.cpp"
+#endif

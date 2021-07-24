@@ -48,4 +48,8 @@ void VertexBufferLayout::push<u32>(u32 count);
 template <>
 void VertexBufferLayout::push<u8>(u32 count);
 
+#ifdef UNITY_BUILD
+#include "vertex_buffer_layout.cpp"
+#endif
+
 #endif // GIR1_VERTEX_BUFFER_LAYOUT_H

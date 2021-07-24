@@ -27,5 +27,8 @@ keymap load_keymap(const std::string& filename);
 
 } // core::input
 
+#ifdef UNITY_BUILD
+#include "keymap.cpp"
+#endif
 
 #endif // GL2_SRC_CORE_KEYMAP_HPP

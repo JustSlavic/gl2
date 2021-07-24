@@ -15,6 +15,8 @@ struct renderer {
 } // ui
 
 
-
+#ifdef UNITY_BUILD
+#include "ui_renderer.cpp"
+#endif
 
 #endif // GL2_SRC_UI_RENDERER_HPP

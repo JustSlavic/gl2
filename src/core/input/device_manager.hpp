@@ -81,4 +81,8 @@ private:
 } // core::input
 
 
+#ifdef UNITY_BUILD
+#include "device_manager.cpp"
+#endif
+
 #endif // GL2_SRC_CORE_INPUT_DEVICE_MANAGER_HPP

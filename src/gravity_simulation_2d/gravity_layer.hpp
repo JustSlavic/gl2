@@ -47,5 +47,8 @@ struct layer_world : public core::layer {
 
 } // gravity_simulation_2d
 
+#ifdef UNITY_BUILD
+#include "gravity_layer.cpp"
+#endif
 
 #endif // GL2_SRC_GRAVITY_SIMULATION_2D_GRAVITY_LAYER_HPP

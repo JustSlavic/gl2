@@ -14,4 +14,9 @@ struct layer : public event_receiver {
 
 } // core
 
+
+#ifdef UNITY_BUILD
+#include "layer.cpp"
+#endif
+
 #endif // GL2_SRC_CORE_LAYER_HPP

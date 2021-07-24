@@ -52,4 +52,9 @@ struct event_toggle_F2 : public event {
 
 } // core
 
+
+#ifdef UNITY_BUILD
+#include "events.cpp"
+#endif
+
 #endif // GL2_SRC_CORE_EVENTS_HPP

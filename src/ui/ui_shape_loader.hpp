@@ -32,5 +32,8 @@ public:
 
 } // ui
 
+#ifdef UNITY_BUILD
+#include "ui_shape_loader.cpp"
+#endif
 
 #endif // GL2_SRC_UI_SHAPE_LOADER_HPP

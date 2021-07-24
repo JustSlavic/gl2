@@ -23,5 +23,8 @@ struct ui_layer : public core::layer {
 
 } // ui
 
+#ifdef UNITY_BUILD
+#include "ui_layer.cpp"
+#endif
 
 #endif

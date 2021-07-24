@@ -72,4 +72,9 @@ struct Model {
     void on_right_mouse_click(math::vector2 position);
 };
 
+
+#ifdef UNITY_BUILD
+#include "model.cpp"
+#endif
+
 } // gravity_simulation_2d

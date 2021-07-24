@@ -131,6 +131,9 @@ inline void print_matrix4(matrix4 m) {
     );
 }
 
-
 } // math
+
+#ifdef UNITY_BUILD
+#include "matrix4.cpp"
+#endif
 

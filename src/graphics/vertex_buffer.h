@@ -14,5 +14,8 @@ struct VertexBuffer {
     void unbind() const;
 };
 
+#ifdef UNITY_BUILD
+#include "vertex_buffer.cpp"
+#endif
 
 #endif // GIR1_VERTEX_BUFFER_H

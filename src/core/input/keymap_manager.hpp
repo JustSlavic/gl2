@@ -27,5 +27,8 @@ private:
 } // core::input
 
 
+#ifdef UNITY_BUILD
+#include "keymap_manager.cpp"
+#endif
 
 #endif // GL2_SRC_CORE_INPUT_KEYMAP_MANAGER_HPP

@@ -121,5 +121,8 @@ inline vector3 lerp (const vector3& a, const vector3& b, f32 t) {
 math::vector3 intersect_plane(math::vector3 ray_origin, math::vector3 ray_direction, math::vector3 point_on_plane, math::vector3 plane_normal);
 math::vector3 intersect_z0_plane(math::vector3 ray_start, math::vector3 vector);
 
-
 } // math
+
+#ifdef UNITY_BUILD
+#include "vector3.cpp"
+#endif

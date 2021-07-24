@@ -61,5 +61,8 @@ struct Shader {
     static void unbind();
 };
 
+#ifdef UNITY_BUILD
+#include "shader.cpp"
+#endif
 
 #endif // GIR1_SHADER_H

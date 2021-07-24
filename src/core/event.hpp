@@ -42,4 +42,8 @@ struct event {
 
 } // core
 
+#ifdef UNITY_BUILD
+#include "event.cpp"
+#endif
+
 #endif // GL2_SRC_CORE_EVENT_HPP

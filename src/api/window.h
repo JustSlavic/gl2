@@ -28,4 +28,8 @@ private:
 }
 
 
+#ifdef UNITY_BUILD
+#include "window.cpp"
+#endif
+
 #endif // GL2_WM_WINDOW_H

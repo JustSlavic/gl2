@@ -25,5 +25,8 @@ struct LogStreamHandler : public LogHandler {
     void write(const std::stringstream& log) override;
 };
 
+#ifdef UNITY_BUILD
+#include "handler.cpp"
+#endif
 
 #endif //GIR1_HANDLER_H

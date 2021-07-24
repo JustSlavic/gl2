@@ -18,5 +18,8 @@ namespace gl2 {
     };
 }
 
+#ifdef UNITY_BUILD
+#include "renderer.cpp"
+#endif
 
 #endif // GIR1_RENDERER_H

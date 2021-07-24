@@ -78,5 +78,8 @@ public:
 
 } // ui
 
+#ifdef UNITY_BUILD
+#include "ui_shape.cpp"
+#endif
 
 #endif // GL2_SRC_UI_UI_SHAPE_HPP

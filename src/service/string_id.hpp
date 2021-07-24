@@ -18,3 +18,7 @@ bool operator == (const string_id& lhs, const string_id& rhs);
 bool operator != (const string_id& lhs, const string_id& rhs);
 
 } // namespace service
+
+#ifdef UNITY_BUILD
+#include "string_id.cpp"
+#endif

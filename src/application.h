@@ -49,6 +49,8 @@ struct physics_engine_app : public application {
 
 }
 
-
+#ifdef UNITY_BUILD
+#include "application.cpp"
+#endif
 
 #endif // GL2_APPLICATION_H

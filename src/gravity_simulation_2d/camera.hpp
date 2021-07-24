@@ -17,3 +17,7 @@ struct Camera2D {
     math::vector3 get_forward_vector () const;
     math::vector3 get_up_vector      () const;
 };
+
+#ifdef UNITY_BUILD
+#include "camera.cpp"
+#endif
