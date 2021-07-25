@@ -1,9 +1,8 @@
 #pragma once
 
 #include "consts.hpp"
-
 #include <defines.hpp>
-#include <type_traits>
+
 
 namespace math {
 
@@ -23,12 +22,14 @@ inline bool equal(f64 a, f64 b) {
     return ::math::abs(b - a) < consts<f64>::eps();
 }
 
-inline f32 radians(f32 a) {
-    return a * consts<f32>::pi() / 180.f;
+// Transforms degrees into radians
+inline f32 radians(f32 degrees) {
+    return degrees * consts<f32>::pi() / 180.f;
 }
 
-inline f64 radians(f64 a) {
-    return a * consts<f64>::pi() / 180.0;
+// Transforms degrees into radians
+inline f64 radians(f64 degrees) {
+    return degrees * consts<f64>::pi() / 180.0;
 }
 
 inline f32 angles(f32 a) {
@@ -67,26 +68,48 @@ inline f64 sqrt(f64 x) {
 }
 
 
-template <typename T, std::enable_if_t<std::is_floating_point<T>::value, bool> = true>
-inline T min (T a, T b) {
+inline f32 min (f32 a, f32 b) {
     return a < b ? a : b;
 }
 
 
-template <typename T, std::enable_if_t<std::is_floating_point<T>::value, bool> = true>
-inline T max (T a, T b) {
+inline f64 min (f64 a, f64 b) {
+    return a < b ? a : b;
+}
+
+
+inline f32 max (f32 a, f32 b) {
     return a < b ? b : a;
 }
 
-template <typename T, std::enable_if_t<std::is_floating_point<T>::value, bool> = true>
-inline T lerp (T a, T b, T t) {
+
+inline f64 max (f64 a, f64 b) {
+    return a < b ? b : a;
+}
+
+
+inline f32 lerp (f32 a, f32 b, f32 t) {
     ASSERT(0 <= t && t <= 1);
 
     return (1 - t) * a + t * b;
 }
 
-template <typename T, std::enable_if_t<std::is_floating_point<T>::value, bool> = true>
-inline T clamp (T x, T min, T max) {
+
+inline f64 lerp (f64 a, f64 b, f64 t) {
+    ASSERT(0 <= t && t <= 1);
+
+    return (1 - t) * a + t * b;
+}
+
+
+inline f32 clamp (f32 x, f32 min, f32 max) {
+    if (x < min) return min;
+    if (x > max) return max;
+    return x;
+}
+
+
+inline f64 clamp (f64 x, f64 min, f64 max) {
     if (x < min) return min;
     if (x > max) return max;
     return x;

@@ -2,7 +2,6 @@
 #define GIR1_SHADER_H
 
 #include <unordered_map>
-#include <glm/glm.hpp>
 #include <math.hpp>
 #include <defines.hpp>
 
@@ -45,15 +44,13 @@ struct Shader {
     Shader& set_uniform_3f(const char *name, const math::vector3& value);
     Shader& set_uniform_3f(const char *name, const math::color24& value);
 
-    Shader& set_uniform_vec3f(Uniform uniform, const glm::vec3 &vector);
-    Shader& set_uniform_vec3f(const char *name, const glm::vec3 &vector);
+    Shader& set_uniform_vec3f(Uniform uniform, const math::vector3 &vector);
+    Shader& set_uniform_vec3f(const char *name, const math::vector3 &vector);
 
     Shader& set_uniform_4f(Uniform uniform, f32 x1, f32 x2, f32 x3, f32 x4);
     Shader& set_uniform_4f(const char *name, f32 x1, f32 x2, f32 x3, f32 x4);
     Shader& set_uniform_4f(const char* name, const math::color32& value);
 
-    Shader& set_uniform_mat4f(Uniform uniform, const glm::mat4& matrix);
-    Shader& set_uniform_mat4f(const char *name, const glm::mat4& matrix);
     Shader& set_uniform_mat4f(Uniform uniform, const math::mat4& matrix);
     Shader& set_uniform_mat4f(const char *name, const math::mat4& matrix);
 

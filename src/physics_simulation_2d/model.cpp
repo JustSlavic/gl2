@@ -1,6 +1,5 @@
 #include "model.hpp"
 
-#include <glm/gtc/matrix_transform.hpp>
 #include <graphics/renderer.h>
 
 
@@ -26,11 +25,12 @@ void model::draw() {
     draw_calls++;
 
     for (auto& segment : static_stuff) {
-        auto model_matrix = glm::mat4(1.f);
-        model_matrix = glm::translate(model_matrix,
-            glm::vec3((segment.start.x + segment.end.x) / 2.f, (segment.start.y + segment.end.y) / 2.f, 0.f)
-        );
-        model_matrix = glm::scale(model_matrix, glm::vec3(math::length(segment.start - segment.end), 0.1f, 1.f));
+        auto model_matrix = math::matrix4::identity();
+        model_matrix = math::translate(model_matrix,
+            math::vector3{ (segment.start.x + segment.end.x) / 2.f, (segment.start.y + segment.end.y) / 2.f, 0.f });
+        model_matrix = math::scale(model_matrix,
+            math::vector3{ math::length(segment.start - segment.end), 0.1f, 1.f });
+
         arrow_shader->set_uniform_mat4f("u_model", model_matrix);
 
         gl2::Renderer::draw(*va, *ib, *arrow_shader);
@@ -40,9 +40,10 @@ void model::draw() {
     for (auto& body : dynamic_stuff) {
         shader->set_uniform_3f("u_color", math::color24{ 1.f, 1.f, 1.f });
 
-        auto model_matrix = glm::mat4(1.f);
-        model_matrix = glm::translate(model_matrix, glm::vec3(body.position.x, body.position.y, 0.f));
-        model_matrix = glm::scale(model_matrix, glm::vec3(0.1f));
+        auto model_matrix = math::matrix4::identity();
+        model_matrix = math::translate(model_matrix,
+            math::vector3::make(body.position, 0.f));
+        model_matrix = math::scale(model_matrix, math::vector3::make(0.1f));
 
         shader->set_uniform_mat4f("u_model", model_matrix);
         shader->bind();

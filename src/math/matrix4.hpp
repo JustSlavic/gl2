@@ -54,6 +54,10 @@ matrix4 projection_fov (f32 fov, f32 width, f32 height, f32 near, f32 far);
 matrix4 projection_fov (f32 fov, f32 ratio, f32 near, f32 far);
 matrix4 projection_1 (f32 width, f32 height, f32 near, f32 far);
 
+matrix4 look_at (vector3 eye, vector3 center, vector3 up);
+
+matrix4 translate (const matrix4& matrix, const vector3& displacement);
+matrix4 scale (const matrix4& matrix, const vector3& factor);
 
 inline matrix4 operator + (const matrix4& lhs, const matrix4& rhs) {
     matrix4 result;

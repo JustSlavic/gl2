@@ -33,6 +33,7 @@ struct vector3 {
     inline float32 length_2   () const { return x*x + y*y + z*z; } // length squared
     inline float32 length     () const { return math::sqrt(length_2()); }
     inline float32 norm       () const { return length(); }
+    inline void    normalize  ()       { auto n = norm(); x /= n; y /= n; z /= n; }
     inline vector3 normalized () const { auto n = norm(); return { x / n, y / n, z / n }; }
 
     inline vector3& operator += (const vector3& other) {
@@ -72,6 +73,8 @@ inline vector3 cross (const vector3& a, const vector3& b) {
         a.x*b.y - a.y*b.x
     };
 }
+
+inline vector3 normalize (vector3 a) { a.normalize(); return a; }
 
 inline bool is_zero (const vector3& a) {
     return math::is_zero(a.x) && math::is_zero(a.y) && math::is_zero(a.z);

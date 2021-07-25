@@ -68,7 +68,7 @@ layer_world::layer_world()
 
 
 void layer_world::draw() {
-    auto view = camera.get_view_matrix_math();
+    auto view = camera.get_view_matrix();
 
     body_shader.set_uniform_mat4f("u_view", view);
     body_shader.set_uniform_mat4f("u_model", math::mat4::identity());

@@ -38,4 +38,8 @@ public:
 }; // physics_simulation_2d
 
 
+#ifdef UNITY_BUILD
+#include "physics_layer.cpp"
+#endif
+
 #endif // GL2_SRC_PHYSICS_SIMULATION_2D_PHYSICS_LAYER_HPP

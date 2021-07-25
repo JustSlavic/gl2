@@ -28,6 +28,7 @@ mat4 projection(f32 width, f32 height, f32 near, f32 far) {
     return a;
 }
 
+
 mat4 projection_fov(f32 fov, f32 width, f32 height, f32 near, f32 far) {
     auto a = mat4::zero();
 
@@ -45,6 +46,7 @@ mat4 projection_fov(f32 fov, f32 width, f32 height, f32 near, f32 far) {
     return a;
 }
 
+
 mat4 projection_fov(f32 fov, f32 ratio, f32 n, f32 f) {
     auto a = mat4::zero();
 
@@ -59,6 +61,7 @@ mat4 projection_fov(f32 fov, f32 ratio, f32 n, f32 f) {
     return a;
 }
 
+
 matrix4 projection_1(f32 width, f32 height, f32 near, f32 far) {
     auto a = matrix4::zero();
 
@@ -69,6 +72,44 @@ matrix4 projection_1(f32 width, f32 height, f32 near, f32 far) {
     a._43 = -2.f * far * near / (far - near);
 
     return a;
+}
+
+
+matrix4 look_at (vector3 to, vector3 from, vector3 up) {
+    auto f = normalize(from - to);
+    auto r = normalize(cross(f, up));
+    auto u = cross(r, f);
+
+    return {
+         r.x,         r.y,         r.z,       0,
+         u.x,         u.y,         u.z,       0,
+        -f.x,        -f.y,        -f.z,       0,
+        -dot(r, to), -dot(u, to), dot(f, to), 1,
+    };
+}
+
+
+matrix4 translate (const matrix4& matrix, const vector3& displacement) {
+    matrix4 transform {
+        1, 0, 0, displacement.x,
+        0, 1, 0, displacement.y,
+        0, 0, 1, displacement.z,
+        0, 0, 0, 1,
+    };
+
+    return transform * matrix;
+}
+
+
+matrix4 scale (const matrix4& matrix, const vector3& factor) {
+    matrix4 transform {
+        factor.x, 0, 0, 0,
+        0, factor.y, 0, 0,
+        0, 0, factor.z, 0,
+        0, 0, 0,        1,
+    };
+
+    return transform * matrix;
 }
 
 

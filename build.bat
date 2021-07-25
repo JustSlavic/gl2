@@ -1,0 +1,1 @@
+cl /Zi /Fegl2 /EHsc /std:c++17 -Icommon -Isrc -Igenerated -Iexternal/son/include -IC:\Projects\SDL2\include -IC:\Projects\glew\include -DUNITY_BUILD main.cpp C:\Projects\glew\lib\Release\x64\glew32.lib C:\Projects\SDL2\lib\x64\SDL2.lib OpenGL32.lib

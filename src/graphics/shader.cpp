@@ -150,17 +150,6 @@ Shader& Shader::set_uniform_4f(const char* name, const math::color32& value) {
     return *this;
 }
 
-Shader &Shader::set_uniform_mat4f(Shader::Uniform uniform, const glm::mat4 &matrix) {
-    this->bind();
-    glUniformMatrix4fv(uniform.location, 1, GL_FALSE, &matrix[0][0]); GL_CHECK_ERRORS;
-    return *this;
-}
-
-Shader &Shader::set_uniform_mat4f(const char *name, const glm::mat4 &matrix) {
-    Uniform uniform = get_uniform(name);
-    set_uniform_mat4f(uniform, matrix);
-    return *this;
-}
 
 Shader &Shader::set_uniform_mat4f(Shader::Uniform uniform, const math::mat4& matrix) {
     this->bind();
@@ -225,13 +214,13 @@ Shader& Shader::set_uniform_3f(const char *name, const math::color24& value) {
 }
 
 
-Shader &Shader::set_uniform_vec3f(Shader::Uniform uniform, const glm::vec3 &vector) {
+Shader &Shader::set_uniform_vec3f(Shader::Uniform uniform, const math::vector3 &vector) {
     this->bind();
     glUniform3fv(uniform.location, 1, &vector.x);
     return *this;
 }
 
-Shader &Shader::set_uniform_vec3f(const char *name, const glm::vec3 &vector) {
+Shader &Shader::set_uniform_vec3f(const char *name, const math::vector3 &vector) {
     Uniform uniform = get_uniform(name);
     set_uniform_vec3f(uniform, vector);
     return *this;

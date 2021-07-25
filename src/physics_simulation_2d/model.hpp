@@ -31,4 +31,8 @@ struct model {
 } // physics_simulation_2d
 
 
+#ifdef UNITY_BUILD
+#include "model.cpp"
+#endif
+
 #endif // GL2_SRC_PHYSICS_SIMULATION_2D_MODEL_HPP

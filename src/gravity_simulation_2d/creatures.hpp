@@ -19,7 +19,7 @@ struct creature {
     f32 size = 0.1f;
     kind_t kind;
 
-    glm::mat4 cached_model_matrix;
+    math::matrix4 cached_model_matrix;
 
     static creature make_random (math::vector2 position);
 };
@@ -40,3 +40,7 @@ struct simulation {
     void clean ();
 };
 
+
+#ifdef UNITY_BUILD
+#include "creatures.cpp"
+#endif

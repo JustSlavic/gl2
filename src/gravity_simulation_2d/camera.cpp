@@ -1,8 +1,8 @@
 #include "camera.hpp"
 #include <logging/logging.h>
 #include <core/input.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-
+//#include <glm/glm.hpp>
+//#include <glm/ext/matrix_transform.hpp>
 
 constexpr f32 CAMERA_SPEED = 2.f;
 constexpr f32 ZOOM_SPEED = .1f;
@@ -13,33 +13,18 @@ Camera2D::Camera2D()
 {}
 
 
-glm::mat4 Camera2D::get_view_matrix() const {
-    glm::vec3 up = glm::vec3(0.f, 1.f, 0.f);
+math::matrix4 Camera2D::get_view_matrix() const {
+    auto up = math::vector3{ 0.f, 1.f, 0.f };
+    auto direction = get_forward_vector();
 
-    glm::vec3 direction;
-    math::vector3 forward = get_forward_vector();
-    direction.x = forward.x;
-    direction.y = forward.y;
-    direction.z = forward.z;
+    //auto glm_position = glm::vec3(position.x, position.y, position.z);
+    //auto glm_direction = glm::vec3(direction.x, direction.y, direction.z);
+    //auto glm_up = glm::vec3(0, 1, 0);
 
-    glm::vec3 glm_position;
-    glm_position.x = position.x;
-    glm_position.y = position.y;
-    glm_position.z = position.z;
+    //auto look_at_matrix = glm::lookAt(glm_position, glm_position + glm_direction, glm_up);
+    auto look_at_result = math::look_at(position, position + direction, up);
 
-    return glm::lookAt(glm_position, glm_position + direction, up);
-}
-
-
-math::mat4 Camera2D::get_view_matrix_math() const {
-    glm::mat4 result = get_view_matrix();
-
-    return {
-        result[0][0], result[0][1], result[0][2], result[0][3],
-        result[1][0], result[1][1], result[1][2], result[1][3],
-        result[2][0], result[2][1], result[2][2], result[2][3],
-        result[3][0], result[3][1], result[3][2], result[3][3]
-    };
+    return look_at_result;
 }
 
 

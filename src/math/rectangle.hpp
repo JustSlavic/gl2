@@ -20,8 +20,8 @@ public:
         : top(tl.y), left(tl.x), bottom(br.y), right(br.x)
     {}
 
-    inline f32 get_width() const { return math::abs(right - left); }
-    inline f32 get_height() const { return math::abs(top - bottom); }
+    inline f32 get_width() const { return abs(right - left); }
+    inline f32 get_height() const { return abs(top - bottom); }
 
     inline vector2 get_size() const { return vector2{ get_width(), get_height() }; }
 
@@ -36,20 +36,20 @@ public:
     inline vector2 get_bottom_right() const { return vector2{ right, bottom }; }
 
     inline bool is_empty() const {
-        return math::is_zero(get_width()) || math::is_zero(get_height());
+        return is_zero(get_width()) || is_zero(get_height());
     }
 
-    inline bool contains(math::vector2 p) {
+    inline bool contains(vector2 p) {
         return left <= p.x && p.x <= right
             && bottom <= p.y && p.y <= top;
     }
 
     inline rectangle intersect(const rectangle& other) const {
         return rectangle(
-            math::min(top, other.top),
-            math::max(left, other.left),
-            math::max(bottom, other.bottom),
-            math::min(right, other.right)
+            min(top, other.top),
+            max(left, other.left),
+            max(bottom, other.bottom),
+            min(right, other.right)
         );
     }
 

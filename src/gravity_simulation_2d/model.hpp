@@ -73,8 +73,9 @@ struct Model {
 };
 
 
+} // gravity_simulation_2d
+
+
 #ifdef UNITY_BUILD
 #include "model.cpp"
 #endif
-
-} // gravity_simulation_2d
